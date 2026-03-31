@@ -1,15 +1,15 @@
 # 🤖 AISHA: AI-Powered Industrial Attachment Matching Platform
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/SirNdinya/AISHA/main/documentation/premium_logo.png" width="200" alt="AISHA Logo" />
+  <img src="./documentation/aisha_hero.png" width="800" alt="AISHA Hero AI Visualization" />
   <br />
   <p align="center">
     <b>Revolutionizing the future of industrial placements through Intelligence & Automation.</b>
   </p>
   
-  [![Neural Engine](https://img.shields.io/badge/Neural_Engine-Active-brightgreen?style=for-the-badge&logo=ai)](file:///home/wakanda_forever/Desktop/AISHA/ai-services)
-  [![Production Ready](https://img.shields.io/badge/Status-Production--Ready-blue?style=for-the-badge)](file:///home/wakanda_forever/Desktop/AISHA)
-  [![Architecture](https://img.shields.io/badge/Architecture-Distributed_Microservices-orange?style=for-the-badge)](file:///home/wakanda_forever/Desktop/AISHA)
+  [![Neural Engine](https://img.shields.io/badge/Neural_Engine-Active-brightgreen?style=for-the-badge&logo=ai)](./ai-services)
+  [![Production Ready](https://img.shields.io/badge/Status-Production--Ready-blue?style=for-the-badge)](./)
+  [![Architecture](https://img.shields.io/badge/Architecture-Distributed_Microservices-orange?style=for-the-badge)](./)
 </div>
 
 ---
@@ -24,7 +24,7 @@
 > **Autonomy & Reasoning:** AISHA doesn't just match; it *reasons*. Utilizing a **Multi-Agent Chief Autonomy System**, it analyzes transcripts, interests, and company requirements for the "Single Best Match".
 
 <div align="center">
-  <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp4Z3p4Z3p4Z3p4Z3p4Z3p4Z3p4Z3p4Z3p4Z3p4Z3p4Z3p4Z3Amdm90ZT0x/3o7TKMGpxP5pXpXG6A/giphy.gif" width="600" alt="AI Animation" />
+  <img src="./documentation/aisha_hero.png" width="600" alt="AI Neural Matching" />
 </div>
 
 #### **Key Neural Components:**
