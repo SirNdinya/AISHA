@@ -1,0 +1,14 @@
+sequenceDiagram
+    actor Student
+    participant Platform
+    actor Company
+    actor Institution
+    
+    Student->>Platform: Submit Application Details
+    Platform->>Platform: Calculate Matching Score
+    Platform-->>Student: Confirm Application Submitted
+    Platform->>Company: Notify of New Applicant
+    Company->>Platform: Review & Accept Applicant
+    Platform->>Platform: Generate Official Documents
+    Platform-->>Student: Notify Acceptance & Provide Docs
+    Platform->>Institution: Update Student Placement Status

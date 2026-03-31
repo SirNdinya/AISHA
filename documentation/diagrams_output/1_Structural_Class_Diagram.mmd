@@ -1,0 +1,46 @@
+classDiagram
+    class User {
+        +UUID id
+        +String email
+        +String role
+        +login()
+        +logout()
+    }
+    class Student {
+        +UUID id
+        +String admission_number
+        +List skills
+        +applyTo(Opportunity)
+    }
+    class Company {
+        +UUID id
+        +String name
+        +String industry
+        +postOpportunity()
+        +reviewApplication()
+    }
+    class Institution {
+        +UUID id
+        +String name
+        +String code
+        +monitorStudents()
+    }
+    class Platform {
+        <<Singleton>>
+        +MatchingEngine match_engine
+        +runAIRecommendations()
+        +generateDocuments()
+    }
+    class Opportunity {
+        +UUID id
+        +String title
+        +Number stipend
+    }
+    User <|-- Student
+    User <|-- Company
+    User <|-- Institution
+    Company "1" *-- "many" Opportunity : posts
+    Student "many" -- "many" Opportunity : applies
+    Institution "1" -- "many" Student : oversees
+    Platform -- Opportunity : manages
+    Platform -- Student : recommends

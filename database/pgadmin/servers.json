@@ -1,0 +1,13 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "SAPS Database",
+      "Group": "Servers",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "saps_db",
+      "Username": "saps_user",
+      "SSLMode": "prefer"
+    }
+  }
+}

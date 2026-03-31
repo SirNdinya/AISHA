@@ -1,0 +1,895 @@
+
+AISHA: AI-Powered Industrial Attachment Matching Platform
+USER STORIES & REQUIREMENTS
+
+Version: 1.0
+Date: February 2026
+
+================================================================================
+STUDENT USER STORIES
+================================================================================
+
+EPIC 1: Student Registration & Profile Management
+--------------------------------------------------
+
+US-S1: As a student, I want to register using my institutional email so that
+       my account is verified and linked to my institution.
+Acceptance Criteria:
+• Student can register with institutional email
+• Verification email sent automatically
+• Account activated upon email verification
+• Student profile auto-populated from institution portal
+
+US-S2: As a student, I want to complete my profile with my interests and
+       specialization so that I get relevant attachment opportunities.
+Acceptance Criteria:
+• Student can select area of interest (e.g., Software Dev, Networking)
+• Student can add skills and certifications
+• Student can set location preferences
+• Profile completion percentage displayed
+• Cannot apply until profile is 100% complete
+
+US-S3: As a student, I want to view my academic performance and units covered
+       so that I can understand my qualifications.
+Acceptance Criteria:
+• GPA displayed prominently
+• List of completed units with grades
+• Units in progress shown separately
+• Performance trends visualized
+• Data synced from institution portal
+
+EPIC 2: Opportunity Discovery
+------------------------------
+
+US-S4: As a student, I want to browse available attachment opportunities so
+       that I can find suitable positions.
+Acceptance Criteria:
+• All open opportunities displayed
+• Opportunities sorted by relevance
+• Filter by location, company, department
+• Search by keywords
+• View opportunity details
+
+US-S5: As a student, I want to see personalized recommendations so that I can
+       quickly find the best matches for me.
+Acceptance Criteria:
+• Top 10 recommendations displayed on dashboard
+• Match score shown for each opportunity (0-100)
+• Explanation of why recommended
+• "Why this match" feature available
+• Recommendations updated daily
+
+US-S6: As a student, I want to understand why an opportunity matches me so
+       that I can make informed decisions.
+Acceptance Criteria:
+• Match reasons displayed (e.g., "Your GPA exceeds requirement")
+• Skills match highlighted
+• Location match indicated
+• Department alignment shown
+• Historical success rate for similar students
+
+EPIC 3: Application Process
+----------------------------
+
+US-S7: As a student, I want to apply to opportunities with one click so that
+       the process is quick and easy.
+Acceptance Criteria:
+• One-click application button
+• All required documents auto-generated
+• Application submitted immediately
+• Confirmation notification sent
+• Application appears in "My Applications"
+
+US-S8: As a student, I want to track my application status so that I know
+       where I stand.
+Acceptance Criteria:
+• Application status visible (Pending/Under Review/Accepted/Rejected)
+• Status updates in real-time
+• Notification on status change
+• Timeline of application progress
+• Estimated response time displayed
+
+US-S9: As a student, I want to receive notifications about my applications so
+       that I don't miss important updates.
+Acceptance Criteria:
+• Email notification on status change
+• SMS notification for acceptance/rejection
+• In-app notification badge
+• Notification preferences configurable
+• Notification history accessible
+
+EPIC 4: Document Management
+----------------------------
+
+US-S10: As a student, I want my application documents auto-generated so that
+        I don't have to create them manually.
+Acceptance Criteria:
+• Application letter auto-generated
+• NITA form auto-filled
+• School letter auto-generated
+• Insurance cover attached
+• All documents downloadable as PDF
+
+US-S11: As a student, I want to download my documents so that I can review
+        them before submission.
+Acceptance Criteria:
+• Download button for each document
+• PDF format
+• Professional formatting
+• Accurate information
+• Editable before final submission (optional)
+
+EPIC 5: Chatbot Support
+-----------------------
+
+US-S12: As a student, I want to ask questions to a chatbot so that I can get
+        help anytime.
+Acceptance Criteria:
+• Chatbot accessible from all pages
+• Responds within 2 seconds
+• Handles common questions (FAQs)
+• Explains placement decisions
+• Provides application guidance
+• Conversation history saved
+
+US-S13: As a student, I want the chatbot to explain why I was matched with
+        specific opportunities so that I understand the system.
+Acceptance Criteria:
+• Chatbot can explain match scores
+• Provides improvement suggestions
+• Compares with other opportunities
+• Explains rejection reasons (if applicable)
+• Suggests profile improvements
+
+EPIC 6: Placement Management
+-----------------------------
+
+US-S14: As a student, I want to view my placement details so that I know
+        where and when to report.
+Acceptance Criteria:
+• Placement details displayed (company, department, dates)
+• Supervisor contact information
+• Reporting instructions
+• Required documents checklist
+• Calendar integration
+
+US-S15: As a student, I want to receive feedback from my placement so that
+        I can improve.
+Acceptance Criteria:
+• Company feedback visible after placement
+• Performance rating displayed
+• Areas of improvement highlighted
+• Strengths acknowledged
+• Completion certificate downloadable
+
+================================================================================
+INSTITUTION USER STORIES
+================================================================================
+
+EPIC 7: Institution Setup & Configuration
+------------------------------------------
+
+US-I1: As an institution admin, I want to register my institution so that
+       students can be linked to us.
+Acceptance Criteria:
+• Institution registration form
+• Upload institution logo
+• Provide official documents
+• Admin verification required
+• Approval notification sent
+
+US-I2: As an institution admin, I want to configure API integration with our
+       student portal so that data syncs automatically.
+Acceptance Criteria:
+• API endpoint configuration
+• API key management
+• Test connection functionality
+• Data mapping configuration
+• Sync frequency settings
+
+EPIC 8: Student Management
+---------------------------
+
+US-I3: As an institution admin, I want to import students in bulk so that
+       onboarding is efficient.
+Acceptance Criteria:
+• CSV/Excel import functionality
+• Template download available
+• Data validation before import
+• Error reporting for invalid data
+• Bulk import confirmation
+
+US-I4: As an institution admin, I want to view all my students and their
+       placement status so that I can track progress.
+Acceptance Criteria:
+• List of all students
+• Filter by year, course, status
+• Search by name or student number
+• Placement status visible
+• Export to Excel
+
+US-I5: As an institution admin, I want to monitor student performance during
+       attachment so that I can provide support.
+Acceptance Criteria:
+• Real-time placement status
+• Company feedback visible
+• Performance ratings displayed
+• Issue alerts for struggling students
+• Communication with supervisors
+
+EPIC 9: Reporting & Analytics
+------------------------------
+
+US-I6: As an institution admin, I want to generate placement reports so that
+       I can analyze success rates.
+Acceptance Criteria:
+• Placement success rate by course
+• Average time to placement
+• Top partner companies
+• Student satisfaction scores
+• Exportable reports (PDF/Excel)
+
+US-I7: As an institution admin, I want to view analytics dashboards so that
+       I can make data-driven decisions.
+Acceptance Criteria:
+• Visual dashboards with charts
+• Trend analysis over time
+• Comparison with previous years
+• Department-wise breakdown
+• Real-time data updates
+
+EPIC 10: Company Relations
+---------------------------
+
+US-I8: As an institution admin, I want to view partner companies so that
+       I can maintain relationships.
+Acceptance Criteria:
+• List of all partner companies
+• Company details and contacts
+• Placement history with each company
+• Communication hub
+• Partnership status
+
+US-I9: As an institution admin, I want to communicate with companies so that
+       I can coordinate placements.
+Acceptance Criteria:
+• Messaging system
+• Email integration
+• Notification on new messages
+• Message history
+• Attachment support
+
+================================================================================
+COMPANY USER STORIES
+================================================================================
+
+EPIC 11: Company Registration & Setup
+--------------------------------------
+
+US-C1: As a company representative, I want to register my company so that
+       we can offer attachment opportunities.
+Acceptance Criteria:
+• Company registration form
+• Upload company logo
+• Provide business registration documents
+• Admin verification required
+• Approval notification sent
+
+US-C2: As a company representative, I want to create departments so that
+       students can be assigned to specific areas.
+Acceptance Criteria:
+• Add/edit/delete departments
+• Set department capacity
+• Assign department heads
+• Department contact information
+• Department description
+
+EPIC 12: Opportunity Management
+--------------------------------
+
+US-C3: As a company representative, I want to post attachment opportunities
+       so that students can apply.
+Acceptance Criteria:
+• Create opportunity form
+• Specify requirements (GPA, units, skills)
+• Set number of slots
+• Define start and end dates
+• Set application deadline
+• Assign to department
+
+US-C4: As a company representative, I want to edit or close opportunities so
+       that information is always current.
+Acceptance Criteria:
+• Edit opportunity details
+• Close opportunity before deadline
+• Mark as filled
+• Reopen closed opportunities
+• View opportunity history
+
+EPIC 13: Student Discovery & Selection
+---------------------------------------
+
+US-C5: As a company representative, I want to view matched students so that
+       I can find qualified candidates.
+Acceptance Criteria:
+• List of matched students for each opportunity
+• Match score displayed
+• Filter by GPA, specialization, location
+• View student profiles
+• Compare students side-by-side
+
+US-C6: As a company representative, I want to review student applications so
+       that I can make informed decisions.
+Acceptance Criteria:
+• Application details displayed
+• Student academic performance visible
+• Documents accessible
+• Accept/reject buttons
+• Bulk actions available
+
+US-C7: As a company representative, I want to accept students and assign them
+       to departments so that placements are organized.
+Acceptance Criteria:
+• Accept application with one click
+• Assign to specific department
+• Set supervisor
+• Automated notification to student
+• Automated notification to institution
+
+EPIC 14: Placement Management
+------------------------------
+
+US-C8: As a company representative, I want to track active placements so that
+       I can monitor progress.
+Acceptance Criteria:
+• List of active placements
+• Student details and contacts
+• Placement duration and dates
+• Supervisor information
+• Department assignment
+
+US-C9: As a company representative, I want to provide feedback on students so
+       that institutions can improve.
+Acceptance Criteria:
+• Feedback form for each student
+• Performance rating (1-5 stars)
+• Strengths and areas for improvement
+• Recommendation for future placements
+• Feedback visible to institution and student
+
+US-C10: As a company representative, I want to generate completion certificates
+        so that students have proof of attachment.
+Acceptance Criteria:
+• Auto-generate certificate
+• Company letterhead
+• Student details and dates
+• Performance summary
+• Digital signature
+• Downloadable PDF
+
+EPIC 15: Analytics & Insights
+------------------------------
+
+US-C11: As a company representative, I want to view analytics on our placements
+        so that we can optimize our program.
+Acceptance Criteria:
+• Number of placements over time
+• Student performance trends
+• Department-wise distribution
+• Application-to-acceptance ratio
+• Student satisfaction scores
+
+================================================================================
+SYSTEM ADMIN USER STORIES
+================================================================================
+
+EPIC 16: Platform Management
+-----------------------------
+
+US-A1: As a system admin, I want to manage all users so that the platform
+       is secure and organized.
+Acceptance Criteria:
+• View all users (students, institutions, companies)
+• Filter by role and status
+• Activate/deactivate accounts
+• Reset passwords
+• View user activity logs
+
+US-A2: As a system admin, I want to verify institutions and companies so that
+       only legitimate organizations are on the platform.
+Acceptance Criteria:
+• Pending verification queue
+• View submitted documents
+• Approve/reject with comments
+• Notification on decision
+• Verification badge on approved accounts
+
+EPIC 17: System Configuration
+------------------------------
+
+US-A3: As a system admin, I want to configure system settings so that the
+       platform operates optimally.
+Acceptance Criteria:
+• Configure matching algorithm parameters
+• Set notification templates
+• Configure NITA integration
+• Set rate limits
+• Configure backup schedules
+
+US-A4: As a system admin, I want to manage integrations so that third-party
+       services work correctly.
+Acceptance Criteria:
+• Configure NITA API
+• Configure email service
+• Configure SMS service
+• Test integrations
+• View integration logs
+
+EPIC 18: Monitoring & Analytics
+--------------------------------
+
+US-A5: As a system admin, I want to monitor system health so that I can
+       ensure uptime and performance.
+Acceptance Criteria:
+• System health dashboard
+• API response times
+• Error rates
+• Database performance
+• Server resource usage
+• Uptime percentage
+
+US-A6: As a system admin, I want to view platform analytics so that I can
+       understand usage patterns.
+Acceptance Criteria:
+• Total users by role
+• Active users (daily/weekly/monthly)
+• Placement success rates
+• Most active institutions and companies
+• Geographic distribution
+• Growth trends
+
+================================================================================
+NITA INTEGRATION REQUIREMENTS
+================================================================================
+
+REQ-N1: NITA Form Generation
+• Auto-populate NITA form with student and placement data
+• Generate unique NITA form number
+• Include all mandatory fields
+• PDF format matching official template
+• Digital signature support
+
+REQ-N2: NITA Form Submission
+• Submit forms electronically to NITA system
+• Track submission status
+• Receive confirmation from NITA
+• Handle submission errors gracefully
+• Retry mechanism for failed submissions
+
+REQ-N3: NITA Approval Tracking
+• Track NITA approval status
+• Update application status based on NITA response
+• Notify student and institution of approval
+• Store NITA approval reference number
+• Generate NITA compliance reports
+
+================================================================================
+CHATBOT REQUIREMENTS
+================================================================================
+
+REQ-CB1: Intent Recognition
+• Recognize at least 50 common intents
+• 90%+ accuracy in intent classification
+• Handle misspellings and variations
+• Support multi-turn conversations
+• Context awareness
+
+REQ-CB2: Response Generation
+• Provide accurate answers to FAQs
+• Explain matching decisions
+• Guide through application process
+• Provide document help
+• Escalate to human support when needed
+
+REQ-CB3: Learning & Improvement
+• Log all conversations
+• Identify unanswered questions
+• Continuous training from interactions
+• Admin interface to add new intents
+• Performance analytics
+
+================================================================================
+MATCHING ALGORITHM REQUIREMENTS
+================================================================================
+
+REQ-MA1: Matching Criteria
+• Academic performance (GPA, grades)
+• Units completed and relevance
+• Specialization alignment
+• Location preferences
+• Company requirements
+• Department needs
+• Historical success patterns
+
+REQ-MA2: Matching Score Calculation
+• Score range: 0-100
+• Weighted combination of criteria
+• Configurable weights
+• Explainable results
+• Fairness constraints
+
+REQ-MA3: Recommendation Generation
+• Top 10 recommendations per student
+• Diversity in recommendations
+• Avoid over-recommending same companies
+• Update recommendations daily
+• Personalized ranking
+
+REQ-MA4: Continuous Improvement
+• Learn from placement outcomes
+• Retrain model monthly
+• A/B testing for algorithm changes
+• Performance metrics tracking
+• Feedback loop integration
+
+================================================================================
+NOTIFICATION REQUIREMENTS
+================================================================================
+
+REQ-NOT1: Email Notifications
+• Application submitted
+• Application status change
+• Placement acceptance
+• Placement rejection
+• Placement start reminder
+• Feedback received
+• System announcements
+
+REQ-NOT2: SMS Notifications
+• Placement acceptance
+• Placement rejection
+• Urgent updates
+• Deadline reminders
+
+REQ-NOT3: In-App Notifications
+• All email notification types
+• Real-time delivery
+• Notification badge
+• Notification center
+• Mark as read functionality
+
+REQ-NOT4: Notification Preferences
+• User can enable/disable each type
+• Choose notification channels
+• Set quiet hours
+• Frequency settings
+• Digest options
+
+================================================================================
+DOCUMENT GENERATION REQUIREMENTS
+================================================================================
+
+REQ-DOC1: Application Letter
+• Professional format
+• Personalized content
+• Student details auto-filled
+• Company details auto-filled
+• Opportunity-specific content
+• PDF generation
+
+REQ-DOC2: NITA Form
+• Official NITA template
+• All mandatory fields
+• Unique form number
+• Student and institution details
+• Company and placement details
+• PDF generation
+
+REQ-DOC3: School Letter
+• Institution letterhead
+• Student details
+• Units covered with grades
+• GPA and performance
+• Recommendation statement
+• Official signature
+• PDF generation
+
+REQ-DOC4: Insurance Cover
+• Insurance provider details
+• Coverage period
+• Coverage amount
+• Student details
+• Beneficiary information
+• PDF generation
+
+================================================================================
+SECURITY REQUIREMENTS
+================================================================================
+
+REQ-SEC1: Authentication
+• Secure password requirements (min 8 chars, uppercase, lowercase, number)
+• Password hashing (bcrypt)
+• JWT token-based authentication
+• Token expiry and refresh
+• Multi-factor authentication (optional)
+• Session management
+
+REQ-SEC2: Authorization
+• Role-based access control
+• Resource-level permissions
+• API endpoint protection
+• Row-level security
+• Audit logging
+
+REQ-SEC3: Data Protection
+• Encryption at rest (AES-256)
+• Encryption in transit (TLS 1.3)
+• PII data protection
+• GDPR compliance
+• Data retention policies
+• Secure file upload
+
+REQ-SEC4: API Security
+• Rate limiting
+• CORS configuration
+• Input validation
+• SQL injection prevention
+• XSS protection
+• CSRF protection
+
+================================================================================
+PERFORMANCE REQUIREMENTS
+================================================================================
+
+REQ-PERF1: Response Times
+• Page load time < 2 seconds
+• API response time < 500ms
+• Search results < 1 second
+• Document generation < 3 seconds
+• Real-time notifications < 1 second
+
+REQ-PERF2: Scalability
+• Support 10,000+ concurrent users
+• Handle 100,000+ students
+• Handle 1,000+ companies
+• Handle 10,000+ opportunities
+• Database query optimization
+
+REQ-PERF3: Availability
+• 99.9% uptime SLA
+• Automated backups (daily)
+• Disaster recovery plan
+• Redundancy
+• Load balancing
+
+================================================================================
+USABILITY REQUIREMENTS
+================================================================================
+
+REQ-UX1: User Interface
+• Mobile-responsive design
+• Intuitive navigation
+• Consistent design language
+• Accessibility compliance (WCAG 2.1)
+• Fast loading times
+
+REQ-UX2: User Experience
+• Minimal clicks to complete tasks
+• Clear error messages
+• Helpful tooltips
+• Progress indicators
+• Confirmation dialogs
+
+REQ-UX3: Accessibility
+• Screen reader support
+• Keyboard navigation
+• High contrast mode
+• Font size adjustment
+• Alt text for images
+
+================================================================================
+END OF USER STORIES & REQUIREMENTS
+================================================================================
+
+
+================================================================================
+LEARNING MODULE USER STORIES
+================================================================================
+
+EPIC 19: Learning & Skill Development
+--------------------------------------
+
+US-L1: As a student, I want to receive personalized course recommendations
+       based on my field of interest so that I can improve my skills.
+Acceptance Criteria:
+• Top 10 course recommendations displayed on learning dashboard
+• Recommendations match selected field of interest
+• Mix of free and paid courses shown
+• Course difficulty matches current level
+• Recommendations updated weekly
+
+US-L2: As a student, I want to browse learning resources by category so that
+       I can find specific topics I want to learn.
+Acceptance Criteria:
+• Browse by category (Technical, Soft Skills, Certifications)
+• Filter by field (Software Dev, Networking, etc.)
+• Filter by level (Beginner, Intermediate, Advanced)
+• Filter by cost (Free, Paid)
+• Search by keywords
+• Sort by rating, popularity, duration
+
+US-L3: As a student, I want to enroll in recommended courses so that I can
+       track my learning progress.
+Acceptance Criteria:
+• One-click enrollment button
+• Course added to "My Courses"
+• External link opens in new tab
+• Progress tracking enabled
+• Notification sent on enrollment
+
+US-L4: As a student, I want to track my learning progress so that I can see
+       how much I've completed.
+Acceptance Criteria:
+• Progress bar for each course (0-100%)
+• Manual progress update
+• Estimated completion date
+• Time spent tracking
+• Completion badges
+
+US-L5: As a student, I want to mark courses as completed and upload
+       certificates so that they appear on my profile.
+Acceptance Criteria:
+• Mark as complete button
+• Upload certificate (PDF/image)
+• Certificate displayed on profile
+• Completion date recorded
+• Skills automatically added to profile
+
+US-L6: As a student, I want to see how my learning improves my attachment
+       chances so that I'm motivated to continue.
+Acceptance Criteria:
+• "Learning Impact" section on dashboard
+• Show match score improvement
+• Display skills gained
+• Show opportunities now accessible
+• Motivational messages
+
+US-L7: As a student, I want to receive certification recommendations so that
+       I can earn industry-recognized credentials.
+Acceptance Criteria:
+• Certification roadmap displayed
+• Recommended certifications for field
+• Free certification options highlighted
+• Exam preparation resources linked
+• Certification tracking
+
+US-L8: As a student, I want to see my skill development over time so that
+       I can track my growth.
+Acceptance Criteria:
+• Skills timeline visualization
+• Skill level progression (Beginner → Expert)
+• Skills gained from courses
+• Skills from academic units
+• Skills gap analysis
+
+US-L9: As a student, I want to receive learning recommendations when my
+       applications are rejected so that I can improve.
+Acceptance Criteria:
+• Rejection triggers skill gap analysis
+• Recommended courses to fill gaps
+• Specific skills needed for opportunity
+• Motivational message
+• Reapplication suggestion after learning
+
+US-L10: As a student, I want to earn badges and achievements for learning
+        so that I'm motivated to continue.
+Acceptance Criteria:
+• Badges for course completion
+• Achievements for milestones (5 courses, 10 courses, etc.)
+• Skill level badges
+• Certification badges
+• Badge showcase on profile
+
+EPIC 20: Learning Analytics (Institution)
+------------------------------------------
+
+US-L11: As an institution admin, I want to see student learning engagement
+        so that I can encourage skill development.
+Acceptance Criteria:
+• Percentage of students using learning module
+• Average courses per student
+• Most popular courses
+• Completion rates
+• Correlation with placement success
+
+US-L12: As an institution admin, I want to add custom learning resources
+        so that students can access institution-specific content.
+Acceptance Criteria:
+• Add custom resource form
+• Upload course materials
+• Set visibility (all students or specific courses)
+• Track engagement with custom resources
+• Edit/delete custom resources
+
+EPIC 21: Learning Integration (Company)
+----------------------------------------
+
+US-L13: As a company representative, I want to see student certifications
+        and completed courses so that I can assess their qualifications.
+Acceptance Criteria:
+• Certifications displayed on student profile
+• Completed courses listed
+• Skills gained from learning
+• Verification links for certifications
+• Learning activity timeline
+
+US-L14: As a company representative, I want to recommend specific courses
+        to accepted students so that they're prepared for attachment.
+Acceptance Criteria:
+• Recommend courses to students
+• Pre-attachment training suggestions
+• Track student completion
+• Notification to student
+• Company-specific learning paths
+
+================================================================================
+LEARNING MODULE REQUIREMENTS
+================================================================================
+
+REQ-LM1: Course Recommendation Engine
+• Recommend top 10 courses based on field of interest
+• Consider skill level and learning history
+• Prioritize free resources
+• Update recommendations weekly
+• Explain why each course is recommended
+
+REQ-LM2: Learning Resource Database
+• Catalog of 1000+ learning resources
+• Multiple platforms (Coursera, edX, YouTube, etc.)
+• Categorized by field, level, type
+• Regular updates with new content
+• Quality ratings and reviews
+
+REQ-LM3: Progress Tracking
+• Track enrollment and completion
+• Monitor progress percentage
+• Record time spent learning
+• Certificate upload and storage
+• Learning history timeline
+
+REQ-LM4: Skill Profile Management
+• Maintain student skill inventory
+• Track skill level progression
+• Link skills to courses and certifications
+• Verify certifications
+• Display skills on profile
+
+REQ-LM5: Integration with Matching
+• Completed courses boost match score
+• Certifications increase competitiveness
+• Skills matched with job requirements
+• Learning activity demonstrates commitment
+• Feedback loop for rejected applications
+
+REQ-LM6: Learning Analytics
+• Track engagement metrics
+• Measure learning impact on placements
+• Identify popular courses
+• Monitor completion rates
+• Generate learning reports
+
+REQ-LM7: Gamification
+• Badges for achievements
+• Skill level progression
+• Learning streaks
+• Leaderboards (optional)
+• Points system
+
+REQ-LM8: Free Resource Priority
+• Prioritize free courses in recommendations
+• Highlight open-source materials
+• Include YouTube tutorials
+• Link to free coding platforms
+• Promote government programs
+
+================================================================================

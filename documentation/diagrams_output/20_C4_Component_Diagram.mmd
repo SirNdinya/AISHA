@@ -1,0 +1,23 @@
+C4Component
+    title Component diagram for Platform API
+    
+    Container(spa, "Frontend Apps", "React", "UI Portals for Actors")
+    
+    Container_Boundary(api, "Platform API") {
+        Component(ctrl, "Controllers", "Express Router", "Routes requests from actors")
+        Component(service_stu, "Student Services", "TypeScript", "Logic for students")
+        Component(service_comp, "Company Services", "TypeScript", "Logic for companies")
+        Component(service_inst, "Institution Services", "TypeScript", "Logic for institutions")
+        Component(repo, "Repositories", "Prisma ORM", "DB access")
+    }
+    
+    ContainerDb(db, "Database", "PostgreSQL", "Stores data")
+    
+    Rel(spa, ctrl, "API calls", "JSON/HTTPS")
+    Rel(ctrl, service_stu, "Delegates")
+    Rel(ctrl, service_comp, "Delegates")
+    Rel(ctrl, service_inst, "Delegates")
+    Rel(service_stu, repo, "Uses")
+    Rel(service_comp, repo, "Uses")
+    Rel(service_inst, repo, "Uses")
+    Rel(repo, db, "Reads/Writes", "SQL")

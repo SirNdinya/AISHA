@@ -1,0 +1,28 @@
+BIT 420 IT PROJECT II - PROPOSAL documentation guide  
+ 
+a) All candidates to use above guide for Proposal documentation  
+b) Note that evaluation will be as per the above guide  
+c) All documentation to be done using Microsoft word , title page font size 14 , other 
+pages 12 point , style time new roman, good editing and formatting of paragraphs , you 
+can staple not a must to bind   
+o Title Page – Candidates details , Project title, citation 
+o Declaration [Preliminary  Pages] remember to indicate supervisors here 
+o Table of contents 
+o Abstract – short and brief , one paragraph  
+o Background/Introduction [Chapter one ] 
+o Statement of the problem 
+o Objectives – MUST be smart 
+o Brief Literature Review [Chapter Two]  
+o Methodology [Chapter Three] 
+o Requirements Analysis and Specifications  
+• Functional requirement 
+• Non-functional requirement 
+o Conceptual design 
+o Functional Design 
+o Development environment 
+• Hardware requirements  
+• Software requirements  
+o Development process design 
+o Development schedule- [Gantt chart ] plan of 28 weeks in a semester  
+o Development Budget 
+o References [APA – Style]  

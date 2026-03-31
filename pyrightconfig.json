@@ -1,0 +1,11 @@
+{
+  "executionEnvironments": [
+    {
+      "root": "ai-services",
+      "venvPath": "ai-services",
+      "venv": "venv",
+      "pythonVersion": "3.13"
+    }
+  ]
+}
+

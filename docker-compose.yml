@@ -1,0 +1,99 @@
+version: '3.8'
+
+services:
+  # ==============================================
+  # INFRASTRUCTURE SERVICES
+  # ==============================================
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: saps_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER:-saps_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-saps_password}
+      POSTGRES_DB: ${DB_NAME:-saps_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+    networks:
+      - saps_network
+
+  # Redis for Job Queue
+  redis:
+    image: redis:alpine
+    container_name: saps_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - saps_network
+
+  # ==============================================
+  # APPLICATION SERVICES (Placeholders for Phase 2)
+  # ==============================================
+
+  # Backend API (Node.js)
+  backend:
+    build: ./backend
+    container_name: saps_backend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - redis
+    env_file: .env
+    volumes:
+      - ./backend/uploads:/usr/src/app/uploads
+    networks:
+      - saps_network
+
+  # AI ML Service (Python)
+  ai-service:
+    build: ./ai-services
+    container_name: saps_ai
+    ports:
+      - "8001:8001"
+    environment:
+      POSTGRES_SERVER: postgres
+      POSTGRES_USER: ${DB_USER:-saps_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-saps_password}
+      POSTGRES_DB: ${DB_NAME:-saps_db}
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - saps_network
+
+  # pgAdmin for Browser-based Database Management
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: saps_pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@saps.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin_password}
+      PGADMIN_LISTEN_ADDRESS: 0.0.0.0
+      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: "False"
+    ports:
+      - "8888:80"
+    volumes:
+      - ./database/pgadmin/servers.json:/pgadmin4/servers.json
+    depends_on:
+      - postgres
+    networks:
+      - saps_network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+
+networks:
+  saps_network:
+    driver: bridge

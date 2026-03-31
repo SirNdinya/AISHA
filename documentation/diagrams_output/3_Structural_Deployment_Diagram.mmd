@@ -1,0 +1,34 @@
+graph TD
+    subgraph Client Devices
+        Web_Stu[Student Browser]
+        Web_Comp[Company Browser]
+        Web_Inst[Institution Browser]
+    end
+    subgraph Cloud Infrastructure (Platform)
+        subgraph CDN
+            Cloudflare[Cloudflare CDN]
+        end
+        subgraph Frontend Hosting
+            FE[React Applications]
+        end
+        subgraph Backend Servers
+            LB[Load Balancer]
+            NodeAPI[Node.js API Server]
+            PyAPI[Python ML API]
+        end
+        subgraph Databases
+            DB[(PostgreSQL)]
+            Redis[(Redis Cache)]
+        end
+    end
+    
+    Web_Stu --> Cloudflare
+    Web_Comp --> Cloudflare
+    Web_Inst --> Cloudflare
+    Cloudflare --> FE
+    Cloudflare --> LB
+    LB --> NodeAPI
+    LB --> PyAPI
+    NodeAPI --> DB
+    NodeAPI --> Redis
+    PyAPI --> DB

@@ -1,0 +1,340 @@
+openapi: 3.0.0
+info:
+  title: Student Attachment Placement System (SAPS) API
+  description: |
+    API documentation for the SAPS platform.
+    Features: Attachments, AI Matching, Document Gen, Learning Module, M-Pesa Payments.
+  version: 1.0.0
+  contact:
+    email: support@saps.ke
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local Development Server
+  - url: https://api.saps.ke/v1
+    description: Production Server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # ----------------------------------------------------------------
+    # CORE ENTITIES
+    # ----------------------------------------------------------------
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+          enum: [STUDENT, COMPANY, INSTITUTION, ADMIN]
+        is_verified:
+          type: boolean
+
+    StudentProfile:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        first_name:
+          type: string
+        last_name:
+          type: string
+        institution_id:
+          type: string
+          format: uuid
+        course_of_study:
+          type: string
+        skills:
+          type: array
+          items:
+            type: string
+        transcript_url:
+          type: string
+        cv_url:
+          type: string
+        requires_stipend:
+          type: boolean
+        min_stipend:
+          type: number
+
+    Opportunity:
+      type: object
+      required: [title, company_id, description, skills_required]
+      properties:
+        id:
+          type: string
+          format: uuid
+        company_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        requirements:
+          type: string
+        skills_required:
+          type: array
+          items:
+            type: string
+        location:
+          type: string
+        stipend_amount:
+          type: number
+        positions_available:
+          type: integer
+        deadline:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [OPEN, CLOSED, FILLED]
+
+    Application:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        student_id:
+          type: string
+          format: uuid
+        opportunity_id:
+          type: string
+          format: uuid
+        match_score:
+          type: number
+          description: AI-generated score (0-100)
+        status:
+          type: string
+          enum: [PENDING, REVIEW, ACCEPTED, REJECTED, AUTO_REJECTED]
+        auto_generated_docs_url:
+          type: string
+
+    # ----------------------------------------------------------------
+    # LEARNING MODULE
+    # ----------------------------------------------------------------
+    LearningResource:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        platform:
+          type: string
+          enum: [Coursera, Udemy, YouTube, Other]
+        url:
+          type: string
+        skills_covered:
+          type: array
+          items:
+            type: string
+        is_free:
+          type: boolean
+
+    # ----------------------------------------------------------------
+    # PAYMENTS (M-PESA)
+    # ----------------------------------------------------------------
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        student_id:
+          type: string
+          format: uuid
+        company_id:
+          type: string
+          format: uuid
+        amount:
+          type: number
+        mpesa_receipt_number:
+          type: string
+        status:
+          type: string
+          enum: [PENDING, COMPLETED, FAILED]
+        transaction_date:
+          type: string
+          format: date-time
+
+security:
+  - bearerAuth: []
+
+paths:
+  # ================================================================
+  # AUTHENTICATION
+  # ================================================================
+  /auth/register:
+    post:
+      summary: Register a new user
+      tags: [Auth]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, role]
+              properties:
+                email: {type: string}
+                password: {type: string}
+                role: {type: string}
+      responses:
+        '201':
+          description: User created
+
+  /auth/login:
+    post:
+      summary: Login
+      tags: [Auth]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: {type: string}
+                password: {type: string}
+      responses:
+        '200':
+          description: Login successful (returns JWT)
+
+  # ================================================================
+  # STUDENTS
+  # ================================================================
+  /students/profile:
+    get:
+      summary: Get current student profile
+      tags: [Students]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentProfile'
+    put:
+      summary: Update profile
+      tags: [Students]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentProfile'
+
+  /students/recommendations:
+    get:
+      summary: Get AI-recommended opportunities
+      tags: [Students, AI]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - $ref: '#/components/schemas/Opportunity'
+                    - type: object
+                      properties:
+                        match_score: {type: number}
+                        reason: {type: string}
+
+  # ================================================================
+  # APPLICATION WORKFLOW
+  # ================================================================
+  /applications/apply:
+    post:
+      summary: Submit an application (triggers document generation)
+      tags: [Applications]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [opportunity_id]
+              properties:
+                opportunity_id: {type: string, format: uuid}
+      responses:
+        '201':
+          description: Application submitted
+
+  /applications/auto-apply-settings:
+    put:
+      summary: Configure zero-click application settings
+      tags: [Applications, Automation]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                enabled: {type: boolean}
+                min_match_score: {type: number}
+                max_daily_apps: {type: integer}
+
+  # ================================================================
+  # LEARNING MODULE
+  # ================================================================
+  /learning/recommendations:
+    get:
+      summary: Get recommended courses based on skill gaps
+      tags: [Learning]
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LearningResource'
+
+  # ================================================================
+  # PAYMENTS (M-PESA)
+  # ================================================================
+  /payments/initiate:
+    post:
+      summary: Initiate M-Pesa Stipend Payment (B2C/B2B)
+      tags: [Payments]
+      responses:
+        '200':
+          description: STK Push / Payment initiated
+
+  /payments/callback:
+    post:
+      summary: M-Pesa Webhook Endpoint
+      tags: [Payments, Webhooks]
+      security: [] # Public endpoint for Safaricom
+      description: Receives payment confirmation from M-Pesa
+
+  # ================================================================
+  # CHATBOT
+  # ================================================================
+  /chatbot/query:
+    post:
+      summary: Send message to AI Assistant
+      tags: [Chatbot]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message: {type: string}
+      responses:
+        '200':
+          description: AI Response
+

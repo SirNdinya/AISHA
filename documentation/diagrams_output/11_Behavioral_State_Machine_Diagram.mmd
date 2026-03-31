@@ -1,0 +1,9 @@
+stateDiagram-v2
+    [*] --> SUBMITTED : Student Applies
+    SUBMITTED --> UNDER_REVIEW : Company opens application
+    UNDER_REVIEW --> ACCEPTED : Company Approves
+    UNDER_REVIEW --> REJECTED : Company Declines
+    ACCEPTED --> ACTIVE_PLACEMENT : Placement Date Starts
+    ACTIVE_PLACEMENT --> COMPLETED : End Date Reached (Institution Notified)
+    REJECTED --> [*]
+    COMPLETED --> [*]

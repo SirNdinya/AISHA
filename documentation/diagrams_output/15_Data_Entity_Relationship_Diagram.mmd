@@ -1,0 +1,27 @@
+erDiagram
+    PLATFORM_USERS ||--o{ STUDENTS : "is a"
+    PLATFORM_USERS ||--o{ COMPANIES : "is a"
+    PLATFORM_USERS ||--o{ INSTITUTIONS : "is a"
+    
+    INSTITUTIONS ||--o{ STUDENTS : "regulates"
+    COMPANIES ||--o{ OPPORTUNITIES : "creates"
+    STUDENTS ||--o{ APPLICATIONS : "submits"
+    OPPORTUNITIES ||--o{ APPLICATIONS : "receives"
+    
+    PLATFORM_USERS {
+        uuid id
+        string email
+        string role
+    }
+    STUDENTS {
+        uuid id
+        string admission_number
+    }
+    COMPANIES {
+        uuid id
+        string name
+    }
+    INSTITUTIONS {
+        uuid id
+        string code
+    }

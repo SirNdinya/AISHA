@@ -1,0 +1,26 @@
+graph LR
+    subgraph Actors
+        S[Student]
+        C[Company]
+        I[Institution]
+    end
+    subgraph AISHA Platform
+        subgraph Presentation Layer
+            Web[Web Portals]
+        end
+        subgraph Business Logic Layer
+            Auth[Auth Module]
+            Core[AI Core Matching]
+        end
+        subgraph Data Layer
+            RelDB[(PostgreSQL)]
+        end
+    end
+    
+    S --> Web
+    C --> Web
+    I --> Web
+    Web --> Auth
+    Web --> Core
+    Auth --> RelDB
+    Core --> RelDB

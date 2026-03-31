@@ -1,0 +1,12 @@
+flowchart TD
+    Start((Start)) --> A[Student: Views Dashboard]
+    A --> B[Student: Searches Opportunities]
+    B --> C[Platform: Generates AI Matches]
+    C --> D[Student: Reviews Recommendations]
+    D --> E[Student: Applies for Opportunity]
+    E --> F[Platform: Forwards Application]
+    F --> G[Company: Reviews Application]
+    G --> H{Company: Accept?}
+    H -- No --> I[Platform: Sends Rejection Notice] --> End((End))
+    H -- Yes --> J[Platform: Automatically Generates Contracts & Letters]
+    J --> End

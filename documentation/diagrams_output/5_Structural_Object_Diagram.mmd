@@ -1,0 +1,34 @@
+classDiagram
+    class jku_Institution {
+        id = "inst-001"
+        name = "JKUAT"
+    }
+    class johnDoe_Student {
+        id = "std-123"
+        name = "John Doe"
+        skills = ["Python", "React"]
+    }
+    class aisha_Platform {
+        status = "Active"
+        version = "1.0"
+    }
+    class safaricom_Company {
+        id = "comp-456"
+        name = "Safaricom"
+    }
+    class swIntern_Opportunity {
+        id = "opp-789"
+        title = "Software Intern"
+        status = "Open"
+    }
+    class app001_Application {
+        id = "app-001"
+        status = "Pending"
+        match_score = 92
+    }
+    
+    jku_Institution "1" -- "many" johnDoe_Student : oversees
+    johnDoe_Student "1" -- "1" app001_Application : creates
+    safaricom_Company "1" -- "1" swIntern_Opportunity : posts
+    app001_Application "1" -- "1" swIntern_Opportunity : targets
+    aisha_Platform -- app001_Application : processes

@@ -1,0 +1,11 @@
+C4Context
+    title System Context diagram for AISHA
+    
+    Person(student, "Student", "A university student seeking an attachment.")
+    Person(company, "Company", "An HR rep or manager looking for interns.")
+    Person(institution, "Institution", "A university admin monitoring students.")
+    System(aisha, "AISHA Platform", "AI-Powered Matching Engine and Document Generator.")
+    
+    Rel(student, aisha, "Applies for roles, views matches")
+    Rel(company, aisha, "Posts roles, reviews applicants")
+    Rel(institution, aisha, "Monitors student placements and progress")

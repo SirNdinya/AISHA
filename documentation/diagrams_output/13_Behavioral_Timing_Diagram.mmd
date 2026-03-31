@@ -1,0 +1,13 @@
+gantt
+    title Student Attachment Lifecycle
+    dateFormat  YYYY-MM-DD
+    section Preparation
+    Institution Register Student :a1, 2026-04-01, 5d
+    Student Complete Profile :a2, after a1, 3d
+    section Matching
+    Platform Recommends :b1, after a2, 1d
+    Student Applies :b2, after b1, 2d
+    Company Reviews :b3, after b2, 5d
+    section Placement
+    Generate Docs :c1, after b3, 1d
+    Attachment Period :c2, after c1, 60d

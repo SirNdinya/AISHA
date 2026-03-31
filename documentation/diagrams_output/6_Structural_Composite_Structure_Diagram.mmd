@@ -1,0 +1,17 @@
+graph LR
+    subgraph Platform_ML_Engine
+        direction TB
+        Port_In[Inbound Student/Opp Data]
+        Port_Out[Outbound Rankings]
+        
+        subgraph Internal_Processing
+            DataPrep[Data Preprocessor]
+            XGB[XGBoost Model]
+            Ranker[Scoring & Ranking]
+        end
+        
+        Port_In --> DataPrep
+        DataPrep --> XGB
+        XGB --> Ranker
+        Ranker --> Port_Out
+    end

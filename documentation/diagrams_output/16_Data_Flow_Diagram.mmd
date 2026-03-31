@@ -1,0 +1,10 @@
+graph TD
+    A(Student) -->|Uploads CV| B(Platform Parser)
+    B -->|Raw Text| C{Data Cleaner}
+    C -->|Clean Text| D(Platform Embedding Engine)
+    D -->|Float Array| E[(Vector DB)]
+    F(Company) -->|Posts Job Desc| D
+    D -->|Query Vector| G(Similarity Search)
+    E --> G
+    G -->|Ranked Matches| H(Frontend Dashboard)
+    H -->|Views Matches| A

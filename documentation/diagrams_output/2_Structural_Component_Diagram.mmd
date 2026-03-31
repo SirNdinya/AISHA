@@ -1,0 +1,29 @@
+graph TD
+    subgraph Frontend Subsystems
+        UI_Stu[Student Portal UI]
+        UI_Comp[Company Portal UI]
+        UI_Inst[Institution Portal UI]
+    end
+    subgraph Backend Core Platform
+        Gateway[API Gateway]
+        AuthC[Auth Component]
+        UserC[User Profile Component]
+        MatchC[Matching ML Component]
+        DocGen[Document Generation Service]
+    end
+    subgraph Storage
+        DB[(PostgreSQL)]
+        Cache[(Redis Cache)]
+    end
+    UI_Stu --> Gateway
+    UI_Comp --> Gateway
+    UI_Inst --> Gateway
+    Gateway --> AuthC
+    Gateway --> UserC
+    Gateway --> MatchC
+    Gateway --> DocGen
+    AuthC --> DB
+    UserC --> DB
+    MatchC --> Cache
+    MatchC --> DB
+    DocGen --> DB

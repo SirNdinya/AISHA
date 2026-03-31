@@ -1,0 +1,24 @@
+flowchart LR
+    Actor1([Student])
+    Actor2([Company])
+    Actor3([Institution])
+    
+    subgraph AISHA Platform
+        UC1(Register / Manage Profile)
+        UC2(Apply for Attachment)
+        UC3(Post Opportunity)
+        UC4(Review Applicants)
+        UC5(Monitor Student Progress)
+        UC6(Generate Formal Docs)
+    end
+    
+    Actor1 --> UC1
+    Actor1 --> UC2
+    Actor1 --> UC6
+    
+    Actor2 --> UC1
+    Actor2 --> UC3
+    Actor2 --> UC4
+    
+    Actor3 --> UC1
+    Actor3 --> UC5

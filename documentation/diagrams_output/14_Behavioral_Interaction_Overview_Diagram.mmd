@@ -1,0 +1,12 @@
+stateDiagram-v2
+    state "Institution Onboarding" as Inst_Flow
+    state "Student Setup" as Stu_Flow
+    state "Company Opportunity Flow" as Comp_Flow
+    state "Platform Matching/Placement" as Match_Flow
+    
+    [*] --> Inst_Flow
+    Inst_Flow --> Stu_Flow : Uploads Roster
+    [*] --> Comp_Flow : Independent Setup
+    Stu_Flow --> Match_Flow : Ready
+    Comp_Flow --> Match_Flow : Roles Opened
+    Match_Flow --> [*] : Placements Finalized

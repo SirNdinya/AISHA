@@ -1,0 +1,20 @@
+C4Container
+    title Container diagram for AISHA Platform
+    
+    Person(student, "Student", "Views matches")
+    Person(company, "Company", "Posts roles")
+    Person(institution, "Institution", "Monitors")
+    System_Boundary(aisha, "AISHA Platform") {
+        Container(spa, "Single Page App", "React, TypeScript", "Provides the main UI portals")
+        Container(api, "API Application", "Node/Express", "Core business logic")
+        Container(ml, "ML Microservice", "FastAPI/Python", "Handles matching")
+        ContainerDb(db, "Database", "PostgreSQL", "Stores user and system data")
+    }
+    
+    Rel(student, spa, "Visits", "HTTPS")
+    Rel(company, spa, "Visits", "HTTPS")
+    Rel(institution, spa, "Visits", "HTTPS")
+    Rel(spa, api, "API calls", "JSON/HTTPS")
+    Rel(api, ml, "Requests ML inferences", "gRPC/HTTP")
+    Rel(api, db, "Reads/writes", "TCP/SQL")
+    Rel(ml, db, "Reads historical data", "TCP/SQL")

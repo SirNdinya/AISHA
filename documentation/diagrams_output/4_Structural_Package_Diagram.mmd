@@ -1,0 +1,20 @@
+graph TD
+    subgraph AISHA_Platform
+        pkg_auth[Auth Module]
+        pkg_students[Student Module]
+        pkg_companies[Company Module]
+        pkg_inst[Institution Module]
+        pkg_match[AI Matching Module]
+        pkg_docs[Document Generator Module]
+        pkg_db[Database Connector]
+    end
+    
+    pkg_auth --> pkg_db
+    pkg_students --> pkg_db
+    pkg_companies --> pkg_db
+    pkg_inst --> pkg_db
+    pkg_match --> pkg_students
+    pkg_match --> pkg_companies
+    pkg_match --> pkg_db
+    pkg_docs --> pkg_students
+    pkg_docs --> pkg_companies

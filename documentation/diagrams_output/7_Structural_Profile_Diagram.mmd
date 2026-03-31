@@ -1,0 +1,21 @@
+classDiagram
+    class PlatformComponent {
+        <<stereotype>>
+    }
+    class ML_Model {
+        <<stereotype>>
+        +predict()
+        +train()
+    }
+    class AISHA_Matcher {
+        <<ML_Model>>
+        +predictRankings()
+    }
+    class AISHA_DocGen {
+        <<ML_Model>>
+        +generateFormalLetters()
+    }
+    
+    PlatformComponent <|-- ML_Model
+    ML_Model <|-- AISHA_Matcher
+    ML_Model <|-- AISHA_DocGen

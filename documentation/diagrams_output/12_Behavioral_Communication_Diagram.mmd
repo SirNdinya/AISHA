@@ -1,0 +1,11 @@
+flowchart TD
+    Stu[(1: Student)]
+    Comp[(2: Company)]
+    Inst[(3: Institution)]
+    App[(4: AISHA Core)]
+    
+    Stu -- "1.1: Submit Profile" --> App
+    Comp -- "1.2: Post Role" --> App
+    App -- "1.3: Recommend Roles" --> Stu
+    App -- "1.4: Forward Applicant" --> Comp
+    App -- "1.5: Sync Status" --> Inst

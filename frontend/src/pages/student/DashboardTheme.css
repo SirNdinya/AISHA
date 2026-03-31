@@ -1,0 +1,57 @@
+/* Dashhboard Theme Overrides */
+:root {
+  --terminal-bg: #0F172A;
+  --terminal-card: #1E293B;
+  --terminal-border: #334155;
+  --terminal-accent: #38BDF8;
+}
+
+.dashboard-container {
+  background-color: var(--terminal-bg);
+  color: #F8FAFC;
+  min-height: 100vh;
+}
+
+.terminal-card {
+  background-color: var(--terminal-card) !important;
+  border: 1px solid var(--terminal-border) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+}
+
+.terminal-text-muted {
+  color: #94A3B8;
+}
+
+.terminal-accent-text {
+  color: var(--terminal-accent);
+}
+
+.pulse-animation {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: .5;
+    transform: scale(1.2);
+  }
+}
+
+/* Typing Animation Keyframes for AISHA Bot */
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: orange }
+}

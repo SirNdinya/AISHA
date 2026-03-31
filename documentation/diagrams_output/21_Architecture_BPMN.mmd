@@ -1,0 +1,10 @@
+flowchart TD
+    Start((Start)) --> A[Institution: Registers Student Data to Platform]
+    A --> B[Student: Completes Profile on Platform]
+    B --> C[Platform: Generates AI Matches]
+    C --> D[Student: Applies to Match]
+    D --> E[Company: Reviews Applicant on Platform]
+    E --> F{Company: Accept?}
+    F -- No --> C
+    F -- Yes --> G[Platform: Finalizes Placement & Notifies Institution]
+    G --> End((End))

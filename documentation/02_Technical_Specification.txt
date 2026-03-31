@@ -1,0 +1,2271 @@
+
+AISHA: AI-Powered Industrial Attachment Matching Platform
+TECHNICAL SPECIFICATION DOCUMENT
+
+Version: 1.0
+Date: February 2026
+
+================================================================================
+1. SYSTEM ARCHITECTURE
+================================================================================
+
+1.1 High-Level Architecture
+---------------------------
+
+The system follows a microservices architecture with the following layers:
+
+┌─────────────────────────────────────────────────────────────┐
+│                     PRESENTATION LAYER                       │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
+│  │ Student  │  │Institution│  │ Company  │  │  Admin   │   │
+│  │   Web    │  │   Web     │  │   Web    │  │   Web    │   │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │
+│  ┌──────────┐  ┌──────────┐                                │
+│  │ Student  │  │ Company  │                                │
+│  │  Mobile  │  │  Mobile  │                                │
+│  └──────────┘  └──────────┘                                │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                      API GATEWAY LAYER                       │
+│         (Authentication, Rate Limiting, Routing)             │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   APPLICATION SERVICES LAYER                 │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
+│  │  User    │  │ Matching │  │Document  │  │Notification│  │
+│  │ Service  │  │ Service  │  │ Service  │  │  Service   │  │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
+│  │Application│  │Analytics │  │Integration│  │ Chatbot  │  │
+│  │ Service  │  │ Service  │  │  Service  │  │ Service  │  │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    AI/ML SERVICES LAYER                      │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
+│  │ Matching │  │   NLP    │  │Predictive│  │Chatbot   │   │
+│  │  Engine  │  │  Engine  │  │Analytics │  │   AI     │   │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                       DATA LAYER                             │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
+│  │PostgreSQL│  │  Redis   │  │  S3/     │  │ Vector   │   │
+│  │(Primary) │  │ (Cache)  │  │ Storage  │  │   DB     │   │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │
+└─────────────────────────────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  EXTERNAL INTEGRATIONS                       │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
+│  │Institution│  │   NITA   │  │  Email   │  │   SMS    │   │
+│  │  Portal  │  │  System  │  │ Service  │  │ Service  │   │
+│  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │
+└─────────────────────────────────────────────────────────────┘
+
+1.2 Technology Stack Details
+----------------------------
+
+FRONTEND:
+• Framework: React 18+ with TypeScript
+• State Management: Redux Toolkit / Zustand
+• UI Components: Chakra UI / shadcn/ui
+• Forms: React Hook Form + Zod validation
+• Charts: Recharts / Chart.js
+• HTTP Client: Axios with interceptors
+• Build Tool: Vite
+• Testing: Vitest + React Testing Library
+
+BACKEND:
+• Runtime: Node.js 20+ / Python 3.11+
+• Framework: Express.js / FastAPI
+• API: RESTful + GraphQL (optional)
+• Authentication: JWT + OAuth 2.0
+• Validation: Joi / Pydantic
+• ORM: Prisma / SQLAlchemy
+• Testing: Jest / Pytest
+• Documentation: Swagger/OpenAPI
+
+AI/ML STACK:
+• ML Framework: TensorFlow 2.x / PyTorch
+• Traditional ML: Scikit-learn
+• NLP: Hugging Face Transformers
+• Chatbot: Rasa / Custom LangChain
+• Vector DB: Pinecone (free tier) / Weaviate
+• Model Serving: FastAPI / TensorFlow Serving
+
+DATABASE:
+• Primary: PostgreSQL 15+
+• Cache: Redis 7+
+• Search: PostgreSQL Full-Text / Elasticsearch
+• File Storage: Supabase Storage / MinIO
+• Backup: Automated daily backups
+
+INFRASTRUCTURE:
+• Containerization: Docker
+• Orchestration: Docker Compose / Kubernetes (optional)
+• CI/CD: GitHub Actions
+• Hosting: Railway / Render / Fly.io
+• CDN: Cloudflare
+• Monitoring: Grafana + Prometheus (free)
+• Logging: Winston / Loguru + Loki
+
+================================================================================
+2. DATABASE SCHEMA
+================================================================================
+
+2.1 Core Tables
+---------------
+
+USERS TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ email           │ VARCHAR(255) │ Unique, indexed         │
+│ password_hash   │ VARCHAR(255) │ Bcrypt hashed           │
+│ role            │ ENUM         │ student/institution/... │
+│ is_active       │ BOOLEAN      │ Account status          │
+│ is_verified     │ BOOLEAN      │ Email verification      │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+│ updated_at      │ TIMESTAMP    │ Auto-updated            │
+│ last_login      │ TIMESTAMP    │ Track activity          │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+STUDENTS TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ user_id         │ UUID         │ FK to users             │
+│ institution_id  │ UUID         │ FK to institutions      │
+│ student_number  │ VARCHAR(50)  │ Unique, indexed         │
+│ first_name      │ VARCHAR(100) │ Required                │
+│ last_name       │ VARCHAR(100) │ Required                │
+│ course          │ VARCHAR(200) │ e.g., "Computer Science"│
+│ year_of_study   │ INTEGER      │ 1-5                     │
+│ gpa             │ DECIMAL(3,2) │ 0.00-4.00               │
+│ specialization  │ VARCHAR(200) │ e.g., "Networking"      │
+│ location_pref   │ VARCHAR(200) │ Preferred location      │
+│ phone           │ VARCHAR(20)  │ Contact                 │
+│ profile_complete│ BOOLEAN      │ Profile status          │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+│ updated_at      │ TIMESTAMP    │ Auto-updated            │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+STUDENT_UNITS TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ student_id      │ UUID         │ FK to students          │
+│ unit_code       │ VARCHAR(20)  │ e.g., "CS101"           │
+│ unit_name       │ VARCHAR(200) │ Full unit name          │
+│ grade           │ VARCHAR(5)   │ A, B+, etc.             │
+│ credits         │ INTEGER      │ Credit hours            │
+│ semester        │ VARCHAR(20)  │ When taken              │
+│ year            │ INTEGER      │ Academic year           │
+│ status          │ ENUM         │ completed/in_progress   │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+INSTITUTIONS TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ user_id         │ UUID         │ FK to users             │
+│ name            │ VARCHAR(255) │ Institution name        │
+│ type            │ ENUM         │ university/college/...  │
+│ registration_no │ VARCHAR(50)  │ Official reg number     │
+│ address         │ TEXT         │ Physical address        │
+│ city            │ VARCHAR(100) │ Location                │
+│ country         │ VARCHAR(100) │ Default: Kenya          │
+│ phone           │ VARCHAR(20)  │ Contact                 │
+│ email           │ VARCHAR(255) │ Official email          │
+│ website         │ VARCHAR(255) │ Optional                │
+│ logo_url        │ VARCHAR(500) │ Institution logo        │
+│ api_key         │ VARCHAR(255) │ For portal integration  │
+│ api_endpoint    │ VARCHAR(500) │ Portal API URL          │
+│ is_verified     │ BOOLEAN      │ Admin verification      │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+COMPANIES TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ user_id         │ UUID         │ FK to users             │
+│ name            │ VARCHAR(255) │ Company name            │
+│ industry        │ VARCHAR(100) │ e.g., "Technology"      │
+│ size            │ ENUM         │ small/medium/large/...  │
+│ registration_no │ VARCHAR(50)  │ Business reg number     │
+│ address         │ TEXT         │ Physical address        │
+│ city            │ VARCHAR(100) │ Location                │
+│ country         │ VARCHAR(100) │ Default: Kenya          │
+│ phone           │ VARCHAR(20)  │ Contact                 │
+│ email           │ VARCHAR(255) │ Official email          │
+│ website         │ VARCHAR(255) │ Company website         │
+│ logo_url        │ VARCHAR(500) │ Company logo            │
+│ description     │ TEXT         │ About company           │
+│ is_verified     │ BOOLEAN      │ Admin verification      │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+DEPARTMENTS TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ company_id      │ UUID         │ FK to companies         │
+│ name            │ VARCHAR(200) │ e.g., "IT Department"   │
+│ description     │ TEXT         │ Department details      │
+│ head_name       │ VARCHAR(200) │ Department head         │
+│ head_email      │ VARCHAR(255) │ Contact email           │
+│ head_phone      │ VARCHAR(20)  │ Contact phone           │
+│ capacity        │ INTEGER      │ Max attachments         │
+│ current_count   │ INTEGER      │ Current attachments     │
+│ is_active       │ BOOLEAN      │ Accepting students      │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+OPPORTUNITIES TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ company_id      │ UUID         │ FK to companies         │
+│ department_id   │ UUID         │ FK to departments       │
+│ title           │ VARCHAR(255) │ Position title          │
+│ description     │ TEXT         │ Detailed description    │
+│ requirements    │ TEXT         │ Required skills/units   │
+│ specialization  │ VARCHAR(200) │ e.g., "Software Dev"    │
+│ duration_weeks  │ INTEGER      │ Attachment duration     │
+│ start_date      │ DATE         │ Expected start          │
+│ end_date        │ DATE         │ Expected end            │
+│ slots           │ INTEGER      │ Available positions     │
+│ filled_slots    │ INTEGER      │ Accepted students       │
+│ min_gpa         │ DECIMAL(3,2) │ Minimum GPA required    │
+│ required_units  │ JSONB        │ Array of unit codes     │
+│ location        │ VARCHAR(200) │ Work location           │
+│ is_remote       │ BOOLEAN      │ Remote option           │
+│ status          │ ENUM         │ open/closed/filled      │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+│ updated_at      │ TIMESTAMP    │ Auto-updated            │
+│ deadline        │ TIMESTAMP    │ Application deadline    │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+APPLICATIONS TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ student_id      │ UUID         │ FK to students          │
+│ opportunity_id  │ UUID         │ FK to opportunities     │
+│ status          │ ENUM         │ pending/accepted/...    │
+│ match_score     │ DECIMAL(5,2) │ AI matching score       │
+│ match_reasons   │ JSONB        │ Why matched             │
+│ cover_letter    │ TEXT         │ Auto-generated          │
+│ nita_form_url   │ VARCHAR(500) │ Generated NITA form     │
+│ insurance_url   │ VARCHAR(500) │ Insurance document      │
+│ school_letter   │ VARCHAR(500) │ School letter URL       │
+│ applied_at      │ TIMESTAMP    │ Application time        │
+│ reviewed_at     │ TIMESTAMP    │ When reviewed           │
+│ accepted_at     │ TIMESTAMP    │ When accepted           │
+│ rejected_at     │ TIMESTAMP    │ When rejected           │
+│ rejection_reason│ TEXT         │ If rejected             │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+│ updated_at      │ TIMESTAMP    │ Auto-updated            │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+PLACEMENTS TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ application_id  │ UUID         │ FK to applications      │
+│ student_id      │ UUID         │ FK to students          │
+│ company_id      │ UUID         │ FK to companies         │
+│ department_id   │ UUID         │ FK to departments       │
+│ start_date      │ DATE         │ Actual start date       │
+│ end_date        │ DATE         │ Actual end date         │
+│ status          │ ENUM         │ active/completed/...    │
+│ supervisor_name │ VARCHAR(200) │ Company supervisor      │
+│ supervisor_email│ VARCHAR(255) │ Contact                 │
+│ performance_rating│DECIMAL(3,2)│ 0-5 rating              │
+│ feedback        │ TEXT         │ Company feedback        │
+│ completion_cert │ VARCHAR(500) │ Certificate URL         │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+│ completed_at    │ TIMESTAMP    │ When completed          │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+NITA_FORMS TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ application_id  │ UUID         │ FK to applications      │
+│ student_id      │ UUID         │ FK to students          │
+│ form_number     │ VARCHAR(50)  │ Unique NITA form ID     │
+│ form_data       │ JSONB        │ Form field data         │
+│ pdf_url         │ VARCHAR(500) │ Generated PDF           │
+│ submitted_to_nita│BOOLEAN      │ Submission status       │
+│ nita_approval   │ BOOLEAN      │ NITA approval status    │
+│ approval_date   │ DATE         │ When approved           │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+NOTIFICATIONS TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ user_id         │ UUID         │ FK to users             │
+│ type            │ ENUM         │ email/sms/push/in_app   │
+│ title           │ VARCHAR(255) │ Notification title      │
+│ message         │ TEXT         │ Notification content    │
+│ link            │ VARCHAR(500) │ Related URL             │
+│ is_read         │ BOOLEAN      │ Read status             │
+│ sent_at         │ TIMESTAMP    │ When sent               │
+│ read_at         │ TIMESTAMP    │ When read               │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+2.2 Indexes
+-----------
+
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_role ON users(role);
+CREATE INDEX idx_students_institution ON students(institution_id);
+CREATE INDEX idx_students_number ON students(student_number);
+CREATE INDEX idx_opportunities_company ON opportunities(company_id);
+CREATE INDEX idx_opportunities_status ON opportunities(status);
+CREATE INDEX idx_applications_student ON applications(student_id);
+CREATE INDEX idx_applications_opportunity ON applications(opportunity_id);
+CREATE INDEX idx_applications_status ON applications(status);
+CREATE INDEX idx_placements_student ON placements(student_id);
+CREATE INDEX idx_placements_company ON placements(company_id);
+CREATE INDEX idx_notifications_user ON notifications(user_id);
+CREATE INDEX idx_notifications_read ON notifications(is_read);
+
+2.3 Relationships
+-----------------
+
+• users 1:1 students (user_id)
+• users 1:1 institutions (user_id)
+• users 1:1 companies (user_id)
+• institutions 1:N students (institution_id)
+• students 1:N student_units (student_id)
+• students 1:N applications (student_id)
+• companies 1:N departments (company_id)
+• companies 1:N opportunities (company_id)
+• departments 1:N opportunities (department_id)
+• opportunities 1:N applications (opportunity_id)
+• applications 1:1 placements (application_id)
+• applications 1:1 nita_forms (application_id)
+• users 1:N notifications (user_id)
+
+================================================================================
+3. API ENDPOINTS
+================================================================================
+
+3.1 Authentication Endpoints
+-----------------------------
+
+POST   /api/auth/register
+POST   /api/auth/login
+POST   /api/auth/logout
+POST   /api/auth/refresh-token
+POST   /api/auth/forgot-password
+POST   /api/auth/reset-password
+POST   /api/auth/verify-email
+GET    /api/auth/me
+
+3.2 Student Endpoints
+---------------------
+
+GET    /api/students/profile
+PUT    /api/students/profile
+GET    /api/students/units
+POST   /api/students/units
+GET    /api/students/opportunities
+GET    /api/students/opportunities/:id
+GET    /api/students/recommendations
+POST   /api/students/applications
+GET    /api/students/applications
+GET    /api/students/applications/:id
+PUT    /api/students/applications/:id
+DELETE /api/students/applications/:id
+GET    /api/students/placements
+GET    /api/students/documents
+POST   /api/students/documents/upload
+
+3.3 Institution Endpoints
+--------------------------
+
+GET    /api/institutions/profile
+PUT    /api/institutions/profile
+GET    /api/institutions/students
+GET    /api/institutions/students/:id
+POST   /api/institutions/students/import
+GET    /api/institutions/placements
+GET    /api/institutions/analytics
+GET    /api/institutions/companies
+POST   /api/institutions/api-config
+GET    /api/institutions/reports
+
+3.4 Company Endpoints
+---------------------
+
+GET    /api/companies/profile
+PUT    /api/companies/profile
+GET    /api/companies/departments
+POST   /api/companies/departments
+PUT    /api/companies/departments/:id
+DELETE /api/companies/departments/:id
+GET    /api/companies/opportunities
+POST   /api/companies/opportunities
+PUT    /api/companies/opportunities/:id
+DELETE /api/companies/opportunities/:id
+GET    /api/companies/applications
+GET    /api/companies/applications/:id
+PUT    /api/companies/applications/:id/accept
+PUT    /api/companies/applications/:id/reject
+GET    /api/companies/placements
+PUT    /api/companies/placements/:id/feedback
+GET    /api/companies/analytics
+
+3.5 Matching & AI Endpoints
+----------------------------
+
+POST   /api/matching/calculate
+GET    /api/matching/recommendations/:studentId
+POST   /api/matching/explain
+POST   /api/chatbot/message
+GET    /api/chatbot/history
+POST   /api/analytics/predict-success
+
+3.6 Document Generation Endpoints
+----------------------------------
+
+POST   /api/documents/application-letter
+POST   /api/documents/nita-form
+POST   /api/documents/school-letter
+GET    /api/documents/:id/download
+
+3.7 Admin Endpoints
+-------------------
+
+GET    /api/admin/users
+POST   /api/admin/users
+PUT    /api/admin/users/:id
+DELETE /api/admin/users/:id
+GET    /api/admin/institutions/verify
+PUT    /api/admin/institutions/:id/verify
+GET    /api/admin/companies/verify
+PUT    /api/admin/companies/:id/verify
+GET    /api/admin/analytics
+GET    /api/admin/system-health
+POST   /api/admin/integrations/nita/config
+
+================================================================================
+4. AI/ML IMPLEMENTATION DETAILS
+================================================================================
+
+4.1 Matching Algorithm
+----------------------
+
+FEATURES:
+• Student GPA (normalized 0-1)
+• Units completed (one-hot encoded)
+• Specialization match (cosine similarity)
+• Location preference match (binary)
+• Historical placement success (0-1)
+• Company requirements match (0-1)
+• Department capacity (normalized)
+
+MODEL:
+• Algorithm: Gradient Boosting (XGBoost/LightGBM)
+• Training: Supervised learning on historical placements
+• Features: 50+ engineered features
+• Output: Match score (0-100)
+• Retraining: Monthly with new placement data
+
+RANKING:
+• Sort by match score
+• Apply filters (location, GPA, units)
+• Diversity injection (prevent same company domination)
+• Fairness constraints (equal opportunity)
+
+4.2 NLP for Document Generation
+-------------------------------
+
+COMPONENTS:
+• Template engine with variable substitution
+• Student data extraction from database
+• Company requirement parsing
+• Formal language generation
+• PDF rendering
+
+TEMPLATES:
+• Application letter template
+• NITA form template (official format)
+• School letter template
+• Insurance cover template
+
+4.3 Chatbot Implementation
+--------------------------
+
+ARCHITECTURE:
+• Intent classification (BERT-based)
+• Entity extraction (NER)
+• Dialog management (rule-based + ML)
+• Response generation (template + GPT)
+
+INTENTS:
+• explain_placement
+• application_help
+• document_questions
+• status_inquiry
+• general_faq
+
+TRAINING DATA:
+• 500+ intent examples
+• 100+ FAQ pairs
+• Continuous learning from user interactions
+
+4.4 Predictive Analytics
+------------------------
+
+MODELS:
+• Placement success prediction
+• Student performance forecasting
+• Company satisfaction prediction
+• Optimal timing prediction
+
+FEATURES:
+• Student academic history
+• Company historical data
+• Market trends
+• Seasonal patterns
+
+================================================================================
+5. SECURITY IMPLEMENTATION
+================================================================================
+
+5.1 Authentication
+------------------
+
+• JWT tokens (access + refresh)
+• Token expiry: 15 minutes (access), 7 days (refresh)
+• Password hashing: bcrypt (cost factor 12)
+• OAuth 2.0 for social login
+• Multi-factor authentication (optional)
+• Session management with Redis
+
+5.2 Authorization
+-----------------
+
+• Role-based access control (RBAC)
+• Resource-level permissions
+• API endpoint protection
+• Row-level security in database
+• Audit logging for sensitive operations
+
+5.3 Data Protection
+-------------------
+
+• Encryption at rest (AES-256)
+• Encryption in transit (TLS 1.3)
+• PII data masking in logs
+• GDPR compliance ready
+• Data retention policies
+• Secure file upload (virus scanning)
+
+5.4 API Security
+----------------
+
+• Rate limiting (100 req/min per user)
+• CORS configuration
+• Input validation (Joi/Zod)
+• SQL injection prevention (ORM)
+• XSS protection
+• CSRF tokens
+
+================================================================================
+6. DEPLOYMENT ARCHITECTURE
+================================================================================
+
+6.1 Free Tier Deployment
+------------------------
+
+FRONTEND:
+• Host: Vercel / Netlify
+• CDN: Cloudflare
+• SSL: Auto (Let's Encrypt)
+
+BACKEND:
+• Host: Railway / Render
+• Database: Supabase PostgreSQL
+• Cache: Upstash Redis
+• Storage: Supabase Storage
+
+ML SERVICES:
+• Host: Hugging Face Spaces / Railway
+• Model Storage: Hugging Face Hub
+• Vector DB: Pinecone free tier
+
+MONITORING:
+• Uptime: UptimeRobot
+• Logs: Better Stack (free tier)
+• Analytics: Plausible Analytics
+
+6.2 Scaling Strategy
+--------------------
+
+HORIZONTAL SCALING:
+• Stateless services
+• Load balancer (Cloudflare)
+• Database read replicas
+• Caching layer (Redis)
+
+VERTICAL SCALING:
+• Upgrade to paid tiers as needed
+• Database connection pooling
+• Query optimization
+• Asset optimization (CDN)
+
+================================================================================
+7. TESTING STRATEGY
+================================================================================
+
+7.1 Unit Testing
+----------------
+
+• Frontend: Vitest + React Testing Library
+• Backend: Jest / Pytest
+• Coverage target: 80%+
+• Test all business logic
+• Mock external dependencies
+
+7.2 Integration Testing
+-----------------------
+
+• API endpoint testing
+• Database integration tests
+• Third-party integration tests
+• End-to-end user flows
+
+7.3 Performance Testing
+-----------------------
+
+• Load testing (k6 / Artillery)
+• Stress testing
+• Database query optimization
+• API response time monitoring
+
+7.4 Security Testing
+--------------------
+
+• OWASP Top 10 checks
+• Penetration testing
+• Dependency vulnerability scanning
+• Code security analysis (SonarQube)
+
+================================================================================
+8. MONITORING & MAINTENANCE
+================================================================================
+
+8.1 Monitoring
+--------------
+
+METRICS:
+• API response times
+• Error rates
+• Database performance
+• User activity
+• ML model accuracy
+• System resource usage
+
+ALERTS:
+• Downtime alerts
+• Error rate spikes
+• Performance degradation
+• Security incidents
+
+8.2 Logging
+-----------
+
+• Structured logging (JSON)
+• Log levels: ERROR, WARN, INFO, DEBUG
+• Centralized log aggregation
+• Log retention: 30 days
+• PII data exclusion
+
+8.3 Backup & Recovery
+---------------------
+
+• Daily automated backups
+• Point-in-time recovery
+• Backup retention: 30 days
+• Disaster recovery plan
+• RTO: 4 hours
+• RPO: 24 hours
+
+================================================================================
+END OF TECHNICAL SPECIFICATION
+================================================================================
+
+
+================================================================================
+9. LEARNING MODULE - TECHNICAL IMPLEMENTATION
+================================================================================
+
+9.1 Database Schema Additions
+------------------------------
+
+LEARNING_RESOURCES TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ title           │ VARCHAR(255) │ Course/resource title   │
+│ description     │ TEXT         │ Detailed description    │
+│ provider        │ VARCHAR(100) │ Coursera, edX, etc.     │
+│ url             │ VARCHAR(500) │ Resource link           │
+│ category        │ VARCHAR(100) │ Technical, Soft, etc.   │
+│ field           │ VARCHAR(100) │ Software Dev, etc.      │
+│ level           │ ENUM         │ beginner/intermediate/..│
+│ duration_hours  │ INTEGER      │ Estimated duration      │
+│ is_free         │ BOOLEAN      │ Free or paid            │
+│ cost            │ DECIMAL(10,2)│ Cost if paid            │
+│ rating          │ DECIMAL(3,2) │ Average rating          │
+│ language        │ VARCHAR(50)  │ English, Swahili, etc.  │
+│ certification   │ BOOLEAN      │ Offers certificate      │
+│ tags            │ JSONB        │ Array of skill tags     │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+│ updated_at      │ TIMESTAMP    │ Auto-updated            │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+STUDENT_LEARNING TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ student_id      │ UUID         │ FK to students          │
+│ resource_id     │ UUID         │ FK to learning_resources│
+│ status          │ ENUM         │ recommended/started/... │
+│ progress        │ INTEGER      │ Percentage 0-100        │
+│ started_at      │ TIMESTAMP    │ When started            │
+│ completed_at    │ TIMESTAMP    │ When completed          │
+│ certificate_url │ VARCHAR(500) │ Certificate link        │
+│ rating          │ INTEGER      │ Student rating 1-5      │
+│ review          │ TEXT         │ Student review          │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+STUDENT_SKILLS TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ student_id      │ UUID         │ FK to students          │
+│ skill_name      │ VARCHAR(100) │ e.g., "Python"          │
+│ skill_level     │ ENUM         │ beginner/intermediate/..│
+│ acquired_from   │ VARCHAR(100) │ Course, Academic, etc.  │
+│ verified        │ BOOLEAN      │ Certification verified  │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+│ updated_at      │ TIMESTAMP    │ Auto-updated            │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+CERTIFICATIONS TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ student_id      │ UUID         │ FK to students          │
+│ certification   │ VARCHAR(200) │ Certification name      │
+│ issuer          │ VARCHAR(100) │ Issuing organization    │
+│ issue_date      │ DATE         │ When issued             │
+│ expiry_date     │ DATE         │ When expires (optional) │
+│ credential_id   │ VARCHAR(100) │ Verification ID         │
+│ credential_url  │ VARCHAR(500) │ Verification link       │
+│ certificate_url │ VARCHAR(500) │ Certificate file        │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+9.2 API Endpoints for Learning Module
+--------------------------------------
+
+GET    /api/learning/recommendations
+GET    /api/learning/resources
+GET    /api/learning/resources/:id
+POST   /api/learning/enroll
+PUT    /api/learning/progress/:id
+GET    /api/learning/my-courses
+POST   /api/learning/complete/:id
+POST   /api/learning/rate/:id
+GET    /api/learning/certifications
+POST   /api/learning/certifications
+GET    /api/learning/skills
+POST   /api/learning/skills
+GET    /api/learning/analytics
+GET    /api/learning/leaderboard
+
+9.3 Learning Recommendation Algorithm
+--------------------------------------
+
+MODEL: Content-Based Filtering + Collaborative Filtering
+
+FEATURES:
+• Student field of interest (TF-IDF vectorization)
+• Current skill level (one-hot encoded)
+• Academic units completed (embedding)
+• Learning history (collaborative filtering)
+• Course metadata (tags, category, level)
+• Popularity among similar students
+
+ALGORITHM:
+1. Extract student profile vector
+2. Calculate cosine similarity with all resources
+3. Filter by field of interest
+4. Rank by relevance score
+5. Apply diversity (different providers)
+6. Prioritize free resources
+7. Return top 10 recommendations
+
+RETRAINING:
+• Weekly update with new resources
+• Monthly retraining with student feedback
+• A/B testing for algorithm improvements
+
+9.4 Integration Points
+----------------------
+
+WITH STUDENT PROFILE:
+• Skills from learning module enhance profile
+• Certifications displayed prominently
+• Completed courses listed
+• Learning activity tracked
+
+WITH MATCHING ALGORITHM:
+• Completed courses add to matching features
+• Certifications boost match score by 5-10%
+• Skills directly matched with job requirements
+• Learning demonstrates initiative
+
+WITH CHATBOT:
+• Chatbot recommends courses
+• Answers learning-related questions
+• Provides course summaries
+• Suggests learning paths
+
+9.5 External Integrations
+--------------------------
+
+LEARNING PLATFORMS:
+• Coursera API (course catalog)
+• edX API (course data)
+• Udemy API (course listings)
+• YouTube Data API (video content)
+• FreeCodeCamp (curriculum data)
+
+DATA SOURCES:
+• Web scraping for platforms without APIs
+• Manual curation of quality resources
+• Community submissions
+• Partner institution content
+
+9.6 Caching Strategy
+--------------------
+
+CACHE LAYERS:
+• Learning resource catalog (Redis, 24h TTL)
+• Student recommendations (Redis, 7d TTL)
+• Course metadata (Redis, 7d TTL)
+• Popular courses (Redis, 1d TTL)
+
+INVALIDATION:
+• New resource added → clear catalog cache
+• Student completes course → clear recommendations
+• Resource updated → clear specific resource cache
+
+================================================================================
+
+
+================================================================================
+15. PLATFORM ACCESS METHODS
+================================================================================
+
+15.1 Student Access
+-------------------
+
+WEB INTERFACE:
+• Responsive web application (desktop and mobile browsers)
+• Progressive Web App (PWA) capabilities
+• Installable on mobile devices
+• Offline support for viewing data
+• URL: students.attachmentportal.ke
+
+MOBILE APPLICATION:
+• Native mobile apps (Android and iOS)
+• Built with React Native / Flutter
+• Push notifications
+• Offline mode
+• Biometric authentication
+• App stores: Google Play, Apple App Store
+
+FEATURES AVAILABLE:
+• Profile management
+• Opportunity browsing
+• Application submission
+• Status tracking
+• Learning module access
+• Chatbot support
+• Document downloads
+• Notifications
+
+15.2 Company Access
+-------------------
+
+WEB INTERFACE:
+• Full-featured web dashboard
+• Desktop-optimized layout
+• Multi-tab workflow support
+• URL: companies.attachmentportal.ke
+
+DESKTOP APPLICATION:
+• Electron-based desktop app (Windows, macOS, Linux)
+• Enhanced performance for bulk operations
+• Offline data caching
+• Local document management
+• System tray integration
+• Auto-updates
+
+FEATURES AVAILABLE:
+• Opportunity management
+• Student discovery and filtering
+• Application review
+• Bulk operations
+• Analytics dashboards
+• Communication hub
+• Reporting tools
+
+15.3 Institution Access
+-----------------------
+
+WEB INTERFACE:
+• Comprehensive admin panel
+• Desktop-optimized interface
+• URL: institutions.attachmentportal.ke
+
+DESKTOP APPLICATION:
+• Electron-based desktop app
+• Bulk student management
+• Offline report generation
+• Data export capabilities
+• Integration management
+• System tray notifications
+
+FEATURES AVAILABLE:
+• Student management
+• Placement tracking
+• Analytics and reporting
+• Company relations
+• API configuration
+• Bulk operations
+• Communication tools
+
+15.4 System Admin Access
+-------------------------
+
+WEB INTERFACE ONLY:
+• Secure admin portal
+• Desktop-optimized
+• URL: admin.attachmentportal.ke
+• Two-factor authentication required
+• IP whitelisting option
+
+FEATURES AVAILABLE:
+• User management
+• System configuration
+• Integration management
+• Monitoring dashboards
+• Audit log viewing
+• Feature flags
+• Security settings
+
+================================================================================
+16. PAYMENT INTEGRATION SYSTEM
+================================================================================
+
+16.1 Overview
+-------------
+
+Some companies offer paid attachments (stipends), while students may have
+financial needs or preferences. The system handles payment information,
+matching, and integration with M-Pesa (Kenya's mobile money platform).
+
+16.2 Database Schema
+--------------------
+
+PAYMENTS TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ placement_id    │ UUID         │ FK to placements        │
+│ student_id      │ UUID         │ FK to students          │
+│ company_id      │ UUID         │ FK to companies         │
+│ amount          │ DECIMAL(10,2)│ Payment amount (KES)    │
+│ payment_method  │ ENUM         │ mpesa/bank/cash         │
+│ payment_schedule│ ENUM         │ weekly/monthly/lumpsum  │
+│ status          │ ENUM         │ pending/paid/failed     │
+│ mpesa_code      │ VARCHAR(50)  │ M-Pesa transaction code │
+│ payment_date    │ DATE         │ When paid               │
+│ next_payment    │ DATE         │ Next scheduled payment  │
+│ total_paid      │ DECIMAL(10,2)│ Total amount paid       │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+STIPEND_CONFIGS TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ opportunity_id  │ UUID         │ FK to opportunities     │
+│ offers_stipend  │ BOOLEAN      │ Whether stipend offered │
+│ stipend_amount  │ DECIMAL(10,2)│ Amount (KES)            │
+│ payment_method  │ ENUM         │ mpesa/bank/cash         │
+│ payment_schedule│ ENUM         │ weekly/monthly/lumpsum  │
+│ payment_details │ TEXT         │ Additional details      │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+│ updated_at      │ TIMESTAMP    │ Auto-updated            │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+STUDENT FINANCIAL PREFERENCES (add to students table):
+• requires_paid_placement BOOLEAN
+• minimum_stipend DECIMAL(10,2)
+• preferred_payment_method ENUM (mpesa/bank)
+• mpesa_number VARCHAR(15)
+• bank_account VARCHAR(50)
+• bank_name VARCHAR(100)
+
+OPPORTUNITY FINANCIAL INFO (add to opportunities table):
+• offers_stipend BOOLEAN
+• stipend_amount DECIMAL(10,2)
+• payment_method ENUM
+• payment_schedule ENUM
+
+16.3 M-Pesa Integration (Daraja API)
+------------------------------------
+
+INTEGRATION POINTS:
+• STK Push for payment initiation
+• Payment confirmation callbacks
+• Transaction status queries
+• Payment reconciliation
+
+API ENDPOINTS:
+POST   /api/payments/initiate
+POST   /api/payments/mpesa/callback
+GET    /api/payments/:id/status
+GET    /api/payments/student/:studentId
+GET    /api/payments/company/:companyId
+PUT    /api/payments/:id/confirm
+
+WEBHOOK:
+POST   /api/webhooks/mpesa/callback
+• Receives M-Pesa payment confirmations
+• Updates payment status
+• Notifies student and company
+
+16.4 Matching with Financial Preferences
+-----------------------------------------
+
+ALGORITHM ENHANCEMENT:
+• If student requires_paid_placement = true:
+  - Only match with opportunities where offers_stipend = true
+  - Filter by minimum_stipend requirement
+  - Boost match score for higher stipends
+• If student prefers unpaid (learning focus):
+  - No filtering, all opportunities considered
+  - Stipend is bonus, not requirement
+
+================================================================================
+17. MULTI-OFFER RESOLUTION SYSTEM
+================================================================================
+
+17.1 Problem Statement
+----------------------
+
+A student may receive multiple acceptance offers from different companies
+simultaneously. The system must automatically resolve this to ensure:
+• Student accepts only one placement
+• Other companies are notified
+• Slots are freed for other students
+
+17.2 Database Schema
+--------------------
+
+OFFER_RESOLUTIONS TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ student_id      │ UUID         │ FK to students          │
+│ accepted_app_id │ UUID         │ FK to applications      │
+│ rejected_app_ids│ JSONB        │ Array of rejected IDs   │
+│ resolution_type │ ENUM         │ auto/manual/timeout     │
+│ resolved_at     │ TIMESTAMP    │ When resolved           │
+│ reason          │ TEXT         │ Resolution reason       │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+17.3 Resolution Algorithm
+--------------------------
+
+AUTOMATIC RESOLUTION (if student has preferences):
+1. Check all accepted applications for student
+2. Rank by:
+   - Match score (40%)
+   - Stipend amount (30% if student requires payment)
+   - Location preference (20%)
+   - Company rating (10%)
+3. Auto-select top-ranked offer
+4. Auto-reject others with explanation
+5. Notify all parties
+
+MANUAL RESOLUTION (student choice):
+1. Student receives multiple acceptances
+2. System presents comparison table
+3. Student has 48 hours to choose
+4. If timeout, automatic resolution kicks in
+
+TIMEOUT RESOLUTION:
+1. After 48 hours of no student action
+2. System auto-selects based on ranking
+3. Notifies student of auto-selection
+4. Allows 24-hour appeal window
+
+17.4 API Endpoints
+------------------
+
+GET    /api/offers/pending-resolution/:studentId
+POST   /api/offers/resolve
+POST   /api/offers/auto-resolve/:studentId
+GET    /api/offers/resolution-history/:studentId
+POST   /api/offers/appeal/:resolutionId
+
+17.5 Notifications
+------------------
+
+TO STUDENT:
+• "You have multiple offers! Choose within 48 hours"
+• "Offer auto-selected: [Company Name]"
+• "You can appeal within 24 hours"
+
+TO COMPANIES (rejected):
+• "Student accepted another offer"
+• "Your slot is now available for other students"
+• "Reason: [Higher stipend/Better location/etc.]"
+
+================================================================================
+18. STUDENT FEEDBACK LOOP & ML IMPROVEMENT
+================================================================================
+
+18.1 Overview
+-------------
+
+Collect student feedback on placements to continuously improve the matching
+algorithm and system recommendations.
+
+18.2 Database Schema
+--------------------
+
+FEEDBACK TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ student_id      │ UUID         │ FK to students          │
+│ placement_id    │ UUID         │ FK to placements        │
+│ application_id  │ UUID         │ FK to applications      │
+│ feedback_type   │ ENUM         │ placement/match/system  │
+│ rating          │ INTEGER      │ 1-5 stars               │
+│ match_accuracy  │ INTEGER      │ 1-5 (was match good?)   │
+│ would_recommend │ BOOLEAN      │ Recommend to peers?     │
+│ comments        │ TEXT         │ Detailed feedback       │
+│ improvement_areas│JSONB        │ Array of suggestions    │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+ML_TRAINING_DATA TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ application_id  │ UUID         │ FK to applications      │
+│ features        │ JSONB        │ Feature vector          │
+│ outcome         │ ENUM         │ success/failure         │
+│ feedback_score  │ INTEGER      │ 1-5 from feedback       │
+│ used_for_training│BOOLEAN      │ Included in training    │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+18.3 Feedback Collection Points
+-------------------------------
+
+DURING PLACEMENT:
+• Mid-placement check-in (week 4)
+• End of placement survey
+• Company feedback correlation
+
+POST-PLACEMENT:
+• Match accuracy rating
+• Recommendation likelihood
+• Skill development assessment
+• Overall satisfaction
+
+18.4 ML Model Retraining
+------------------------
+
+MONTHLY RETRAINING:
+1. Collect all new feedback data
+2. Extract features from successful placements
+3. Update training dataset
+4. Retrain matching model
+5. A/B test new model vs. current
+6. Deploy if performance improves
+
+PERFORMANCE TRACKING:
+• Match accuracy trend over time
+• Student satisfaction scores
+• Placement success rate
+• Algorithm precision/recall
+
+18.5 API Endpoints
+------------------
+
+POST   /api/feedback/submit
+GET    /api/feedback/student/:studentId
+GET    /api/feedback/placement/:placementId
+GET    /api/feedback/analytics
+POST   /api/ml/retrain
+GET    /api/ml/performance-metrics
+
+================================================================================
+19. INSURANCE DOCUMENT MANAGEMENT
+================================================================================
+
+19.1 Overview
+-------------
+
+Students require insurance cover for industrial attachments. The system
+manages insurance providers, policies, and automated document generation.
+
+19.2 Database Schema
+--------------------
+
+INSURANCE_PROVIDERS TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ name            │ VARCHAR(255) │ Provider name           │
+│ contact_email   │ VARCHAR(255) │ Contact email           │
+│ contact_phone   │ VARCHAR(20)  │ Contact phone           │
+│ api_endpoint    │ VARCHAR(500) │ API for integration     │
+│ api_key         │ VARCHAR(255) │ API authentication      │
+│ coverage_amount │ DECIMAL(10,2)│ Default coverage (KES)  │
+│ premium_cost    │ DECIMAL(10,2)│ Cost per student        │
+│ is_active       │ BOOLEAN      │ Active provider         │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+INSURANCE_POLICIES TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ student_id      │ UUID         │ FK to students          │
+│ provider_id     │ UUID         │ FK to insurance_providers│
+│ policy_number   │ VARCHAR(100) │ Unique policy number    │
+│ coverage_amount │ DECIMAL(10,2)│ Coverage amount (KES)   │
+│ start_date      │ DATE         │ Coverage start          │
+│ end_date        │ DATE         │ Coverage end            │
+│ status          │ ENUM         │ active/expired/cancelled│
+│ certificate_url │ VARCHAR(500) │ Insurance certificate   │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+19.3 Automated Insurance Cover Generation
+------------------------------------------
+
+PROCESS:
+1. Student accepts placement
+2. System checks if insurance exists and is valid
+3. If not, auto-generates insurance request
+4. Integrates with insurance provider API
+5. Generates policy number
+6. Creates insurance certificate PDF
+7. Attaches to application documents
+8. Notifies student
+
+19.4 API Endpoints
+------------------
+
+POST   /api/insurance/generate
+GET    /api/insurance/student/:studentId
+GET    /api/insurance/providers
+POST   /api/insurance/providers
+PUT    /api/insurance/renew/:policyId
+GET    /api/insurance/certificate/:policyId
+
+================================================================================
+20. REAL-TIME COMMUNICATION SYSTEM
+================================================================================
+
+20.1 Overview
+-------------
+
+WebSocket-based real-time communication for instant notifications, live chat,
+and real-time updates across the platform.
+
+20.2 WebSocket Implementation
+------------------------------
+
+TECHNOLOGY:
+• Socket.io (Node.js) / Django Channels (Python)
+• Redis for pub/sub messaging
+• Room-based communication
+
+ROOMS:
+• student:{studentId} - Student-specific updates
+• company:{companyId} - Company-specific updates
+• institution:{institutionId} - Institution updates
+• global - System-wide announcements
+
+20.3 Real-time Events
+---------------------
+
+STUDENT EVENTS:
+• application_status_changed
+• new_recommendation
+• offer_received
+• offer_expired
+• payment_received
+• message_received
+
+COMPANY EVENTS:
+• new_application
+• student_accepted_offer
+• student_rejected_offer
+• placement_started
+• placement_completed
+
+INSTITUTION EVENTS:
+• student_placed
+• placement_completed
+• company_feedback_received
+• bulk_import_completed
+
+20.4 Live Chat System
+---------------------
+
+FEATURES:
+• Student ↔ Company messaging
+• Student ↔ Institution messaging
+• Company ↔ Institution messaging
+• File attachments
+• Read receipts
+• Typing indicators
+• Message history
+
+DATABASE SCHEMA:
+
+MESSAGES TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ sender_id       │ UUID         │ FK to users             │
+│ receiver_id     │ UUID         │ FK to users             │
+│ message         │ TEXT         │ Message content         │
+│ attachment_url  │ VARCHAR(500) │ File attachment         │
+│ is_read         │ BOOLEAN      │ Read status             │
+│ read_at         │ TIMESTAMP    │ When read               │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+20.5 API Endpoints
+------------------
+
+WebSocket Events:
+• connect
+• disconnect
+• join_room
+• leave_room
+• send_message
+• typing_start
+• typing_stop
+
+REST Endpoints:
+GET    /api/messages/conversations
+GET    /api/messages/conversation/:userId
+POST   /api/messages/send
+PUT    /api/messages/:id/read
+GET    /api/messages/unread-count
+
+================================================================================
+21. AUDIT TRAIL SYSTEM
+================================================================================
+
+21.1 Overview
+-------------
+
+Comprehensive audit logging for transparency, anti-corruption, and compliance.
+Every decision, action, and change is logged with full context.
+
+21.2 Database Schema
+--------------------
+
+AUDIT_LOGS TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ user_id         │ UUID         │ FK to users (who)       │
+│ action          │ VARCHAR(100) │ Action performed        │
+│ entity_type     │ VARCHAR(50)  │ Table/resource affected │
+│ entity_id       │ UUID         │ Specific record ID      │
+│ old_values      │ JSONB        │ Before state            │
+│ new_values      │ JSONB        │ After state             │
+│ ip_address      │ VARCHAR(45)  │ User IP                 │
+│ user_agent      │ TEXT         │ Browser/device info     │
+│ reason          │ TEXT         │ Reason for action       │
+│ automated       │ BOOLEAN      │ Was it automated?       │
+│ created_at      │ TIMESTAMP    │ When action occurred    │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+DECISION_EXPLANATIONS TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ decision_type   │ VARCHAR(100) │ Type of decision        │
+│ entity_id       │ UUID         │ Related entity          │
+│ explanation     │ TEXT         │ Human-readable reason   │
+│ factors         │ JSONB        │ Decision factors        │
+│ confidence      │ DECIMAL(5,2) │ Confidence score        │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+21.3 Logged Actions
+-------------------
+
+USER ACTIONS:
+• login, logout
+• profile_update
+• application_submit
+• application_accept, application_reject
+• offer_accept, offer_reject
+
+SYSTEM ACTIONS:
+• automated_match_generated
+• automated_application_submitted
+• automated_offer_resolved
+• payment_processed
+• document_generated
+
+ADMIN ACTIONS:
+• user_verified, user_suspended
+• system_config_changed
+• feature_flag_toggled
+• manual_override
+
+21.4 Transparency Features
+--------------------------
+
+STUDENT VIEW:
+• "Why was I matched with this company?"
+• "Why was my application rejected?"
+• "How was my offer auto-selected?"
+• Full audit trail of their data
+
+COMPANY VIEW:
+• "Why was this student recommended?"
+• "What factors influenced the match?"
+• Audit trail of all actions
+
+INSTITUTION VIEW:
+• Complete placement history
+• All decisions and reasons
+• System action logs
+
+21.5 API Endpoints
+------------------
+
+GET    /api/audit/logs
+GET    /api/audit/user/:userId
+GET    /api/audit/entity/:entityType/:entityId
+GET    /api/audit/explanations/:decisionId
+POST   /api/audit/log (internal)
+
+================================================================================
+
+
+================================================================================
+22. CONFIGURATION MANAGEMENT SYSTEM
+================================================================================
+
+22.1 Overview
+-------------
+
+Centralized system configuration for feature flags, algorithm parameters,
+business rules, and system settings without code deployment.
+
+22.2 Database Schema
+--------------------
+
+SYSTEM_CONFIG TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ config_key      │ VARCHAR(100) │ Unique config key       │
+│ config_value    │ TEXT         │ Configuration value     │
+│ value_type      │ ENUM         │ string/int/bool/json    │
+│ category        │ VARCHAR(50)  │ matching/payment/etc    │
+│ description     │ TEXT         │ What this config does   │
+│ is_active       │ BOOLEAN      │ Currently active        │
+│ updated_by      │ UUID         │ FK to users (admin)     │
+│ updated_at      │ TIMESTAMP    │ Last update             │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+FEATURE_FLAGS TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ flag_name       │ VARCHAR(100) │ Feature flag name       │
+│ is_enabled      │ BOOLEAN      │ Feature enabled?        │
+│ rollout_percent │ INTEGER      │ % of users (0-100)      │
+│ target_roles    │ JSONB        │ Specific user roles     │
+│ description     │ TEXT         │ Feature description     │
+│ updated_by      │ UUID         │ FK to users             │
+│ updated_at      │ TIMESTAMP    │ Last update             │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+ALGORITHM_PARAMS TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ param_name      │ VARCHAR(100) │ Parameter name          │
+│ param_value     │ DECIMAL(10,4)│ Numeric value           │
+│ algorithm       │ VARCHAR(50)  │ Which algorithm         │
+│ description     │ TEXT         │ Parameter purpose       │
+│ min_value       │ DECIMAL(10,4)│ Minimum allowed         │
+│ max_value       │ DECIMAL(10,4)│ Maximum allowed         │
+│ updated_by      │ UUID         │ FK to users             │
+│ updated_at      │ TIMESTAMP    │ Last update             │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+22.3 Configurable Parameters
+-----------------------------
+
+MATCHING ALGORITHM:
+• gpa_weight: 0.25 (25% of match score)
+• skills_weight: 0.30
+• location_weight: 0.20
+• performance_weight: 0.15
+• interest_weight: 0.10
+• min_match_threshold: 60 (minimum score to recommend)
+
+AUTOMATION SETTINGS:
+• auto_application_enabled: true
+• auto_offer_resolution_timeout: 48 (hours)
+• auto_recommendation_frequency: 24 (hours)
+• max_auto_applications_per_day: 5
+
+BUSINESS RULES:
+• min_gpa_for_application: 2.0
+• max_applications_per_student: 10
+• application_deadline_days: 7
+• placement_duration_weeks: 12
+
+FEATURE FLAGS:
+• enable_learning_module: true
+• enable_payment_integration: true
+• enable_chatbot: true
+• enable_auto_matching: true
+• enable_multi_offer_resolution: true
+
+22.4 API Endpoints
+------------------
+
+GET    /api/config/all
+GET    /api/config/:key
+PUT    /api/config/:key
+GET    /api/config/feature-flags
+PUT    /api/config/feature-flags/:name
+GET    /api/config/algorithm-params
+PUT    /api/config/algorithm-params/:name
+
+================================================================================
+23. BATCH PROCESSING & SCHEDULED TASKS
+================================================================================
+
+23.1 Overview
+-------------
+
+Automated background jobs for bulk operations, scheduled tasks, and
+asynchronous processing using job queues.
+
+23.2 Job Queue System
+---------------------
+
+TECHNOLOGY:
+• Bull Queue (Node.js) / Celery (Python)
+• Redis as message broker
+• Job scheduling with cron expressions
+
+JOBS TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ job_type        │ VARCHAR(100) │ Type of job             │
+│ status          │ ENUM         │ pending/running/done/...│
+│ payload         │ JSONB        │ Job parameters          │
+│ result          │ JSONB        │ Job result              │
+│ error           │ TEXT         │ Error message if failed │
+│ attempts        │ INTEGER      │ Retry attempts          │
+│ max_attempts    │ INTEGER      │ Max retries             │
+│ scheduled_at    │ TIMESTAMP    │ When to run             │
+│ started_at      │ TIMESTAMP    │ When started            │
+│ completed_at    │ TIMESTAMP    │ When completed          │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+23.3 Scheduled Tasks (Cron Jobs)
+--------------------------------
+
+DAILY TASKS:
+• 00:00 - Generate daily recommendations for all students
+• 01:00 - Process pending payments
+• 02:00 - Backup database
+• 06:00 - Send morning digest emails
+• 12:00 - Check application deadlines
+• 18:00 - Send evening reminders
+
+WEEKLY TASKS:
+• Sunday 00:00 - Retrain ML models
+• Monday 08:00 - Generate weekly reports
+• Friday 17:00 - Send weekly summaries
+
+MONTHLY TASKS:
+• 1st of month - Generate monthly analytics
+• 1st of month - Archive old data
+• 15th of month - Send placement reminders
+
+23.4 Batch Operations
+---------------------
+
+BULK STUDENT IMPORT:
+• Parse CSV/Excel file
+• Validate data
+• Create student records
+• Send welcome emails
+• Generate initial recommendations
+
+BULK OPPORTUNITY CREATION:
+• Parse company data
+• Create multiple opportunities
+• Generate matching candidates
+• Notify relevant students
+
+BULK APPLICATION PROCESSING:
+• Process multiple applications
+• Generate documents for each
+• Submit to companies
+• Send confirmations
+
+BULK MATCHING:
+• Run matching algorithm for all students
+• Generate recommendations
+• Update match scores
+• Queue notifications
+
+23.5 API Endpoints
+------------------
+
+POST   /api/batch/students/import
+POST   /api/batch/opportunities/create
+POST   /api/batch/applications/process
+POST   /api/batch/matching/run
+GET    /api/batch/jobs
+GET    /api/batch/jobs/:id
+DELETE /api/batch/jobs/:id
+POST   /api/batch/jobs/:id/retry
+
+================================================================================
+24. AUTOMATED APPLICATION PROCESS
+================================================================================
+
+24.1 Zero-Click Application
+----------------------------
+
+CONCEPT:
+Students don't manually apply. The system automatically submits applications
+to top-matched opportunities based on student preferences.
+
+24.2 Automation Logic
+---------------------
+
+TRIGGER CONDITIONS:
+• New opportunity posted that matches student
+• Student profile updated (new skills, better GPA)
+• Student explicitly enables auto-apply
+• Match score exceeds threshold (e.g., 80+)
+
+AUTOMATION WORKFLOW:
+1. Daily matching algorithm runs
+2. Identifies opportunities with match score > 80
+3. Checks student preferences:
+   - Auto-apply enabled?
+   - Max applications per day not exceeded?
+   - Student hasn't manually rejected this company?
+4. Auto-generates all required documents
+5. Submits application
+6. Notifies student: "We applied to [Company] for you!"
+7. Student can cancel within 24 hours
+
+STUDENT CONTROL:
+• Enable/disable auto-apply
+• Set max auto-applications per day
+• Blacklist specific companies
+• Set minimum match score threshold
+• Review and cancel auto-applications
+
+24.3 Database Schema
+--------------------
+
+AUTO_APPLICATION_SETTINGS (add to students table):
+• auto_apply_enabled BOOLEAN
+• max_auto_applications_per_day INTEGER
+• min_auto_match_score INTEGER
+• blacklisted_companies JSONB (array of company IDs)
+• auto_apply_only_paid BOOLEAN
+
+AUTO_APPLICATION_LOG TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ student_id      │ UUID         │ FK to students          │
+│ application_id  │ UUID         │ FK to applications      │
+│ match_score     │ DECIMAL(5,2) │ Match score at time     │
+│ auto_applied_at │ TIMESTAMP    │ When auto-applied       │
+│ cancelled       │ BOOLEAN      │ Student cancelled?      │
+│ cancelled_at    │ TIMESTAMP    │ When cancelled          │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+24.4 API Endpoints
+------------------
+
+PUT    /api/students/auto-apply/settings
+GET    /api/students/auto-apply/settings
+GET    /api/students/auto-apply/history
+POST   /api/students/auto-apply/cancel/:applicationId
+POST   /api/automation/trigger-auto-applications (internal)
+
+================================================================================
+25. CHATBOT EXPLANATION GENERATION
+================================================================================
+
+25.1 Overview
+-------------
+
+The chatbot must explain complex decisions in simple, understandable language,
+especially for placement decisions and match scores.
+
+25.2 Explanation Templates
+--------------------------
+
+WHY THIS PLACEMENT:
+"You were matched with [Company Name] because:
+1. Your GPA of [X.XX] exceeds their requirement of [Y.YY] ✓
+2. You've completed [N] relevant units including [Unit Names] ✓
+3. Your specialization in [Field] aligns with their [Department] ✓
+4. Your location preference ([Location]) matches their office ✓
+5. Similar students rated this placement [X]/5 stars ✓
+
+Your match score: [XX]/100"
+
+WHY APPLICATION REJECTED:
+"Your application to [Company] was not accepted because:
+1. They received [N] applications for [M] slots
+2. Other candidates had:
+   - Higher GPAs (yours: [X.XX], average accepted: [Y.YY])
+   - More relevant certifications
+   - Completed specific required units
+
+💡 Recommendation: Complete these courses to improve:
+   - [Course 1] - Would add [Skill]
+   - [Course 2] - Required by similar companies
+   
+Try again after completing 1-2 courses!"
+
+WHY AUTO-SELECTED THIS OFFER:
+"You received multiple offers! We selected [Company A] because:
+1. Higher stipend: KES [Amount] vs KES [Other Amount] 💰
+2. Better location match: [Preferred] vs [Other] 📍
+3. Higher company rating: [X]/5 vs [Y]/5 ⭐
+4. Better skill alignment: [XX]% vs [YY]% 🎯
+
+You can appeal this decision within 24 hours."
+
+25.3 Intent Training Data
+--------------------------
+
+INTENTS:
+• explain_match_score
+• explain_rejection
+• explain_auto_selection
+• why_this_company
+• how_to_improve
+• what_is_match_score
+• why_no_recommendations
+
+TRAINING EXAMPLES (per intent):
+• 50+ variations of user questions
+• Context-aware responses
+• Multi-turn conversation support
+
+25.4 API Endpoints
+------------------
+
+POST   /api/chatbot/explain/match/:applicationId
+POST   /api/chatbot/explain/rejection/:applicationId
+POST   /api/chatbot/explain/selection/:resolutionId
+GET    /api/chatbot/explanations/:studentId
+
+================================================================================
+26. DOCUMENT STATUS WORKFLOW
+================================================================================
+
+26.1 Overview
+-------------
+
+Comprehensive tracking of all documents through their lifecycle with
+automated follow-ups and reminders.
+
+26.2 Database Schema
+--------------------
+
+DOCUMENT_WORKFLOW TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ application_id  │ UUID         │ FK to applications      │
+│ document_type   │ ENUM         │ letter/nita/insurance/..│
+│ status          │ ENUM         │ pending/approved/...    │
+│ document_url    │ VARCHAR(500) │ Document file           │
+│ generated_at    │ TIMESTAMP    │ When generated          │
+│ submitted_at    │ TIMESTAMP    │ When submitted          │
+│ approved_at     │ TIMESTAMP    │ When approved           │
+│ rejected_at     │ TIMESTAMP    │ When rejected           │
+│ rejection_reason│ TEXT         │ Why rejected            │
+│ approved_by     │ UUID         │ FK to users             │
+│ version         │ INTEGER      │ Document version        │
+│ created_at      │ TIMESTAMP    │ Auto-generated          │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+26.3 Document Lifecycle
+-----------------------
+
+STATES:
+1. draft - Document being generated
+2. pending_review - Awaiting institution review
+3. approved - Approved by institution
+4. rejected - Rejected, needs revision
+5. submitted - Submitted to company/NITA
+6. accepted - Accepted by recipient
+7. expired - Past validity period
+
+TRANSITIONS:
+draft → pending_review (auto, after generation)
+pending_review → approved (institution action)
+pending_review → rejected (institution action)
+rejected → draft (auto-regenerate)
+approved → submitted (auto, to company)
+submitted → accepted (company/NITA action)
+
+26.4 Automated Follow-ups
+-------------------------
+
+REMINDERS:
+• Day 1: Document pending review
+• Day 3: Reminder to institution
+• Day 5: Escalation to admin
+• Day 7: Auto-approve if configured
+
+NOTIFICATIONS:
+• Student: "Your documents are being reviewed"
+• Institution: "3 documents pending your review"
+• Company: "New application documents received"
+
+26.5 API Endpoints
+------------------
+
+GET    /api/documents/workflow/:applicationId
+PUT    /api/documents/workflow/:id/approve
+PUT    /api/documents/workflow/:id/reject
+POST   /api/documents/workflow/:id/regenerate
+GET    /api/documents/pending-review
+
+================================================================================
+27. THIRD-PARTY SERVICE WEBHOOKS
+================================================================================
+
+27.1 Overview
+-------------
+
+Webhook endpoints for receiving callbacks from external services like
+M-Pesa, NITA, insurance providers, and learning platforms.
+
+27.2 Webhook Endpoints
+----------------------
+
+M-PESA WEBHOOKS:
+POST   /api/webhooks/mpesa/payment-confirmation
+POST   /api/webhooks/mpesa/payment-timeout
+POST   /api/webhooks/mpesa/payment-reversal
+
+NITA WEBHOOKS:
+POST   /api/webhooks/nita/form-approved
+POST   /api/webhooks/nita/form-rejected
+POST   /api/webhooks/nita/status-update
+
+INSURANCE WEBHOOKS:
+POST   /api/webhooks/insurance/policy-issued
+POST   /api/webhooks/insurance/policy-expired
+POST   /api/webhooks/insurance/claim-processed
+
+LEARNING PLATFORM WEBHOOKS:
+POST   /api/webhooks/coursera/course-completed
+POST   /api/webhooks/edx/certificate-issued
+POST   /api/webhooks/udemy/enrollment-confirmed
+
+27.3 Webhook Security
+---------------------
+
+VERIFICATION:
+• HMAC signature verification
+• IP whitelisting
+• API key validation
+• Timestamp validation (prevent replay attacks)
+
+PROCESSING:
+• Async processing (queue-based)
+• Idempotency (handle duplicates)
+• Retry logic for failures
+• Audit logging
+
+27.4 Webhook Events Table
+-------------------------
+
+WEBHOOK_EVENTS TABLE:
+┌─────────────────┬──────────────┬─────────────────────────┐
+│ Column          │ Type         │ Description             │
+├─────────────────┼──────────────┼─────────────────────────┤
+│ id              │ UUID         │ Primary key             │
+│ source          │ VARCHAR(50)  │ mpesa/nita/insurance/...│
+│ event_type      │ VARCHAR(100) │ Event type              │
+│ payload         │ JSONB        │ Full webhook payload    │
+│ signature       │ VARCHAR(255) │ Verification signature  │
+│ processed       │ BOOLEAN      │ Successfully processed? │
+│ error           │ TEXT         │ Error if failed         │
+│ received_at     │ TIMESTAMP    │ When received           │
+│ processed_at    │ TIMESTAMP    │ When processed          │
+└─────────────────┴──────────────┴─────────────────────────┘
+
+================================================================================
+28. BULK OPERATIONS API
+================================================================================
+
+28.1 Overview
+-------------
+
+Comprehensive bulk operation endpoints for efficient mass data management.
+
+28.2 API Endpoints
+------------------
+
+BULK STUDENT OPERATIONS:
+POST   /api/bulk/students/import
+POST   /api/bulk/students/export
+POST   /api/bulk/students/update
+POST   /api/bulk/students/delete
+POST   /api/bulk/students/send-notifications
+
+BULK OPPORTUNITY OPERATIONS:
+POST   /api/bulk/opportunities/create
+POST   /api/bulk/opportunities/update
+POST   /api/bulk/opportunities/close
+POST   /api/bulk/opportunities/export
+
+BULK APPLICATION OPERATIONS:
+POST   /api/bulk/applications/submit
+POST   /api/bulk/applications/approve
+POST   /api/bulk/applications/reject
+POST   /api/bulk/applications/export
+
+BULK MATCHING OPERATIONS:
+POST   /api/bulk/matching/generate-all
+POST   /api/bulk/matching/refresh
+POST   /api/bulk/matching/export-scores
+
+BULK NOTIFICATION OPERATIONS:
+POST   /api/bulk/notifications/send
+POST   /api/bulk/notifications/email-campaign
+POST   /api/bulk/notifications/sms-campaign
+
+28.3 Request Format
+-------------------
+
+EXAMPLE - Bulk Student Import:
+POST /api/bulk/students/import
+Content-Type: multipart/form-data
+
+{
+  "file": <CSV/Excel file>,
+  "institution_id": "uuid",
+  "send_welcome_email": true,
+  "auto_generate_recommendations": true
+}
+
+RESPONSE:
+{
+  "job_id": "uuid",
+  "status": "queued",
+  "total_records": 150,
+  "estimated_completion": "2026-02-05T14:30:00Z"
+}
+
+28.4 Progress Tracking
+----------------------
+
+GET /api/bulk/jobs/:jobId
+
+RESPONSE:
+{
+  "job_id": "uuid",
+  "status": "processing",
+  "progress": 65,
+  "total_records": 150,
+  "processed_records": 98,
+  "successful": 95,
+  "failed": 3,
+  "errors": [
+    {"row": 12, "error": "Invalid email format"},
+    {"row": 45, "error": "Duplicate student number"},
+    {"row": 89, "error": "Missing required field: course"}
+  ]
+}
+
+================================================================================
+29. STUDENT DASHBOARD AUTOMATION
+================================================================================
+
+29.1 Top Recommended Algorithm
+-------------------------------
+
+RANKING FACTORS:
+1. Match Score (50%)
+   - GPA alignment
+   - Skills match
+   - Units completed
+
+2. Opportunity Quality (25%)
+   - Company rating
+   - Past placement success rate
+   - Student feedback scores
+
+3. Student Preferences (15%)
+   - Location match
+   - Stipend (if required)
+   - Company size preference
+
+4. Urgency (10%)
+   - Application deadline proximity
+   - Slots remaining
+   - Competition level
+
+CALCULATION:
+final_score = (match_score * 0.5) + 
+              (quality_score * 0.25) + 
+              (preference_score * 0.15) + 
+              (urgency_score * 0.1)
+
+DISPLAY:
+• Top 5 opportunities prominently featured
+• "Apply Now" button for each
+• Match percentage displayed
+• Deadline countdown
+• Slots remaining indicator
+
+29.2 Automated Acceptance Workflow
+----------------------------------
+
+WHEN STUDENT CLICKS "ACCEPT OFFER":
+1. Check for other pending offers
+2. If multiple offers exist:
+   - Trigger multi-offer resolution
+   - Show comparison table
+   - Request student choice
+3. If single offer:
+   - Auto-accept immediately
+   - Generate all documents
+   - Notify company and institution
+   - Update placement status
+   - Send congratulations email
+4. Auto-reject other pending offers
+5. Remove student from other opportunity matches
+6. Update dashboard to show placement details
+
+================================================================================
+30. PLATFORM OWNER DASHBOARD
+================================================================================
+
+30.1 Owner-Specific Functionalities
+------------------------------------
+
+SYSTEM OVERVIEW:
+• Total users (students, companies, institutions)
+• Active placements
+• System health metrics
+• Revenue (if applicable)
+• Growth trends
+
+STAKEHOLDER MANAGEMENT:
+• Verify new institutions
+• Verify new companies
+• Manage user accounts
+• Handle disputes
+• Review feedback
+
+SYSTEM CONFIGURATION:
+• Feature flag management
+• Algorithm parameter tuning
+• Payment gateway configuration
+• Integration settings
+• Email/SMS templates
+
+ANALYTICS & INSIGHTS:
+• Platform usage statistics
+• Matching algorithm performance
+• User satisfaction metrics
+• Geographic distribution
+• Industry trends
+
+FINANCIAL MANAGEMENT (if applicable):
+• Subscription management
+• Payment processing
+• Revenue reports
+• Billing and invoicing
+
+30.2 API Endpoints
+------------------
+
+GET    /api/owner/dashboard/overview
+GET    /api/owner/users/pending-verification
+PUT    /api/owner/users/:id/verify
+GET    /api/owner/analytics/platform
+GET    /api/owner/system/health
+PUT    /api/owner/system/config
+GET    /api/owner/disputes
+PUT    /api/owner/disputes/:id/resolve
+
+================================================================================
+31. ERROR HANDLING & FALLBACK MECHANISMS
+================================================================================
+
+31.1 Automation Failure Handling
+---------------------------------
+
+MATCHING ALGORITHM FAILURE:
+• Fallback to rule-based matching
+• Manual matching by institution
+• Notification to admin
+• Automatic retry after 1 hour
+
+DOCUMENT GENERATION FAILURE:
+• Retry up to 3 times
+• Use cached template if available
+• Manual document upload option
+• Notification to student and institution
+
+PAYMENT PROCESSING FAILURE:
+• Retry payment after 5 minutes
+• Alternative payment method suggestion
+• Manual payment recording option
+• Notification to all parties
+
+API INTEGRATION FAILURE:
+• Use cached data if available
+• Queue for retry when service recovers
+• Manual data entry fallback
+• Admin notification
+
+31.2 Manual Override Procedures
+-------------------------------
+
+ADMIN CAN OVERRIDE:
+• Automated match scores
+• Auto-application decisions
+• Multi-offer resolutions
+• Payment statuses
+• Document approvals
+• System configurations
+
+OVERRIDE LOGGING:
+• All overrides logged in audit trail
+• Reason required for override
+• Notification to affected parties
+• Review by senior admin
+
+31.3 Retry Logic
+----------------
+
+EXPONENTIAL BACKOFF:
+• 1st retry: 1 minute
+• 2nd retry: 5 minutes
+• 3rd retry: 15 minutes
+• 4th retry: 1 hour
+• 5th retry: Manual intervention required
+
+CIRCUIT BREAKER:
+• After 5 consecutive failures
+• Stop automatic retries
+• Alert admin
+• Manual investigation required
+
+================================================================================
+END OF MISSING COMPONENTS DOCUMENTATION
+================================================================================

@@ -1,0 +1,7 @@
+1.3 Objectives
+1.3.1 Main Objective
+To design and develop an intelligent, automated Attachment Placement System that uses Artificial Intelligence and Machine Learning to optimize the matching of students with industrial attachment opportunities, eliminate corruption, reduce administrative burden, and improve placement success rates for all stakeholders.
+1.3.2 Specific Objectives
+1. To analyze the current systems.
+2. To design the system.
+3. To implement the system.
