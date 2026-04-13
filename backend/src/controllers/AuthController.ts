@@ -128,7 +128,7 @@ export class AuthController extends BaseController {
 
             if (role === 'STUDENT') {
                 if (!targetInstitutionId && targetInstitutionName) {
-                    const instRes = await pool.query('SELECT id FROM institutions WHERE name ILIKE $1 LIMIT 1', [targetInstitutionName]);
+                    const instRes = await pool.query('SELECT id FROM institutions WHERE name ILIKE $1 LIMIT 1', [`%${targetInstitutionName}%`]);
                     if (instRes.rows.length > 0) {
                         targetInstitutionId = instRes.rows[0].id;
                     }
@@ -231,8 +231,15 @@ export class AuthController extends BaseController {
             });
 
         } catch (error: any) {
-            console.error('Registration Error:', error.message);
-            res.status(500).json({ message: 'Internal Server Error' });
+            console.error('Registration Error Detailed:', {
+                message: error.message,
+                stack: error.stack,
+                body: req.body
+            });
+            res.status(500).json({ 
+                message: 'Internal Server Error during registration',
+                detail: process.env.NODE_ENV === 'development' ? error.message : undefined
+            });
         }
     };
 
@@ -338,75 +345,30 @@ export class AuthController extends BaseController {
      * Returns the currently authenticated user's status.
      */
     getMe = async (req: Request, res: Response) => {
-        // req.user is attached by the auth middleware
-        res.status(200).json({
-            status: 'success',
-            user: (req as any).user
-        });
-    };
-
-    /**
-     * Deletes the currently authenticated user's account (Platform only).
-     */
-    deleteAccount = async (req: Request, res: Response) => {
-        const userId = (req as any).user?.id;
-        const role = (req as any).user?.role;
-        const email = (req as any).user?.email;
-
-        if (email === 'admin@aisha.com') {
-            return res.status(403).json({
-                status: 'error',
-                message: 'The system owner account cannot be deleted.'
-            });
-        }
-
-        const client = await pool.connect();
         try {
-            await client.query('BEGIN');
+            const userId = (req as any).user?.id;
+            const result = await pool.query(
+                `SELECT u.id, u.email, u.role, u.is_verified, 
+                        s.id as student_id, c.id as company_id, i.id as institution_id,
+                        i.name as institution_name
+                 FROM users u
+                 LEFT JOIN students s ON s.user_id = u.id
+                 LEFT JOIN companies c ON c.user_id = u.id
+                 LEFT JOIN institutions i ON i.user_id = u.id
+                 WHERE u.id = $1`,
+                [userId]
+            );
 
-            if (role === 'STUDENT') {
-                const studentRes = await client.query('SELECT id FROM students WHERE user_id = $1', [userId]);
-                if (studentRes.rows.length > 0) {
-                    const studentId = studentRes.rows[0].id;
-
-                    // 1. Delete applications and linked placements/payments
-                    await client.query('DELETE FROM payments WHERE application_id IN (SELECT id FROM applications WHERE student_id = $1)', [studentId]);
-                    await client.query('DELETE FROM placements WHERE application_id IN (SELECT id FROM applications WHERE student_id = $1)', [studentId]);
-                    await client.query('DELETE FROM applications WHERE student_id = $1', [studentId]);
-
-                    // 2. Delete academic records and units
-                    await client.query('DELETE FROM student_academic_records WHERE student_id = $1', [studentId]);
-                    await client.query('DELETE FROM student_units WHERE student_id = $1', [studentId]);
-
-                    // 3. Delete learning progress
-                    await client.query('DELETE FROM student_learning_progress WHERE student_id = $1', [studentId]);
-
-                    // 4. Delete student record
-                    await client.query('DELETE FROM students WHERE id = $1', [studentId]);
-                }
+            if (result.rows.length === 0) {
+                return res.status(404).json({ message: 'User not found' });
             }
-
-            // 5. Delete audit logs, notifications, and messages
-            await client.query('DELETE FROM audit_logs WHERE user_id = $1', [userId]);
-            await client.query('DELETE FROM notifications WHERE user_id = $1', [userId]);
-            await client.query('DELETE FROM messages WHERE sender_id = $1 OR receiver_id = $1', [userId, userId]);
-
-            // 6. Delete user record
-            await client.query('DELETE FROM users WHERE id = $1', [userId]);
-
-            await client.query('COMMIT');
 
             res.status(200).json({
                 status: 'success',
-                message: 'Account deleted successfully. All platform data has been removed.'
+                data: result.rows[0]
             });
-
-        } catch (error: any) {
-            await client.query('ROLLBACK');
-            console.error('Delete Account Error:', error.message);
+        } catch (error) {
             res.status(500).json({ message: 'Internal Server Error' });
-        } finally {
-            client.release();
         }
     };
 }

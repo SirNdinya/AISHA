@@ -11,11 +11,11 @@ async def run_benchmark():
         user_id = '444ef451-e885-4204-86e4-e819be9365f1'
 
         student = db.query(models.Student).filter(
-            models.Student.admission_number == 'SIT/B/02-00027/2022'
+            models.Student.admission_number == 'SIT/B/05-00039/2022'
         ).first()
 
         if not student:
-            print("Student SIT/B/02-00027/2022 not found.")
+            print("Student SIT/B/05-00039/2022 not found.")
             return
 
         student.user_id = user_id

@@ -33,6 +33,23 @@ const fileFilter = (req: any, file: any, cb: any) => {
 
 export const documentUpload = multer({
     storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+    limits: { fileSize: 20 * 1024 * 1024 }, // 20MB limit
+    fileFilter: fileFilter
+});
+
+const profileDir = path.join(__dirname, '../../uploads/profiles');
+if (!fs.existsSync(profileDir)) {
+    fs.mkdirSync(profileDir, { recursive: true });
+}
+
+export const profileUpload = multer({
+    storage: multer.diskStorage({
+        destination: (req, file, cb) => cb(null, profileDir),
+        filename: (req, file, cb) => {
+            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+            cb(null, 'profile-' + uniqueSuffix + path.extname(file.originalname));
+        }
+    }),
+    limits: { fileSize: 20 * 1024 * 1024 }, // 20MB for profile pics
     fileFilter: fileFilter
 });

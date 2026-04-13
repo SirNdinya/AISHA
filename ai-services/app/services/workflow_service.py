@@ -50,7 +50,7 @@ class WorkflowService:
                     )
                     self.db.add(app)
                     
-                    # 3. Auto-Generate Docs (NITA/Insurance)
+                    # 3. Securely Verify Placement
                     # In a real app, find correct template for the student's institution
                     # For demo, taking first available
                     template = self.db.query(models_docs.DocumentTemplate).first()

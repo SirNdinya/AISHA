@@ -91,9 +91,13 @@ async function populateInstitutionalData() {
                 const unitCode = `${deptCode}-${(i + 1).toString().padStart(3, '0')}`;
                 const unitId = unitIdMap[unitCode];
                 if (unitId) {
+                    const grade = grades[i % grades.length];
+                    const markMap: Record<string, number> = { 'A': 82, 'B': 68, 'C': 54, 'D': 45 };
+                    const mark = markMap[grade] || 50;
+
                     await pool.query(
-                        'INSERT INTO inst_mmust.student_academic_records (student_id, unit_id, grade, semester, academic_year) VALUES ($1, $2, $3, $4, $5)',
-                        [studentId, unitId, grades[i % grades.length], 'Sem 1', 3]
+                        'INSERT INTO inst_mmust.student_academic_records (student_id, unit_id, grade, mark, semester, academic_year) VALUES ($1, $2, $3, $4, $5, $6)',
+                        [studentId, unitId, grade, mark, 'Sem 1', 3]
                     );
                 }
             }

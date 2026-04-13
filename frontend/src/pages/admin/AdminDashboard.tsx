@@ -7,9 +7,8 @@ import type { AppDispatch, RootState } from '../../store';
 import { Toaster, toaster } from '../../components/ui/toaster';
 import BroadcastManager from './components/BroadcastManager';
 import SystemSettings from './components/SystemSettings';
-import CommandCentre from './components/CommandCentre';
 import InstitutionsManager from './components/InstitutionsManager';
-import { LuShieldCheck, LuMegaphone, LuSettings, LuTerminal, LuBuilding2 } from 'react-icons/lu';
+import { LuShieldCheck, LuMegaphone, LuSettings, LuBuilding2 } from 'react-icons/lu';
 
 const MotionBox = motion.create(Box);
 
@@ -48,10 +47,6 @@ const AdminDashboard: React.FC = () => {
                     <Tabs.Trigger value="settings" gap={2}>
                         <LuSettings size={18} />
                         Settings
-                    </Tabs.Trigger>
-                    <Tabs.Trigger value="command" gap={2}>
-                        <LuTerminal size={18} />
-                        Command Centre
                     </Tabs.Trigger>
                     <Tabs.Trigger value="institutions" gap={2}>
                         <LuBuilding2 size={18} />
@@ -119,16 +114,6 @@ const AdminDashboard: React.FC = () => {
                         transition={{ duration: 0.3 }}
                     >
                         <SystemSettings />
-                    </MotionBox>
-                </Tabs.Content>
-
-                <Tabs.Content value="command">
-                    <MotionBox
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.3 }}
-                    >
-                        <CommandCentre />
                     </MotionBox>
                 </Tabs.Content>
 

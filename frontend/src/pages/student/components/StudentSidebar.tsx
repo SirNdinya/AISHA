@@ -1,28 +1,24 @@
 
 import React from 'react';
-import { Box, VStack, HStack, Text, Icon, Flex, Badge, Separator, IconButton } from '@chakra-ui/react';
+import { Box, VStack, HStack, Text, Icon, Flex, Separator, IconButton } from '@chakra-ui/react';
 import { NavLink } from 'react-router-dom';
 import {
     LuLayoutDashboard,
     LuBriefcase,
     LuUser,
-    LuFileText,
-    LuMessageSquare,
-    LuSettings,
-    LuFile,
-    LuPanelLeftClose,
     LuPanelLeftOpen,
+    LuPanelLeftClose,
     LuGraduationCap,
-    LuActivity
+    LuActivity,
+    LuFileText,
+    LuSettings
 } from 'react-icons/lu';
 
 const navItems = [
     { name: 'Dashboard', icon: LuLayoutDashboard, path: '/student/dashboard' },
     { name: 'My Placement', icon: LuBriefcase, path: '/student/attachments' },
     { name: 'Profile', icon: LuUser, path: '/student/profile' },
-    { name: 'Resume Builder', icon: LuFile, path: '/student/cv-builder' },
     { name: 'Logbook', icon: LuFileText, path: '/student/logbook' },
-    { name: 'Communications', icon: LuMessageSquare, path: '/student/chat' },
     { name: 'Settings', icon: LuSettings, path: '/student/settings' },
 ];
 
@@ -64,7 +60,7 @@ const StudentSidebar: React.FC<StudentSidebarProps> = ({ isCollapsed, onToggle, 
                     </Box>
                     {!isCollapsed && (
                         <VStack align="flex-start" gap={0}>
-                            <Text fontWeight="extrabold" fontSize="xl" letterSpacing="tight" color="white">
+                            <Text fontWeight="extrabold" fontSize="2xl" letterSpacing="tight" color="white">
                                 AISHA
                             </Text>
                             <Text fontSize="10px" fontWeight="bold" color="cyan.400" mt="-1">
@@ -117,7 +113,7 @@ const StudentSidebar: React.FC<StudentSidebarProps> = ({ isCollapsed, onToggle, 
                             >
                                 <Icon as={item.icon} boxSize={5} flexShrink={0} />
                                 {!isCollapsed && (
-                                    <Text fontWeight="medium" fontSize="sm" whiteSpace="nowrap">{item.name}</Text>
+                                    <Text fontWeight="medium" fontSize="md" whiteSpace="nowrap">{item.name}</Text>
                                 )}
                             </HStack>
                         </NavLink>
@@ -125,34 +121,7 @@ const StudentSidebar: React.FC<StudentSidebarProps> = ({ isCollapsed, onToggle, 
                 </VStack>
 
                 {/* Bottom Card */}
-                {!isCollapsed ? (
-                    <Box
-                        className="glass-panel-accent"
-                        p={4}
-                        borderRadius="2xl"
-                        position="relative"
-                        overflow="hidden"
-                    >
-                        <Icon as={LuActivity} position="absolute" right="-10px" bottom="-10px" boxSize="60px" opacity={0.1} />
-                        <HStack mb={2}>
-                            <Badge colorPalette="cyan" size="xs" variant="subtle">NEURAL LINK</Badge>
-                            <Text fontSize="10px" fontWeight="bold">ACTIVE</Text>
-                        </HStack>
-                        <Text fontSize="xs" color="cyan.100" opacity={0.8}>
-                            Synchronizing academic records and placement nodes.
-                        </Text>
-                    </Box>
-                ) : (
-                    <Flex justify="center">
-                        <Box
-                            w={3} h={3}
-                            borderRadius="full"
-                            bg="cyan.400"
-                            boxShadow="0 0 8px rgba(0, 184, 212, 0.6)"
-                            title="Neural Link Active"
-                        />
-                    </Flex>
-                )}
+
 
                 <Separator opacity={0.1} />
 
@@ -171,7 +140,7 @@ const StudentSidebar: React.FC<StudentSidebarProps> = ({ isCollapsed, onToggle, 
                     >
                         <Icon as={LuActivity} transform="rotate(45deg)" boxSize={5} flexShrink={0} />
                         {!isCollapsed && (
-                            <Text fontWeight="black" fontSize="xs" letterSpacing="widest">LOGOUT_SESSION</Text>
+                            <Text fontWeight="black" fontSize="sm" letterSpacing="widest">SIGN OUT</Text>
                         )}
                     </HStack>
                 </Box>

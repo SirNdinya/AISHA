@@ -369,9 +369,16 @@ const DepartmentManager: React.FC = () => {
                                                 }
                                             }}
                                         >
-                                            <option value="" disabled style={{ color: '#000' }}>Select a department...</option>
-                                            {departments.filter(d => !d.user_id).map(d => (
-                                                <option key={d.id} value={d.id} style={{ color: '#000' }}>{d.name}</option>
+                                            <option value="" disabled style={{ color: '#000' }}>Choose a department node...</option>
+                                            {departments.map(d => (
+                                                <option 
+                                                    key={d.id} 
+                                                    value={d.id} 
+                                                    style={{ color: d.user_id ? '#999' : '#000' }}
+                                                    disabled={!!d.user_id}
+                                                >
+                                                    {d.name} {d.user_id ? '(ADMIN ASSIGNED)' : '(AVAILABLE)'}
+                                                </option>
                                             ))}
                                         </select>
                                         <Icon as={Building2} position="absolute" right={4} top="50%" transform="translateY(-50%)" color="gray.500" pointerEvents="none" />

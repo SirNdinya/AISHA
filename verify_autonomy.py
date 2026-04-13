@@ -16,7 +16,7 @@ def test_autonomy_and_blockchain():
     
     # 1. Test Reasoning Engine
     reasoner = ReasoningEngine()
-    query = "Verify my NITA documents on the blockchain and find me a Python course."
+    query = "Verify my blockchain documents and find me a Python course."
     plan = reasoner.plan_execution(query)
     print(f"\n[Reasoning] Query: {query}")
     print("Identified Plan:")

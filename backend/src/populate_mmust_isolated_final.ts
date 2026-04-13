@@ -149,14 +149,23 @@ async function main() {
                 const uId = unitIdMap[unitCode];
                 if (!uId) continue;
 
-                const isOngoing = i >= 28;
+                const grade = isOngoing ? null : grades[i % grades.length];
+                let mark = null;
+                if (grade) {
+                    if (grade.startsWith('A')) mark = Math.floor(Math.random() * (100 - 70 + 1) + 70);
+                    else if (grade.startsWith('B')) mark = Math.floor(Math.random() * (69 - 60 + 1) + 60);
+                    else if (grade.startsWith('C')) mark = Math.floor(Math.random() * (59 - 50 + 1) + 50);
+                    else mark = 45;
+                }
+
                 await pool.query(
-                    `INSERT INTO inst_mmust.student_academic_records (student_id, unit_id, grade, semester, academic_year)
-                     VALUES ($1, $2, $3, $4, $5)`,
+                    `INSERT INTO inst_mmust.student_academic_records (student_id, unit_id, grade, mark, semester, academic_year)
+                     VALUES ($1, $2, $3, $4, $5, $6)`,
                     [
                         studentId,
                         uId,
-                        isOngoing ? null : grades[i % grades.length],
+                        grade,
+                        mark,
                         (i % 14) < 7 ? 'Sem 1' : 'Sem 2',
                         Math.floor(i / 14) + 1
                     ]

@@ -32,7 +32,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, portal }) => {
             { icon: FaCheckCircle, title: "Industry Verified", desc: "Your skills, certified by AI-driven validation." },
             { icon: FaStar, title: "Be Digitally Placed", desc: "Start your professional journey with confidence." },
             { icon: FaRocket, title: "Register to Simplify Your Career", desc: "The fastest way to land your dream role." },
-            { icon: FaChartLine, title: "Resume Optimization", desc: "AI-driven refinement for maximum impact." }
+            { icon: FaChartLine, title: "Digital Portfolio", desc: "Showcase your achievements to the world." }
         ],
         company: [
             { icon: FaStar, title: "AI-Ranked Talent", desc: "Find the perfect fit using advanced neural matching." },
@@ -51,7 +51,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, portal }) => {
             { icon: FaCheckCircle, title: "Be Digitally Integrated", desc: "The future of academic management is here." }
         ],
         admin: [
-            { icon: FaRobot, title: "Neural Oversight", desc: "Monitor global system health and neural processing." },
+            { icon: FaRobot, title: "System Monitoring", desc: "Monitor portal services and activity." },
             { icon: FaShieldAlt, title: "Sovereign Security", desc: "Advanced data protection and access control." },
             { icon: FaStar, title: "System Analytics", desc: "Real-time insights across all platform portals." },
             { icon: FaChartLine, title: "Total Control", desc: "Manage every aspect of the AISHA ecosystem." },

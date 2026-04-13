@@ -41,7 +41,75 @@ export class CompanyController extends BaseController {
     };
 
     updateProfile = async (req: Request, res: Response, next: NextFunction) => {
-        // ... (existing updateProfile logic)
+        try {
+            const userId = (req as any).user?.id;
+            const { name, industry, description, website, logo_url, profile_picture_url, acceptance_letter_template, acceptance_letter_requirements } = req.body;
+
+            const query = `
+                UPDATE companies 
+                SET name = COALESCE($1, name),
+                    industry = COALESCE($2, industry),
+                    description = COALESCE($3, description),
+                    website = COALESCE($4, website),
+                    logo_url = COALESCE($5, logo_url),
+                    profile_picture_url = COALESCE($6, profile_picture_url),
+                    acceptance_letter_template = COALESCE($7, acceptance_letter_template),
+                    acceptance_letter_requirements = COALESCE($8, acceptance_letter_requirements)
+                WHERE user_id = $9
+                RETURNING *
+            `;
+
+            const result = await pool.query(query, [
+                name, industry, description, website, logo_url, profile_picture_url, acceptance_letter_template, acceptance_letter_requirements, userId
+            ]);
+
+            if (result.rows.length === 0) {
+                return res.status(404).json({ status: 'error', message: 'Company profile not found' });
+            }
+
+            res.status(200).json({
+                status: 'success',
+                data: result.rows[0],
+            });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    uploadProfilePicture = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const userId = (req as any).user?.id;
+            if (!req.file) {
+                return res.status(400).json({ status: 'error', message: 'No file uploaded' });
+            }
+
+            const profilePictureUrl = `/uploads/profiles/${req.file.filename}`;
+
+            const query = `
+                UPDATE companies 
+                SET profile_picture_url = $1,
+                    logo_url = COALESCE(logo_url, $1)
+                WHERE user_id = $2
+                RETURNING *
+            `;
+
+            const result = await pool.query(query, [profilePictureUrl, userId]);
+
+            if (result.rows.length === 0) {
+                return res.status(404).json({ status: 'error', message: 'Company profile not found' });
+            }
+
+            res.status(200).json({
+                status: 'success',
+                message: 'Profile picture uploaded successfully',
+                data: {
+                    profile_picture_url: profilePictureUrl
+                }
+            });
+
+        } catch (error) {
+            next(error);
+        }
     };
 
     getTalentAnalytics = async (req: Request, res: Response, next: NextFunction) => {
@@ -58,18 +126,56 @@ export class CompanyController extends BaseController {
                 CompanyService.getSkillGapAnalysis(companyId)
             ]);
 
-            // Real-time metrics
             const metricsRes = await pool.query(`
                 SELECT 
-                    COUNT(CASE WHEN status = 'ACCEPTED' THEN 1 END) as active_placements,
+                    (SELECT COUNT(DISTINCT student_id) FROM placements WHERE company_id = $1 AND status = 'ACTIVE') as active_placements,
+                    (SELECT COUNT(*) FROM applications a JOIN opportunities o ON a.opportunity_id = o.id WHERE o.company_id = $1 AND a.status = 'PENDING') as pending_applicants,
                     COUNT(*) as total_apps
                 FROM applications a
                 JOIN opportunities o ON a.opportunity_id = o.id
                 WHERE o.company_id = $1
             `, [companyId]);
 
-            const { active_placements, total_apps } = metricsRes.rows[0];
+            const { active_placements, pending_applicants, total_apps } = metricsRes.rows[0];
             const efficiency = total_apps > 0 ? Math.round((active_placements / total_apps) * 100) : 0;
+
+            const recentActivitiesRes = await pool.query(`
+                WITH placement_history AS (
+                    SELECT 
+                        p.id,
+                        p.student_id,
+                        p.status,
+                        p.created_at,
+                        LAG(p.status) OVER (PARTITION BY p.student_id ORDER BY p.created_at ASC, p.id ASC) as prev_status,
+                        s.first_name,
+                        s.last_name
+                    FROM placements p
+                    JOIN students s ON p.student_id = s.id
+                    WHERE p.company_id = $1
+                )
+                SELECT 
+                    first_name,
+                    last_name,
+                    status,
+                    prev_status,
+                    created_at as time
+                FROM placement_history
+                WHERE prev_status IS NULL OR prev_status != status
+                ORDER BY created_at DESC, id DESC
+                LIMIT 5
+            `, [companyId]);
+            
+            const recent_activities = recentActivitiesRes.rows.map((row: any) => {
+                const name = `${row.first_name} ${row.last_name}`;
+                const description = row.prev_status 
+                    ? `Placement Updated: ${name} (${row.prev_status} → ${row.status})`
+                    : `New Placement Match: ${name} (${row.status})`;
+                
+                return {
+                    description,
+                    time: new Date(row.time).toLocaleDateString() + ' ' + new Date(row.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                };
+            });
 
             res.status(200).json({
                 status: 'success',
@@ -77,7 +183,9 @@ export class CompanyController extends BaseController {
                     demand_forecast: forecast,
                     skill_gaps: skillGaps,
                     efficiency_score: efficiency || 0,
-                    active_placements: parseInt(active_placements) || 0
+                    active_placements: parseInt(active_placements) || 0,
+                    pending_applicants: parseInt(pending_applicants) || 0,
+                    recent_activities
                 }
             });
         } catch (error) {

@@ -403,9 +403,9 @@ diagrams = {
     },
     "16_Data_Flow_Diagram": {
         "title": "Data Flow Diagram (DFD)",
-        "desc": "Illustrates how unstructured student data (resumes) flow through the platform to be converted to vector embeddings for matching with company requirements.",
+        "desc": "Illustrates how unstructured student data flow through the platform to be converted to vector embeddings for matching with company requirements.",
         "code": """graph TD
-    A(Student) -->|Uploads CV| B(Platform Parser)
+    A(Student) -->|Uploads Data| B(Platform Parser)
     B -->|Raw Text| C{Data Cleaner}
     C -->|Clean Text| D(Platform Embedding Engine)
     D -->|Float Array| E[(Vector DB)]

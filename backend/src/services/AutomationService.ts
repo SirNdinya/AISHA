@@ -14,22 +14,20 @@ export class AutomationService {
 
         const student = studentRes.rows[0];
 
-        // Ensure we import AIService and NotificationService dynamically if needed to prevent circular dependencies
         const { AIService } = require('./AIService');
         const { NotificationService } = require('./NotificationService');
 
         console.log(`[AI SERVICE] Triggering Match Protocol for student ${studentId}...`);
         
-        // Let the AI perform deep analysis on transcript, career path, etc.
         const matches = await AIService.getMatchIntelligence(studentId);
         
         if (!matches || matches.length === 0) {
             return { matches_found: 0, message: 'No opportunities currently match your strict profile.' };
         }
 
-        const newApps: string[] = [];
-        let bestMatch: any = null;
+        await pool.query('UPDATE students SET ai_match_cache = $1, last_sync_at = NOW() WHERE id = $2', [JSON.stringify(matches), studentId]);
 
+        let bestMatch: any = null;
         for (const job of matches) {
             const score = job.score || job.match_score || 0;
             if (!bestMatch || score > (bestMatch.score || bestMatch.match_score || 0)) {
@@ -40,38 +38,88 @@ export class AutomationService {
         if (bestMatch) {
             const totalScore = bestMatch.score || bestMatch.match_score || 0;
             const reasoning = bestMatch.reasoning || "Strong neural alignment with your trajectory.";
+            const oppId = bestMatch.opportunity_id || bestMatch.id;
+
+            // 24-HOUR REMATCH PROTOCOL
+            // Check if student is within the window to change matches
+            const lockCheckQuery = `
+                SELECT a.id, COALESCE(p.created_at, a.applied_at) as match_time
+                FROM applications a
+                LEFT JOIN placements p ON a.id = p.application_id
+                WHERE a.student_id = $1
+                  AND (a.status IN ('ACCEPTED', 'OFFERED') OR p.status = 'ACTIVE')
+                ORDER BY match_time DESC
+                LIMIT 1
+            `;
+            const lockCheckRes = await pool.query(lockCheckQuery, [studentId]);
+            let canRematch = student.auto_apply_enabled;
             
-            // High Confidence Pre-placement / Auto-Apply Protocol (Single Best Match)
-            if (totalScore >= 75 && student.auto_apply_enabled) {
-                const checkRes = await pool.query('SELECT id FROM applications WHERE student_id = $1 AND opportunity_id = $2', [student.id, bestMatch.opportunity_id || bestMatch.id]);
+            if (lockCheckRes.rows.length > 0) {
+                const matchTime = new Date(lockCheckRes.rows[0].match_time).getTime();
+                const diff = (matchTime + (24 * 60 * 60 * 1000)) - Date.now();
+                if (diff > 0) {
+                    canRematch = true; // Still within window, allow AISHA to pivot
+                }
+            } else {
+                canRematch = true; // No active match, definitely can auto-apply if score high
+            }
+
+            if (canRematch) {
+                const checkRes = await pool.query('SELECT id FROM applications WHERE student_id = $1 AND opportunity_id = $2 AND status != \'REPLACED\'', [student.id, oppId]);
+                
                 if (checkRes.rows.length === 0) {
+                    console.log(`[AI SERVICE] Rematching student ${studentId} to higher confidence node: ${oppId}`);
+                    
+                    // Atomic Purge of existing matches and applications
+                    await pool.query('UPDATE placements SET status = \'REPLACED\', updated_at = NOW() WHERE student_id = $1 AND status = \'ACTIVE\'', [student.id]);
+                    await pool.query('UPDATE applications SET status = \'REPLACED\', updated_at = NOW() WHERE student_id = $1 AND status != \'REPLACED\'', [student.id]);
+
                     const insertQuery = `
                         INSERT INTO applications (student_id, opportunity_id, match_score, match_reason, status)
-                        VALUES ($1, $2, $3, $4, 'PENDING')
+                        VALUES ($1, $2, $3, $4, 'ACCEPTED')
+                        RETURNING id
                     `;
-                    await pool.query(insertQuery, [student.id, bestMatch.opportunity_id || bestMatch.id, totalScore, reasoning]);
-                    newApps.push(bestMatch.opportunity_id || bestMatch.id);
+                    const appRes = await pool.query(insertQuery, [student.id, oppId, totalScore, reasoning]);
+                    const newAppId = appRes.rows[0].id;
+                    
+                    const oppQuery = await pool.query('SELECT company_id FROM opportunities WHERE id = $1', [oppId]);
+                    const compId = oppQuery.rows[0].company_id;
+
+                    await pool.query(`
+                        INSERT INTO placements (application_id, student_id, company_id, start_date, end_date, status)
+                        VALUES ($1, $2, $3, NOW(), NOW() + INTERVAL '3 months', 'ACTIVE')
+                    `, [newAppId, student.id, compId]);
+
+                    await NotificationService.createNotification(
+                        userId,
+                        'Neural Match Adjusted',
+                        `Your preferences triggered a pivot. You have been rematched to ${bestMatch.title || bestMatch.job_title} (${totalScore}% alignment).`,
+                        'SUCCESS'
+                    );
+
+                    return { matches_found: 1, message: `Successfully rematched student to ${bestMatch.title || bestMatch.job_title}.` };
+                } else {
+                    // Exact same active priority match remained highest rated
+                    await NotificationService.createNotification(
+                        userId,
+                        'Match Verified',
+                        `We processed your updated preferences, but ${bestMatch.title || bestMatch.job_title} remains your most optimal mathematical match (${totalScore}%).`,
+                        'INFO'
+                    );
                 }
             }
 
-            // Send a notification if the top match is high-quality (regardless of auto-apply)
-            if (totalScore >= 70) {
-                const hasAutoApplied = newApps.length > 0;
-                const notificationTitle = hasAutoApplied ? 'Neural Auto-Application' : 'New High-Relevance Match';
-                const notificationBody = hasAutoApplied 
-                    ? `AISHA has identified your 100% ideal match for ${bestMatch.title || bestMatch.job_title} and automatically placed your application.`
-                    : `AISHA identified ${bestMatch.title || bestMatch.job_title} as your #${Math.round(totalScore)}% match node. Check your dashboard.`;
-                    
+            if (!canRematch) {
                 await NotificationService.createNotification(
                     userId,
-                    notificationTitle,
-                    notificationBody,
-                    'SUCCESS'
+                    'New Potential Match Evaluated',
+                    `AISHA evaluated ${bestMatch.title || bestMatch.job_title}. However, your match window is locked.`,
+                    'INFO'
                 );
             }
         }
 
-        return { matches_found: newApps.length, message: `Auto-applied to ${newApps.length} opportunity. Highest match: ${bestMatch ? Math.round(bestMatch.score || bestMatch.match_score || 0) : 0}%.` };
+        return { matches_found: 0, message: "Match analysis complete. No high-confidence pivot required." };
     }
 
     /**
@@ -110,7 +158,6 @@ export class AutomationService {
                     await pool.query("UPDATE applications SET status = 'OFFERED', updated_at = NOW() WHERE id = $1", [app.id]);
 
                     const { NotificationService } = require('./NotificationService');
-                    const { MessageService } = require('./MessageService');
                     const { RealtimeService } = require('./RealtimeService');
 
                     // 1. Notify Student of Offer
@@ -121,9 +168,7 @@ export class AutomationService {
                         'SUCCESS'
                     );
 
-                    // 2. AI Automated Message
-                    const aiGreeting = `Congratulations ${app.first_name}! AISHA's autonomous engine has verified your academic excellence. Your ${match_score}% match score makes you a top candidate for the ${opp.title} position. Please review the offer!`;
-
+                    // 2. Notify Company of Auto-generated Offer
                     const companyUserRes = await pool.query(`
                         SELECT c.user_id FROM companies c
                         JOIN opportunities o ON o.company_id = c.id
@@ -131,11 +176,12 @@ export class AutomationService {
                     `, [opportunityId]);
 
                     if (companyUserRes.rows.length > 0) {
-                        await MessageService.sendMessage(companyUserRes.rows[0].user_id, app.student_user_id, aiGreeting, {
-                            oppId: opportunityId,
-                            appId: app.id,
-                            is_ai: true
-                        });
+                        await NotificationService.createNotification(
+                            companyUserRes.rows[0].user_id,
+                            'Autonomous Offer Issued',
+                            `AISHA has automatically issued a professional offer to ${app.first_name} for the ${opp.title} position based on a ${Math.round(match_score)}% neural match and verified academic excellence.`,
+                            'INFO'
+                        );
                     }
 
                     // 3. Notify Institution

@@ -36,7 +36,7 @@ const StudentProfile: React.FC = () => {
         return (
             <Container maxW="container.xl">
                 <Box className="terminal-card" p={8} borderColor="red.900">
-                    <Text color="red.400" fontWeight="mono">[SYSTEM_FAILURE]: UNAUTHORIZED_ACCESS OR DATA_SYNC_ERROR</Text>
+                    <Text color="red.400" fontWeight="mono">[SYSTEM FAILURE]: UNAUTHORIZED ACCESS OR DATA SYNC ERROR</Text>
                     <Text color="whiteAlpha.600" fontSize="xs" mt={2}>{error}</Text>
                 </Box>
             </Container>

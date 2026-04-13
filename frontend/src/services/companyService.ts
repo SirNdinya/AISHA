@@ -20,6 +20,13 @@ const CompanyService = {
         return response.data.data;
     },
 
+    uploadProfilePicture: async (file: File): Promise<{ profile_picture_url: string }> => {
+        const formData = new FormData();
+        formData.append('profile_picture', file);
+        const response = await apiClient.post<ApiResponse<{ profile_picture_url: string }>>('/companies/profile/upload', formData);
+        return response.data.data;
+    },
+
     // Opportunity Management (Company Side)
     getMyOpportunities: async (): Promise<Opportunity[]> => {
         const response = await apiClient.get<ApiResponse<Opportunity[]>>('/opportunities/my-postings');
@@ -48,6 +55,11 @@ const CompanyService = {
     // Applicant Management
     getApplicants: async (opportunityId: string): Promise<Application[]> => {
         const response = await apiClient.get<ApiResponse<Application[]>>(`/applications/job/${opportunityId}`);
+        return response.data.data;
+    },
+
+    getAllApplicants: async (): Promise<Application[]> => {
+        const response = await apiClient.get<ApiResponse<Application[]>>('/applications/all');
         return response.data.data;
     },
 

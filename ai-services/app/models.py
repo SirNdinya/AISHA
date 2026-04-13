@@ -33,8 +33,6 @@ class Student(Base):
     skills = Column(ARRAY(String)) 
     interests = Column(ARRAY(String))
     preferred_locations = Column(ARRAY(String))
-    cv_url = Column(String)
-    resume_text = Column(String)
     requires_stipend = Column(Boolean, default=False)
     min_stipend_amount = Column(DECIMAL(10, 2))
     mpesa_number = Column(String)

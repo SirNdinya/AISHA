@@ -8,9 +8,6 @@ const controller = new DocumentController();
 
 router.use(authenticate);
 
-router.get('/placement-letter/:applicationId', controller.downloadPlacementLetter);
-router.get('/nita-form/:applicationId', controller.downloadNITAForm);
-
 // Unified Uploads
 router.post('/upload', documentUpload.single('file'), controller.uploadDocument);
 router.get('/mine', controller.getMyDocuments);

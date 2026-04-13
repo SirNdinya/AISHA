@@ -42,7 +42,7 @@ def build_sdd():
     # 2. Architectural Overview
     add_heading(doc, "2. Architectural & System Design", 1)
     add_diagram(doc, "2.1 System Context", "17_Architecture_System_Context.png", 
-                "The System Context diagram provides a high-level view showing the software system in relation to the users and external systems it interacts with, such as the NITA Portal and M-Pesa API.")
+                "The System Context diagram provides a high-level view showing the software system in relation to the users and external systems it interacts with, such as the M-Pesa API.")
     add_diagram(doc, "2.2 System Architecture Layering", "18_Architecture_System_Architecture.png",
                 "The logical architecture divided into Presentation, API, Business Logic, and Data layers.")
     add_diagram(doc, "2.3 C4 Container Diagram", "19_C4_Container_Diagram.png",
@@ -74,7 +74,7 @@ def build_sdd():
     add_diagram(doc, "4.1 Entity-Relationship Diagram (ERD)", "15_Data_Entity_Relationship_Diagram.png",
                 "Displays the relationships between core database tables in PostgreSQL.")
     add_diagram(doc, "4.2 Data Flow Diagram (DFD)", "16_Data_Flow_Diagram.png",
-                "Illustrates how unstructured data (like resumes) flow through the system to be converted into vector embeddings for ML matching.")
+                "Illustrates how unstructured data flow through the system to be converted into vector embeddings for ML matching.")
     doc.add_page_break()
 
     # 5. Behavioral Design

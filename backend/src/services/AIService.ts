@@ -67,38 +67,22 @@ export class AIService {
             return response.data.data; // Expected { skills: string[], tags: string[] }
         } catch (error: any) {
             console.error('AI Profile Generation Error:', error.message);
-            // Professional fallback based on keywords
-            const lowerCourse = course.toLowerCase();
-            if (lowerCourse.includes('computer') || lowerCourse.includes('software') || lowerCourse.includes('coding')) {
-                return {
-                    skills: ['Python', 'Software Engineering', 'SQL', 'Algorithms', 'Data Structures'],
-                    tags: ['Software Development', 'SaaS', 'Fintech', 'AI/ML']
-                };
-            } else if (lowerCourse.includes('information technology') || lowerCourse.includes('it') || lowerCourse.includes('network')) {
-                return {
-                    skills: ['Networking', 'Cybersecurity', 'Cloud Computing (AWS/Azure)', 'System Administration', 'Database Admin'],
-                    tags: ['IT Infrastructure', 'Cloud Services', 'Information Security', 'Network Eng']
-                };
-            } else if (lowerCourse.includes('education') || lowerCourse.includes('pedagogy') || lowerCourse.includes('teaching')) {
-                return {
-                    skills: ['Curriculum Design', 'Educational Psychology', 'Instructional Leadership', 'Assessment Strategies', 'Classroom Management'],
-                    tags: ['Higher Education', 'E-Learning', 'K-12 Instruction', 'EduTech']
-                };
-            }
             return {
-                skills: ['Communication', 'Critical Thinking', 'Problem Solving', 'Teamwork'],
-                tags: ['General Industry', 'Professional Services']
+                skills: [],
+                tags: []
             };
+
         }
     }
 
     /**
      * Analyze student academic performance.
      */
-    static async analyzeTranscript(records: any[]) {
+    static async analyzeTranscript(records: any[], studentName: string = 'the student') {
         try {
             const response = await axios.post(`${AI_SERVICE_URL}/api/learning/analyze-transcript`, {
-                records: records
+                records: records,
+                student_name: studentName
             });
             return response.data.data;
         } catch (error: any) {

@@ -93,6 +93,7 @@ const RegisterPage: React.FC = () => {
             confirmPassword: '',
             institution: '',
             name: '',
+            admissionNumber: '',
         },
         validationSchema: Yup.object({
             email: Yup.string().email('Invalid email address').required('Email is required'),
@@ -111,6 +112,11 @@ const RegisterPage: React.FC = () => {
                 then: (schema) => schema.required('Institution is required'),
                 otherwise: (schema) => schema.notRequired(),
             }),
+            admissionNumber: Yup.string().when('role', {
+                is: 'STUDENT',
+                then: (schema) => schema.required('Registration/Admission number is required'),
+                otherwise: (schema) => schema.notRequired(),
+            }),
             name: Yup.string().when('role', {
                 is: 'COMPANY',
                 then: (schema) => schema.required('Company name is required'),
@@ -126,7 +132,8 @@ const RegisterPage: React.FC = () => {
                     password: values.password,
                     role,
                     institution: (role === 'STUDENT' || role === 'INSTITUTION') ? values.institution : undefined,
-                    name: role === 'COMPANY' ? values.name : undefined
+                    name: role === 'COMPANY' ? values.name : undefined,
+                    admission_number: role === 'STUDENT' ? values.admissionNumber : undefined
                 });
                 setEmailSent(response.data.emailSent);
                 setEmailError(response.data.emailError || '');
@@ -398,6 +405,32 @@ const RegisterPage: React.FC = () => {
                                             </AnimatePresence>
                                             {formik.touched.institution && formik.errors.institution && (
                                                 <Text color="red.500" fontSize="xs" mt={1} fontWeight="semibold">{formik.errors.institution}</Text>
+                                            )}
+                                        </Box>
+                                    )}
+
+                                    {role === 'STUDENT' && (
+                                        <Box w="full">
+                                            <Flex align="center" mb={1.5} gap={2} color="gray.500">
+                                                <Icon as={FaUser} fontSize="xs" />
+                                                <Text fontSize="xs" fontWeight="bold" letterSpacing="widest" textTransform="uppercase">Registration Number</Text>
+                                            </Flex>
+                                            <Input
+                                                id="admissionNumber"
+                                                name="admissionNumber"
+                                                onChange={formik.handleChange}
+                                                onBlur={formik.handleBlur}
+                                                value={formik.values.admissionNumber}
+                                                placeholder="Enter your registration/admission number"
+                                                h={12}
+                                                borderRadius="xl"
+                                                bg="white"
+                                                color="gray.800"
+                                                borderColor={formik.touched.admissionNumber && formik.errors.admissionNumber ? "red.300" : "gray.200"}
+                                                _focus={{ borderColor: `${currentConfig.color}.400`, boxShadow: `0 0 0 1px var(--chakra-colors-${currentConfig.color}-400)` }}
+                                            />
+                                            {formik.touched.admissionNumber && formik.errors.admissionNumber && (
+                                                <Text color="red.500" fontSize="xs" mt={1} fontWeight="semibold">{formik.errors.admissionNumber}</Text>
                                             )}
                                         </Box>
                                     )}

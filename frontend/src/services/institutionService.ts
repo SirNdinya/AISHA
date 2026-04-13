@@ -88,10 +88,6 @@ const InstitutionService = {
         return response.data.data;
     },
 
-    getDocuments: async () => {
-        const response = await apiClient.get<ApiResponse<any[]>>('/institutions/documents');
-        return response.data.data;
-    },
 
     updateSettings: async (data: { firstName?: string; lastName?: string; institutionName?: string }) => {
         const response = await apiClient.patch<ApiResponse<any>>('/institutions/settings', data);

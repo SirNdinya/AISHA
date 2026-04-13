@@ -193,5 +193,5 @@ stateDiagram-v2
 
 - **Design Pattern**: Microservices Architecture
 - **Multi-Tenancy**: Handled via schema separation per institution (`inst_[slug]`) ensuring institutional data isolation and performance optimizations for academic units tracking.
-- **AI Matching**: XGBoost/LightGBM model fed by parsed resumes (`resume_text`), students' `skills`, and opportunity requirements.
+- **AI Matching**: XGBoost/LightGBM model fed by students' `skills`, academic records, and opportunity requirements.
 - **Payments Integration**: Tightly coupled with the M-Pesa API to distribute stipends to student endpoints efficiently.

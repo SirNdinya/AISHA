@@ -35,7 +35,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({ student }) => {
                                 <Heading size="xl" color="white" fontWeight="bold">
                                     {student.first_name} {student.last_name}
                                 </Heading>
-                                <Badge colorPalette="cyan" variant="outline" size="xs">OFFICIAL_PROFILE</Badge>
+                                <Badge colorPalette="cyan" variant="outline" size="xs">OFFICIAL PROFILE</Badge>
                             </HStack>
                             <Text fontSize="sm" color="cyan.400" fontWeight="mono" textTransform="uppercase" letterSpacing="widest">
                                 {student.course_of_study || '[NODE_UNASSIGNED]'}
@@ -83,7 +83,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({ student }) => {
                     </Box>
                 </VStack>
 
-                {/* Right Column: Skills, Interests, CV */}
+                {/* Right Column: Skills, Interests */}
                 <VStack gap={6} align="stretch">
                     <Box className="terminal-card" p={6}>
                         <HStack justify="space-between" mb={4}>

@@ -8,7 +8,6 @@ import CompanySidebar from '../../pages/company/components/CompanySidebar';
 import CompanyHeader from '../../pages/company/components/CompanyHeader';
 import { WebSocketProvider } from '../../context/WebSocketContext';
 import AishaAssistant from '../common/AishaAssistant';
-import BroadcastBanner from '../common/BroadcastBanner';
 import '../../styles/AIDashboardTheme.css';
 
 const CompanyLayout: React.FC = () => {
@@ -30,7 +29,6 @@ const CompanyLayout: React.FC = () => {
     return (
         <WebSocketProvider userId={user.id}>
             <Box className="glass-background" minH="100vh">
-                <BroadcastBanner system="COMPANY" />
                 <CompanySidebar
                     isCollapsed={isSidebarCollapsed}
                     onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}

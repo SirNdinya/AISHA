@@ -118,4 +118,29 @@ export class NotificationService {
             { type: 'PAYMENT_REQUIRED', amount, opportunityId }
         );
     }
+
+    /**
+     * Broadcast a notification to all users matching a system role.
+     */
+    static async broadcastToSystem(
+        targetSystem: 'STUDENT' | 'COMPANY' | 'INSTITUTION' | 'ALL',
+        title: string,
+        message: string,
+        type: 'INFO' | 'SUCCESS' | 'WARNING' | 'ERROR' = 'INFO'
+    ) {
+        let userQuery = 'SELECT id FROM users';
+        const params: any[] = [];
+
+        if (targetSystem !== 'ALL') {
+            userQuery += ' WHERE role = $1';
+            params.push(targetSystem);
+        }
+
+        const usersRes = await pool.query(userQuery, params);
+        
+        // Concurrent notification creation
+        await Promise.all(usersRes.rows.map(user => 
+            this.createNotification(user.id, title, message, type)
+        ));
+    }
 }

@@ -15,16 +15,16 @@ class OpportunityGenerationService:
         logger.info(f"Generating opportunity from prompt: {prompt[:50]}...")
         
         schema = {
-            "title": "Software Engineering Intern",
-            "description": "Develop and maintain web applications...",
-            "requirements": "Proficiency in React and Node.js...",
-            "skills_required": ["React", "Node.js", "TypeScript"],
-            "location": "Nairobi",
-            "type": "INTERNSHIP",
-            "stipend_amount": 15000,
-            "duration_months": 6,
-            "vacancies": 3,
-            "application_deadline": "2024-12-31"
+            "title": "string",
+            "description": "string",
+            "requirements": "string",
+            "skills_required": ["string"],
+            "location": "string",
+            "type": "string",
+            "stipend_amount": "number",
+            "duration_months": "number",
+            "vacancies": "number",
+            "application_deadline": "string"
         }
         
         instruction = f"""

@@ -43,7 +43,7 @@ class ReviewerAgent:
         Analyze this candidate for the role of {opportunity.title}.
         
         Requirements: {opportunity.requirements}
-        Candidate Resume: {student.resume_text}
+        Candidate Skills: {student.skills}
         Academic Score: {score}/100
         
         Verify if the candidate TRULY possesses the core skills mentioned.

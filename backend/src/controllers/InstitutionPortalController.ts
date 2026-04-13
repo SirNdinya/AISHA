@@ -203,21 +203,27 @@ export class InstitutionPortalController extends BaseController {
 
             const query = `
                 SELECT 
-                    a.id,
+                    p.id as placement_id,
+                    p.student_id,
+                    p.start_date,
+                    p.end_date,
+                    p.first_assessment_date,
+                    p.second_assessment_date,
+                    p.status,
+                    p.created_at,
                     s.first_name, 
                     s.last_name, 
                     o.title as role,
                     c.name as company_name,
-                    c.location,
-                    a.status,
-                    a.applied_at as start_date
-                FROM applications a
-                JOIN students s ON a.student_id = s.id
+                    c.location
+                FROM placements p
+                JOIN students s ON p.student_id = s.id
+                JOIN applications a ON p.application_id = a.id
                 JOIN opportunities o ON a.opportunity_id = o.id
-                JOIN companies c ON o.company_id = c.id
-                WHERE s.institution_id = $1 AND a.status IN ('ACCEPTED', 'OFFERED', 'COMPLETED')
+                JOIN companies c ON p.company_id = c.id
+                WHERE s.institution_id = $1
                 ${isDeptAdmin ? 'AND s.department_id = $2' : ''}
-                ORDER BY a.updated_at DESC
+                ORDER BY p.created_at DESC
             `;
             const result = await pool.query(query, isDeptAdmin ? [institutionId, deptId] : [institutionId]);
 
@@ -230,42 +236,5 @@ export class InstitutionPortalController extends BaseController {
         }
     };
 
-    /**
-     * Document Hub - List all documents related to placements in the institution
-     */
-    getDocuments = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const institutionId = (req as any).user?.institution_id || req.params.id;
 
-            const isDeptAdmin = (req as any).user?.role === 'DEPARTMENT_ADMIN';
-            const deptId = (req as any).user?.department_id;
-
-            const query = `
-                SELECT 
-                    a.id,
-                    'Placement Letter' as type,
-                    s.first_name || ' ' || s.last_name as student_name,
-                    'AUTO' as mode,
-                    95 as score,
-                    CASE 
-                        WHEN a.status = 'ACCEPTED' THEN 'VERIFIED'
-                        WHEN a.status = 'OFFERED' THEN 'PENDING'
-                        ELSE 'FLAGGED'
-                    END as status
-                FROM applications a
-                JOIN students s ON a.student_id = s.id
-                WHERE s.institution_id = $1 AND a.status IN ('ACCEPTED', 'OFFERED')
-                ${isDeptAdmin ? 'AND s.department_id = $2' : ''}
-                ORDER BY a.updated_at DESC
-            `;
-            const result = await pool.query(query, isDeptAdmin ? [institutionId, deptId] : [institutionId]);
-
-            res.status(200).json({
-                status: 'success',
-                data: result.rows
-            });
-        } catch (error) {
-            next(error);
-        }
-    };
 }

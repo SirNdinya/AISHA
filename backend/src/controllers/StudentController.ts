@@ -60,16 +60,48 @@ export class StudentController extends BaseController {
             const userId = (req as any).user?.id;
             const {
                 first_name, last_name, admission_number, course_of_study,
-                skills, interests, cv_url, requires_stipend, min_stipend_amount, mpesa_number,
+                skills, interests, requires_stipend, min_stipend_amount, mpesa_number,
                 preferred_locations, placement_duration, career_path
             } = req.body;
 
             // Check if profile exists
-            const checkQuery = 'SELECT id FROM students WHERE user_id = $1';
+            const checkQuery = 'SELECT id, skills, interests, career_path FROM students WHERE user_id = $1';
             const checkRes = await pool.query(checkQuery, [userId]);
 
-            let result;
             let studentId;
+            let finalSkills = skills;
+            let finalInterests = interests;
+            let finalCareerPath = career_path;
+
+            if (checkRes.rows.length > 0) {
+                studentId = checkRes.rows[0].id;
+
+                // 24-HOUR MATCH LOCK ENFORCEMENT
+                const lockCheckQuery = `
+                    SELECT a.applied_at, p.created_at
+                    FROM applications a
+                    LEFT JOIN placements p ON a.id = p.application_id
+                    WHERE a.student_id = $1
+                      AND (a.status IN ('ACCEPTED', 'OFFERED') OR p.status = 'ACTIVE')
+                    ORDER BY COALESCE(p.created_at, a.applied_at) DESC
+                    LIMIT 1
+                `;
+                const lockCheckRes = await pool.query(lockCheckQuery, [studentId]);
+                if (lockCheckRes.rows.length > 0) {
+                    const activeApp = lockCheckRes.rows[0];
+                    const matchTime = new Date(activeApp.applied_at || activeApp.created_at || new Date()).getTime();
+                    const diff = (matchTime + (24 * 60 * 60 * 1000)) - Date.now();
+                    
+                    if (diff <= 0) {
+                        // Securely override input to current DB truths
+                        finalSkills = checkRes.rows[0].skills;
+                        finalInterests = checkRes.rows[0].interests;
+                        finalCareerPath = checkRes.rows[0].career_path;
+                    }
+                }
+            }
+
+            let result;
 
             if (checkRes.rows.length === 0) {
                 // CREATE (INSERT)
@@ -81,47 +113,47 @@ export class StudentController extends BaseController {
                 }
 
                 const insertQuery = `
+                    INSERT INTO students (
                         user_id, first_name, last_name, admission_number, course_of_study,
-                        skills, interests, cv_url, requires_stipend, min_stipend_amount, mpesa_number,
+                        skills, interests, requires_stipend, min_stipend_amount, mpesa_number,
                         preferred_locations, placement_duration, career_path
                     )
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
                     RETURNING *
                 `;
                 const values = [
                     userId, first_name, last_name, admission_number, course_of_study,
-                    skills, interests, cv_url, requires_stipend, min_stipend_amount, mpesa_number,
-                    preferred_locations, placement_duration, career_path
+                    finalSkills, finalInterests, requires_stipend, min_stipend_amount, mpesa_number,
+                    preferred_locations, placement_duration, finalCareerPath
                 ];
                 result = await pool.query(insertQuery, values);
                 studentId = result.rows[0].id;
 
             } else {
-                studentId = checkRes.rows[0].id;
                 // UPDATE
                 const query = `
                     UPDATE students 
-                    SET first_name = COALESCE($1, first_name),
-                        last_name = COALESCE($2, last_name),
-                        admission_number = COALESCE($3, admission_number),
-                        course_of_study = COALESCE($4, course_of_study),
-                        skills = COALESCE($5, skills),
-                        interests = COALESCE($6, interests),
-                        cv_url = COALESCE($7, cv_url),
-                        requires_stipend = COALESCE($8, requires_stipend),
-                        min_stipend_amount = COALESCE($9, min_stipend_amount),
-                        mpesa_number = COALESCE($10, mpesa_number),
-                        preferred_locations = COALESCE($11, preferred_locations),
-                        placement_duration = COALESCE($12, placement_duration),
-                        career_path = COALESCE($13, career_path)
-                    WHERE user_id = $14
+                    SET first_name = COALESCE($1::text, first_name),
+                        last_name = COALESCE($2::text, last_name),
+                        admission_number = COALESCE($3::text, admission_number),
+                        course_of_study = COALESCE($4::text, course_of_study),
+                        skills = COALESCE($5::text[], skills),
+                        interests = COALESCE($6::text[], interests),
+                        requires_stipend = COALESCE($7::boolean, requires_stipend),
+                        min_stipend_amount = COALESCE($8::numeric, min_stipend_amount),
+                        mpesa_number = COALESCE($9::text, mpesa_number),
+                        preferred_locations = COALESCE($10::text[], preferred_locations),
+                        placement_duration = COALESCE($11::integer, placement_duration),
+                        career_path = COALESCE($12::text, career_path),
+                        ai_match_cache = NULL
+                    WHERE user_id = $13::uuid
                     RETURNING *
                 `;
 
                 const values = [
                     first_name, last_name, admission_number, course_of_study,
-                    skills, interests, cv_url, requires_stipend, min_stipend_amount, mpesa_number,
-                    preferred_locations, placement_duration, career_path, userId
+                    finalSkills, finalInterests, requires_stipend, min_stipend_amount, mpesa_number,
+                    preferred_locations, placement_duration, finalCareerPath, userId
                 ];
                 result = await pool.query(query, values);
             }
@@ -143,19 +175,6 @@ export class StudentController extends BaseController {
                 AutomationService.runAutoMatch(studentId, userId).catch((err: any) => console.error("Auto-match error:", err));
             }
 
-            // Sovereign Document Fulfillment Hook
-            if (result.rows[0].admission_number && result.rows[0].department_id) {
-                const { DocumentController } = require('./DocumentController');
-                // Check if they already have this doc type to avoid duplicates
-                const existingDocQuery = "SELECT id FROM document_hub WHERE owner_id = $1 AND type = 'RECOMMENDATION_LETTER' LIMIT 1";
-                const existingDoc = await pool.query(existingDocQuery, [userId]);
-
-                if (existingDoc.rows.length === 0) {
-                    DocumentController.generateForStudentSync(result.rows[0].id)
-                        .catch((err: any) => console.error("Auto-fulfillment failure:", err));
-                }
-            }
-
             res.status(200).json({
                 status: 'success',
                 data: result.rows[0],
@@ -166,39 +185,7 @@ export class StudentController extends BaseController {
         }
     };
 
-    uploadCV = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const userId = (req as any).user?.id;
-            const file = req.file;
 
-            if (!file) {
-                return res.status(400).json({ message: 'No file uploaded' });
-            }
-
-            // Get Student ID
-            const studentRes = await pool.query('SELECT id FROM students WHERE user_id = $1', [userId]);
-            if (studentRes.rows.length === 0) return res.status(404).json({ message: 'Student profile not found' });
-            const studentId = studentRes.rows[0].id;
-            const cvUrl = `/uploads/cvs/${file.filename}`;
-
-            // Update Database with CV URL
-            const query = 'UPDATE students SET cv_url = $1 WHERE id = $2 RETURNING *';
-            const result = await pool.query(query, [cvUrl, studentId]);
-
-            // Autonomous Logic: Trigger Auto-Match
-            const { AutomationService } = require('../services/AutomationService');
-            AutomationService.runAutoMatch(studentId, userId).catch((err: any) => console.error("Auto-match trigger error:", err));
-
-            res.status(200).json({
-                status: 'success',
-                message: 'CV uploaded successfully. Auto-matching triggered.',
-                data: result.rows[0],
-            });
-
-        } catch (error) {
-            next(error);
-        }
-    };
 
     uploadProfilePicture = async (req: Request, res: Response, next: NextFunction) => {
         try {
@@ -236,7 +223,7 @@ export class StudentController extends BaseController {
 
             // 1. Get Student Data (Skills, Course)
             const studentRes = await pool.query(`
-                SELECT id, skills, course_of_study 
+                SELECT id, skills, course_of_study, admission_number 
                 FROM students 
                 WHERE user_id = $1
             `, [userId]);
@@ -322,9 +309,8 @@ export class StudentController extends BaseController {
                         trend_data: trendData
                     },
                     external_status: {
-                        mpesa: student.mpesa_number ? 'VERIFIED' : 'PENDING',
-                        nita: student.cv_url ? 'APPROVED' : 'PENDING',
-                        insurance: 'ACTIVE'
+                        mpesa: student.admission_number ? 'VERIFIED' : 'PENDING',
+                        insurance: student.admission_number ? 'ACTIVE' : 'PENDING'
                     }
                 }
             });
@@ -337,35 +323,93 @@ export class StudentController extends BaseController {
     getMatchIntelligence = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const userId = (req as any).user?.id;
-            const studentRes = await pool.query('SELECT id FROM students WHERE user_id = $1', [userId]);
+            const studentRes = await pool.query('SELECT id, ai_match_cache FROM students WHERE user_id = $1', [userId]);
             if (studentRes.rows.length === 0) return res.status(404).json({ message: 'Student profile not found' });
-            const studentId = studentRes.rows[0].id;
+            const student = studentRes.rows[0];
 
-            // AI Logic: Fetch matches and intelligence from AI Service
-            const aiIntelligence = await AIService.getMatchIntelligence(studentId);
-
-            if (aiIntelligence) {
-                return res.status(200).json({
-                    status: 'success',
-                    data: aiIntelligence
-                });
-            }
-
-            // Fallback to basic DB query if AI service is unavailable
-            const query = `
-                SELECT a.*, o.title as job_title, c.name as company_name 
+            // 1. Fetch Real-Time Applications for context
+            const appsQuery = `
+                SELECT 
+                    a.id as application_id, a.status, a.match_score, a.match_reason, a.updated_at,
+                    o.id as opportunity_id, o.title as job_title, 
+                    c.name as company_name, c.logo_url, c.profile_picture_url
                 FROM applications a
                 JOIN opportunities o ON a.opportunity_id = o.id
                 JOIN companies c ON o.company_id = c.id
                 WHERE a.student_id = $1
-                ORDER BY a.match_score DESC
-                LIMIT 5
             `;
-            const result = await pool.query(query, [studentId]);
+            const appsRes = await pool.query(appsQuery, [student.id]);
+            const applications = appsRes.rows;
+
+            // 2. Resolve AI Matches (Cache or Service)
+            let aiMatches = student.ai_match_cache || [];
+            if (aiMatches.length === 0) {
+                const aiIntelligence = await AIService.getMatchIntelligence(student.id);
+                if (aiIntelligence) {
+                    aiMatches = aiIntelligence;
+                    await pool.query('UPDATE students SET ai_match_cache = $1, last_sync_at = NOW() WHERE id = $2', [JSON.stringify(aiMatches), student.id]);
+                }
+            }
+
+            // 3. Merge & Prioritize (User logic: Latest match overwrites past ones)
+            // Map applications for easy lookup
+            const appMap = new Map(applications.map(app => [app.opportunity_id, app]));
+            
+            // Merge AI matches with application status if available
+            const merged = aiMatches.map((match: any) => {
+                const app = appMap.get(match.opportunity_id);
+                return {
+                    ...match,
+                    status: app?.status || null,
+                    application_id: app?.application_id || null,
+                    updated_at: app?.updated_at || null,
+                    match_score: app ? parseFloat(app.match_score) : match.match_score,
+                    reasoning: app?.match_reason || match.reasoning
+                };
+            });
+
+            // Add applications that might not be in the AI cache (manual applications)
+            const aiOppIds = new Set(aiMatches.map((m: any) => m.opportunity_id));
+            applications.forEach(app => {
+                if (!aiOppIds.has(app.opportunity_id)) {
+                    merged.push({
+                        ...app,
+                        reasoning: app.match_reason
+                    });
+                }
+            });
+
+            // Status Priority Map
+            const statusPriority: Record<string, number> = {
+                'ACCEPTED': 100,
+                'OFFERED': 80,
+                'READY': 60,
+                'PENDING': 40,
+                'null': 0
+            };
+
+            // Sorting: Priority (Accepted > ...) then Latest Overwrites 
+            merged.sort((a: any, b: any) => {
+                const pA = statusPriority[String(a.status)] || 0;
+                const pB = statusPriority[String(b.status)] || 0;
+                
+                // If one of the matches is a confirmed high-level stage (ACCEPTED, OFFERED), it takes ultimate priority
+                if (pA !== pB && (pA >= 80 || pB >= 80)) return pB - pA;
+                
+                // Otherwise, the strict MATCH_SCORE determines top recommendation priority
+                if (a.match_score !== b.match_score) {
+                    return b.match_score - a.match_score;
+                }
+
+                // Tie breaker: Most recently updated/matched first
+                const timeA = a.updated_at ? new Date(a.updated_at).getTime() : 0;
+                const timeB = b.updated_at ? new Date(b.updated_at).getTime() : 0;
+                return timeB - timeA;
+            });
 
             res.status(200).json({
                 status: 'success',
-                data: result.rows
+                data: merged.slice(0, 5)
             });
         } catch (error) {
             next(error);
@@ -574,11 +618,12 @@ export class StudentController extends BaseController {
                 SELECT s.id, i.schema_name 
                 FROM students s
                 JOIN users u ON s.user_id = u.id
-                JOIN institutions i ON u.institution_id = i.id
+                JOIN institutions i ON s.institution_id = i.id
                 WHERE s.user_id = $1
             `, [userId]);
 
             if (studentCheck.rows.length === 0) {
+                console.log(`[DEBUG] syncProfileByReg - Student profile not found for UserID: ${userId}`);
                 return res.status(404).json({ status: 'error', message: 'Student profile not found' });
             }
 
@@ -645,32 +690,5 @@ export class StudentController extends BaseController {
         }
     };
 
-    generateAIResume = async (req: Request, res: Response, next: NextFunction) => {
-        try {
-            const { id: studentId } = req.params;
-            const { prompt } = req.body;
 
-            if (!prompt) {
-                return res.status(400).json({ status: 'error', message: 'Prompt is required' });
-            }
-
-            const axios = require('axios');
-            const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:8001';
-
-            const response = await axios.post(`${AI_SERVICE_URL}/api/resume/generate/${studentId}`, {
-                prompt
-            });
-
-            res.status(200).json({
-                status: 'success',
-                data: response.data.data
-            });
-        } catch (error: any) {
-            console.error('AI Resume Generation Error:', error.message);
-            res.status(500).json({
-                status: 'error',
-                message: 'Failed to generate AI resume. Please ensure the AI service is running.'
-            });
-        }
-    };
 }

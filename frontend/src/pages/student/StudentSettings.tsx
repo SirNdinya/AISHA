@@ -5,7 +5,7 @@ import {
     DialogRoot, DialogContent, DialogHeader, DialogTitle,
     DialogBody, DialogFooter, DialogActionTrigger, DialogCloseTrigger,
     DialogBackdrop, DialogPositioner,
-    Box, VStack, Heading, Text, Flex, Icon, Button, Input, SimpleGrid
+    Box, VStack, Heading, Text, Flex, Icon, Button, Input, SimpleGrid, chakra
 } from '@chakra-ui/react';
 import {
     LuUser, LuTarget, LuFilter, LuDownload, LuZap,
@@ -14,7 +14,7 @@ import {
 
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState, AppDispatch } from '../../store';
-import { updateStudentProfile, fetchStudentProfile, clearInstitutionalData, clearMatchData } from '../../store/studentSlice';
+import { updateStudentProfile, fetchStudentProfile, clearInstitutionalData, clearMatchData, fetchMyApplications } from '../../store/studentSlice';
 import { logout } from '../../store/authSlice';
 import StudentService from '../../services/studentService';
 import { Toaster, toaster } from '../../components/ui/toaster';
@@ -47,7 +47,7 @@ const LOCATIONS = ['Nairobi', 'Kisumu', 'Mombasa', 'Nakuru'];
 const StudentSettings: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
-    const { profile } = useSelector((state: RootState) => state.student);
+    const { profile, applications } = useSelector((state: RootState) => state.student);
     const [isSaving, setIsSaving] = useState(false);
     const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
 
@@ -65,6 +65,22 @@ const StudentSettings: React.FC = () => {
     });
 
     const [isSyncing, setIsSyncing] = useState(false);
+    const [isPreferencesLocked, setIsPreferencesLocked] = useState(false);
+
+    useEffect(() => {
+        dispatch(fetchMyApplications());
+    }, [dispatch]);
+
+    useEffect(() => {
+        const activeApp = applications.find(a => a.placement_status === 'ACTIVE' || a.status === 'ACCEPTED' || a.status === 'OFFERED');
+        if (activeApp) {
+            const matchTime = new Date(activeApp.applied_at || activeApp.created_at || new Date()).getTime();
+            const diff = (matchTime + (24 * 60 * 60 * 1000)) - Date.now();
+            setIsPreferencesLocked(diff <= 0);
+        } else {
+            setIsPreferencesLocked(false);
+        }
+    }, [applications]);
 
     const handleSync = async () => {
         if (!settings.admission_number) return;
@@ -131,18 +147,6 @@ const StudentSettings: React.FC = () => {
         }
     }, [profile]);
 
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
-    const handleConfirmDelete = async () => {
-        try {
-            await StudentService.deleteAccount();
-            dispatch(logout());
-            navigate('/');
-        } catch (error) {
-            console.error('Deletion failed:', error);
-        }
-    };
-
     const handleSave = async () => {
         setIsSaving(true);
         const updateData = {
@@ -156,9 +160,9 @@ const StudentSettings: React.FC = () => {
             requires_stipend: settings.requires_stipend,
             placement_duration: settings.placement_duration
         };
-        
+
         // Check if preferences changed to clear matches and show animations
-        const preferencesChanged = 
+        const preferencesChanged =
             settings.career_path !== profile?.career_path ||
             JSON.stringify(settings.fields_of_interest) !== JSON.stringify(profile?.interests) ||
             JSON.stringify(settings.skills) !== JSON.stringify(profile?.skills) ||
@@ -236,9 +240,7 @@ const StudentSettings: React.FC = () => {
                                             }
                                         }}
                                     />
-                                    <Box
-                                        as="label"
-                                        // @ts-ignore
+                                    <chakra.label
                                         htmlFor="profile-upload"
                                         pos="absolute"
                                         bottom={0}
@@ -253,7 +255,7 @@ const StudentSettings: React.FC = () => {
                                         pointerEvents={isUploadingPhoto ? "none" : "auto"}
                                     >
                                         <LuCamera size={14} />
-                                    </Box>
+                                    </chakra.label>
                                 </Box>
                                 <VStack gap={1}>
                                     <Heading size="md" color="white">{profile?.first_name} {profile?.last_name}</Heading>
@@ -279,12 +281,12 @@ const StudentSettings: React.FC = () => {
                                         <Button
                                             size="sm"
                                             colorPalette="cyan"
-                                             variant="outline"
+                                            variant="outline"
                                             onClick={handleSync}
                                             loading={isSyncing}
                                             fontSize="10px"
                                         >
-                                            SYNC_REGISTRY
+                                            UPDATE PROFILE
                                         </Button>
                                     </Flex>
                                 </Box>
@@ -317,9 +319,8 @@ const StudentSettings: React.FC = () => {
 
                                 <Box>
                                     <Text fontSize="xs" color="whiteAlpha.500" mb={1} textTransform="uppercase">Target Career Path</Text>
-                                    <Box
-                                        as="select"
-                                        size="sm"
+                                    <chakra.select
+                                        fontSize="sm"
                                         bg="whiteAlpha.100"
                                         borderColor="whiteAlpha.200"
                                         color="whiteAlpha.600"
@@ -329,12 +330,13 @@ const StudentSettings: React.FC = () => {
                                         border="1px solid"
                                         value={settings.career_path}
                                         onChange={(e: any) => setSettings({ ...settings, career_path: e.target.value, fields_of_interest: [], skills: [] })}
+                                        disabled={isPreferencesLocked}
                                     >
                                         <option value="" style={{ background: '#1a202c' }}>Select Career Path</option>
                                         {CAREER_PATHS.map(path => (
                                             <option key={path} value={path} style={{ background: '#1a202c' }}>{path}</option>
                                         ))}
-                                    </Box>
+                                    </chakra.select>
                                 </Box>
 
                                 <Box>
@@ -355,27 +357,6 @@ const StudentSettings: React.FC = () => {
                             </VStack>
                         </Box>
 
-                        <Box className="terminal-card" p={6} border="1px solid" borderColor="red.900/30">
-                            <Flex justify="space-between" mb={4}>
-                                <Heading size="xs" color="red.400" textTransform="uppercase" letterSpacing="wider">Danger Zone</Heading>
-                                <Icon as={LuTrash2} color="red.500" />
-                            </Flex>
-                            <VStack align="stretch" gap={4}>
-                                <Text fontSize="10px" color="whiteAlpha.500">
-                                    Deleting your account will remove your profile from this platform.
-                                    Note: Your registration data in the institution database remains untouched.
-                                </Text>
-                                <Button
-                                    size="xs"
-                                    colorPalette="red"
-                                    variant="outline"
-                                    onClick={() => setIsDeleteModalOpen(true)}
-                                    _hover={{ bg: "red.900/20" }}
-                                >
-                                    DELETE_ACCOUNT
-                                </Button>
-                            </VStack>
-                        </Box>
                     </VStack>
 
                     {/* Column 2 & 3: Matching Preferences */}
@@ -390,7 +371,19 @@ const StudentSettings: React.FC = () => {
                             </Flex>
 
                             <VStack align="stretch" gap={6}>
-                                <Box>
+                                {isPreferencesLocked && (
+                                    <Box p={3} bg="red.900/40" border="1px solid" borderColor="red.500/50" borderRadius="xl">
+                                        <Text color="red.400" fontSize="sm" fontWeight="bold">
+                                            <Icon as={LuTriangleAlert} mr={2} />
+                                            Preferences Locked
+                                        </Text>
+                                        <Text color="whiteAlpha.800" fontSize="xs" mt={1}>
+                                            Your match age has exceeded 24 hours. Your matching preferences and skills are now finalized and cannot be modified.
+                                        </Text>
+                                    </Box>
+                                )}
+
+                                <Box opacity={isPreferencesLocked ? 0.6 : 1} pointerEvents={isPreferencesLocked ? 'none' : 'auto'}>
                                     <Flex mb={4} gap={2} alignItems="center">
                                         <Icon as={LuTarget} color="cyan.400" size="sm" />
                                         <Text fontSize="sm" fontWeight="bold" color="white" textTransform="uppercase" letterSpacing="widest">Interest Areas</Text>
@@ -402,10 +395,10 @@ const StudentSettings: React.FC = () => {
                                             {availableInterests.map((interest: string) => {
                                                 const isSelected = settings.fields_of_interest.includes(interest);
                                                 return (
-                                                    <Box 
+                                                    <Box
                                                         key={interest}
-                                                        p={3} 
-                                                        borderRadius="lg" 
+                                                        p={3}
+                                                        borderRadius="lg"
                                                         bg={isSelected ? "cyan.900/20" : "whiteAlpha.50"}
                                                         border="1px solid"
                                                         borderColor={isSelected ? "cyan.500/40" : "whiteAlpha.100"}
@@ -439,7 +432,7 @@ const StudentSettings: React.FC = () => {
 
                                 <Separator opacity={0.1} my={2} />
 
-                                <Box>
+                                <Box opacity={isPreferencesLocked ? 0.6 : 1} pointerEvents={isPreferencesLocked ? 'none' : 'auto'}>
                                     <Flex mb={4} gap={2} alignItems="center">
                                         <Icon as={LuZap} color="cyan.400" size="sm" />
                                         <Text fontSize="sm" fontWeight="bold" color="white" textTransform="uppercase" letterSpacing="widest">Professional Skills</Text>
@@ -451,10 +444,10 @@ const StudentSettings: React.FC = () => {
                                             {availableSkills.map((skill: string) => {
                                                 const isSelected = settings.skills.includes(skill);
                                                 return (
-                                                    <Box 
+                                                    <Box
                                                         key={skill}
-                                                        p={3} 
-                                                        borderRadius="lg" 
+                                                        p={3}
+                                                        borderRadius="lg"
                                                         bg={isSelected ? "cyan.900/20" : "whiteAlpha.50"}
                                                         border="1px solid"
                                                         borderColor={isSelected ? "cyan.500/40" : "whiteAlpha.100"}
@@ -491,8 +484,7 @@ const StudentSettings: React.FC = () => {
                                         <Icon as={LuMapPin} color="cyan.400" size="sm" />
                                         <Text fontSize="xs" fontWeight="bold" color="white" textTransform="uppercase">Preferred Regions</Text>
                                     </Flex>
-                                    <Box
-                                        as="select"
+                                    <chakra.select
                                         bg="whiteAlpha.50"
                                         borderColor="whiteAlpha.100"
                                         color="white"
@@ -508,7 +500,7 @@ const StudentSettings: React.FC = () => {
                                         {LOCATIONS.map((loc: string) => (
                                             <option key={loc} value={loc} style={{ background: '#1a202c' }}>{loc}</option>
                                         ))}
-                                    </Box>
+                                    </chakra.select>
                                 </Box>
                             </VStack>
 
@@ -517,7 +509,7 @@ const StudentSettings: React.FC = () => {
                             <Flex justify="space-between" align="center">
                                 <Button
                                     variant="ghost"
-                                     colorPalette="whiteAlpha"
+                                    colorPalette="whiteAlpha"
                                     size="sm"
                                     onClick={handleDownloadSummary}
                                 >
@@ -532,7 +524,7 @@ const StudentSettings: React.FC = () => {
                                         onClick={handleSave}
                                         loading={isSaving}
                                     >
-                                        SAVE_CHANGES
+                                        SAVE CHANGES
                                     </Button>
                                 </Flex>
                             </Flex>
@@ -541,63 +533,6 @@ const StudentSettings: React.FC = () => {
                 </SimpleGrid>
             </Container>
 
-            <DialogRoot
-                open={isDeleteModalOpen}
-                onOpenChange={(e: { open: boolean }) => setIsDeleteModalOpen(e.open)}
-                size="md"
-            >
-                <DialogBackdrop />
-                <DialogPositioner>
-                    <DialogContent
-                        bg="#0a0f18"
-                        border="1px solid"
-                        borderColor="red.900"
-                        boxShadow="0 0 40px rgba(255, 0, 0, 0.1)"
-                    >
-                        <DialogHeader pb={0}>
-                            <Flex align="center" gap={3}>
-                                <Box p={2} bg="red.900/20" borderRadius="lg">
-                                    <Icon as={LuTriangleAlert} color="red.500" size="lg" />
-                                </Box>
-                                <DialogTitle color="white" textTransform="uppercase" letterSpacing="widest" fontWeight="black">
-                                    Delete My Account
-                                </DialogTitle>
-                            </Flex>
-                        </DialogHeader>
-                        <DialogBody py={6}>
-                            <VStack align="stretch" gap={4}>
-                                <Text color="whiteAlpha.800" fontSize="sm" lineHeight="tall">
-                                    You are about to permanently remove your AISHA platform profile. This action will:
-                                </Text>
-                                <VStack align="stretch" gap={2} pl={4}>
-                                    <Text color="whiteAlpha.600" fontSize="xs">• Erase all active attachment requests and match history</Text>
-                                    <Text color="whiteAlpha.600" fontSize="xs">• Wipe your AI-generated skill mapping and interests</Text>
-                                    <Text color="whiteAlpha.600" fontSize="xs">• Terminate all platform-wide communications</Text>
-                                </VStack>
-                                <Box p={3} bg="whiteAlpha.50" borderRadius="md" borderLeft="4px solid" borderColor="cyan.400">
-                                    <Text color="cyan.400" fontSize="xs" fontWeight="bold">
-                                        NOTE: Your official records in the Institutional Registry will NOT be affected.
-                                    </Text>
-                                </Box>
-                            </VStack>
-                        </DialogBody>
-                        <DialogFooter bg="whiteAlpha.50" borderTop="1px solid" borderColor="whiteAlpha.100">
-                            <DialogActionTrigger asChild>
-                                <Button variant="ghost" size="sm" color="whiteAlpha.700">CANCEL</Button>
-                            </DialogActionTrigger>
-                            <Button
-                                colorPalette="red"
-                                size="sm"
-                                px={8}
-                                onClick={handleConfirmDelete}
-                            >
-                                CONFIRM_DELETION
-                            </Button>
-                        </DialogFooter>
-                        <DialogCloseTrigger color="whiteAlpha.400" />
-                    </DialogContent>
-                </DialogPositioner>
-            </DialogRoot>
             <Toaster />
         </>
     );

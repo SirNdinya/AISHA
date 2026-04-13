@@ -202,8 +202,17 @@ const studentSlice = createSlice({
         });
 
         // Applications
+        builder.addCase(fetchMyApplications.pending, (state) => {
+            state.isLoading = true;
+            state.error = null;
+        });
         builder.addCase(fetchMyApplications.fulfilled, (state, action) => {
+            state.isLoading = false;
             state.applications = action.payload || [];
+        });
+        builder.addCase(fetchMyApplications.rejected, (state, action) => {
+            state.isLoading = false;
+            state.error = action.payload as string;
         });
 
         // Apply Logic

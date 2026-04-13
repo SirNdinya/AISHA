@@ -17,14 +17,6 @@ describe('Document Intelligence Service Tests', () => {
             RETURNING id
         `, [studentUserRes.rows[0].id, testInst.id]);
         testStudent = studentRes.rows[0];
-
-        // Create a document in hub
-        const docRes = await pool.query(`
-            INSERT INTO document_hub (owner_id, type, file_url, status, digital_signature)
-            VALUES ($1, 'NITA_FORM', 'https://example.com/nita.pdf', 'PENDING', 'AISHA_SOVEREIGN_V3_TEST_SIG')
-            RETURNING id
-        `, [studentUserRes.rows[0].id]);
-        testDoc = docRes.rows[0];
     });
 
     afterAll(async () => {

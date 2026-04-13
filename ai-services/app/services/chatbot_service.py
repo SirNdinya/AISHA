@@ -156,7 +156,7 @@ class ChatbotService:
                     if "verify" in str(message).lower() or "blockchain" in str(message).lower():
                         final_response += "Initiating blockchain integrity check... All system-generated documents are anchored to our private immutable ledger. "
                     else:
-                        final_response += "All necessary documents (NITA, Insurance, School Letter) are automatically generated and secured on the blockchain once you accept a placement. "
+                        final_response += "All necessary documents (Insurance, School Letter) are automatically generated and secured on the blockchain once you accept a placement. "
 
                 elif cap == "DECISION_ANALYSIS" and self.db and user_id:
                     analysis = await self.chief.handle_complex_goal(user_id, message)
@@ -242,7 +242,7 @@ class ChatbotService:
 
         # Clean up response
         if not final_response:
-             final_response = "I'm AISHA, and I'm still learning about that specific topic. Try asking about placements, NITA rules, or scouting for courses!"
+             final_response = "I'm AISHA, and I'm still learning about that specific topic. Try asking about placements or scouting for courses!"
 
         return {
             "user_id": user_id,

@@ -1,8 +1,11 @@
 import asyncio
 import logging
+print("[BOOT] Starting AI Services...")
 from fastapi import FastAPI
+print("[BOOT] FastAPI Imported...")
 from app.core.config import settings
-from app.api.routes import matching, learning, chatbot, documents, explain, chat, autonomy, blockchain, resume, generation
+print("[BOOT] Settings Loaded...")
+from app.api.routes import matching, learning, chatbot, documents, explain, chat, autonomy, blockchain, generation
 from app.api.routes import ops_routes
 from app.core.events import EventListener
 from app.services.scheduler_service import SchedulerService
@@ -30,7 +33,7 @@ app.include_router(explain.router, prefix="/api/explain", tags=["explain"])
 app.include_router(chat.router, prefix="/api/chat", tags=["chat"])
 app.include_router(autonomy.router, prefix="/api/autonomy", tags=["autonomy"])
 app.include_router(blockchain.router, prefix="/api/blockchain", tags=["blockchain"])
-app.include_router(resume.router, prefix="/api/resume", tags=["resume"])
+# app.include_router(resume.router, prefix="/api/resume", tags=["resume"])
 # app.include_router(websockets.router, tags=["websockets"])  # WebSocket handled separately
 app.include_router(ops_routes.payment_router, prefix="/api/payments", tags=["payments"])
 app.include_router(ops_routes.batch_router, prefix="/api/batch", tags=["batch"])

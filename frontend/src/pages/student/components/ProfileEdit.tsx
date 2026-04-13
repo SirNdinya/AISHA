@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { Box, Button, Flex, Heading, Input, VStack, HStack, Field, Text as ChakraText, Icon, Grid, Slider } from '@chakra-ui/react';
+import {
+    DialogRoot, DialogContent, DialogHeader, DialogTitle, DialogBody,
+    DialogFooter, DialogActionTrigger, DialogBackdrop, DialogPositioner
+} from '@chakra-ui/react';
 import { LuSave, LuTerminal, LuUpload, LuSearch } from "react-icons/lu";
 import Cropper from 'react-easy-crop';
 import studentService from '../../../services/studentService';
@@ -43,6 +47,8 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({ student, onCancel }) => {
     const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
     const [isCropping, setIsCropping] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -152,7 +158,7 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({ student, onCancel }) => {
 
                 <Grid templateColumns={{ base: "1fr", md: "1fr 1.5fr" }} gap={6}>
                     <Field.Root>
-                        <Field.Label {...labelStyles}>Registry ID (Admission)</Field.Label>
+                        <Field.Label {...labelStyles}>Admission Number</Field.Label>
                         <Input name="admission_number" value={formData.admission_number || ''} readOnly bg="whiteAlpha.100" color="whiteAlpha.600" />
                     </Field.Root>
                     <Field.Root>
@@ -200,8 +206,8 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({ student, onCancel }) => {
                                 name={`${student.first_name} ${student.last_name}`}
                             />
                             <VStack align="start" gap={0}>
-                                <Text fontSize="10px" color="whiteAlpha.600" fontWeight="bold">CURRENT_MATRIX</Text>
-                                <Text fontSize="9px" color="cyan.400" fontWeight="mono">ACTIVE_AVATAR_LAYER</Text>
+                                <Text fontSize="10px" color="whiteAlpha.600" fontWeight="bold">CURRENT MATRIX</Text>
+                                <Text fontSize="9px" color="cyan.400" fontWeight="mono">ACTIVE AVATAR LAYER</Text>
                             </VStack>
                         </HStack>
                         <Flex
@@ -218,7 +224,7 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({ student, onCancel }) => {
                             onClick={() => document.getElementById('profile-upload')?.click()}
                         >
                             <Icon as={LuUpload} color="cyan.400" />
-                            <ChakraText fontSize="10px" color="cyan.200" fontWeight="bold">UPLOAD_AVATAR_LAYER</ChakraText>
+                            <ChakraText fontSize="10px" color="cyan.200" fontWeight="bold">UPLOAD AVATAR LAYER</ChakraText>
                             <Input id="profile-upload" type="file" accept="image/*" display="none" onChange={(e) => {
                                 const file = e.target.files?.[0];
                                 if (file) {
@@ -267,7 +273,7 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({ student, onCancel }) => {
                                         </HStack>
                                         <HStack gap={4}>
                                             <Button variant="ghost" color="white" onClick={() => setIsCropping(false)}>CANCEL</Button>
-                                            <Button colorPalette="cyan" loading={isUploading} onClick={handleUploadCrop}>INITIALIZE_SYNC</Button>
+                                            <Button colorPalette="cyan" loading={isUploading} onClick={handleUploadCrop}>INITIALIZE SYNC</Button>
                                         </HStack>
                                     </VStack>
                                 </VStack>
@@ -275,54 +281,47 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({ student, onCancel }) => {
                         )}
                     </Field.Root>
 
-                    <Field.Root>
-                        <Field.Label {...labelStyles}>External Doc Sync (Resume / CV)</Field.Label>
-                        <Flex
-                            border="1px dashed"
-                            borderColor="whiteAlpha.300"
-                            p={4}
-                            borderRadius="md"
-                            direction="column"
-                            align="center"
-                            gap={2}
-                            cursor="pointer"
-                            _hover={{ bg: "whiteAlpha.50", borderColor: "cyan.400" }}
-                            onClick={() => document.getElementById('cv-upload')?.click()}
-                        >
-                            <Icon as={LuUpload} color="whiteAlpha.400" />
-                            <ChakraText fontSize="xs" color="whiteAlpha.500">UPLOAD PDF / DOC FOR NEURAL PARSING</ChakraText>
-                            <Input id="cv-upload" type="file" accept=".pdf,.doc,.docx" display="none" onChange={async (e) => {
-                                const file = e.target.files?.[0];
-                                if (file) {
-                                    try {
-                                        await import('../../../services/studentService').then(m => m.default.uploadCV(file));
-                                        alert("RESUME_UPLOADED: NEURAL_DATA_SYNCED");
-                                    } catch (err) {
-                                        console.error("Upload failed", err);
-                                    }
-                                }
-                            }} />
-                        </Flex>
-                    </Field.Root>
                 </Grid>
 
                 <Flex gap={4} mt={6} justify="flex-end">
                     <Button variant="ghost" colorPalette="whiteAlpha" onClick={onCancel} size="sm" fontSize="10px" letterSpacing="widest">
-                        ABORT_CHANGES
+                        ABORT CHANGES
                     </Button>
                     <Button
                         colorPalette="cyan"
                         variant="solid"
                         loading={isLoading}
-                        onClick={handleSubmit}
+                        onClick={() => setIsConfirmOpen(true)}
                         size="sm"
                         fontSize="10px"
                         letterSpacing="widest"
                     >
-                        <LuSave /> COMMIT_PARAMETERS
+                        <LuSave /> COMMIT PARAMETERS
                     </Button>
                 </Flex>
             </VStack>
+
+            <DialogRoot open={isConfirmOpen} onOpenChange={(details) => setIsConfirmOpen(details.open)} placement="center">
+                <DialogBackdrop />
+                <DialogPositioner>
+                    <DialogContent bg="gray.900" border="1px solid" borderColor="cyan.800" color="white" boxShadow="0 0 30px rgba(0, 200, 255, 0.15)">
+                        <DialogHeader>
+                            <DialogTitle color="white" textTransform="uppercase" letterSpacing="widest" fontSize="lg">CONFIRM PARAMETER UPDATE</DialogTitle>
+                        </DialogHeader>
+                        <DialogBody>
+                            <ChakraText color="whiteAlpha.800" fontSize="sm" lineHeight="tall">
+                                Once you select continue, you will be automtically matched to placement opportunities based on your skills and won't be able to edit these changes easily.
+                            </ChakraText>
+                        </DialogBody>
+                        <DialogFooter>
+                            <DialogActionTrigger asChild>
+                                <Button variant="ghost" color="whiteAlpha.700" onClick={() => setIsConfirmOpen(false)} _hover={{color: "white"}}>REVIEW</Button>
+                            </DialogActionTrigger>
+                            <Button colorPalette="cyan" loading={isLoading} onClick={() => { setIsConfirmOpen(false); handleSubmit(); }}>CONTINUE</Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </DialogPositioner>
+            </DialogRoot>
         </Box>
     );
 };

@@ -91,6 +91,17 @@ export const fetchApplicants = createAsyncThunk(
     }
 );
 
+export const fetchAllApplicants = createAsyncThunk(
+    'company/fetchAllApplicants',
+    async (_, { rejectWithValue }) => {
+        try {
+            return await CompanyService.getAllApplicants();
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Failed to fetch all applicants');
+        }
+    }
+);
+
 export const updateApplicantStatus = createAsyncThunk(
     'company/updateApplicantStatus',
     async ({ id, status }: { id: string, status: string }, { rejectWithValue }) => {
@@ -109,6 +120,17 @@ export const fetchCompanyAnalytics = createAsyncThunk(
             return await CompanyService.getTalentAnalytics();
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Failed to fetch analytics');
+        }
+    }
+);
+
+export const updateCompanyProfile = createAsyncThunk(
+    'company/updateProfile',
+    async (data: any, { rejectWithValue }) => {
+        try {
+            return await CompanyService.updateProfile(data);
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Failed to update profile');
         }
     }
 );
@@ -142,6 +164,17 @@ const companySlice = createSlice({
             state.error = action.payload as string;
         });
 
+        // Update Profile
+        builder.addCase(updateCompanyProfile.pending, (state) => { state.isLoading = true; });
+        builder.addCase(updateCompanyProfile.fulfilled, (state, action) => {
+            state.isLoading = false;
+            state.profile = action.payload;
+        });
+        builder.addCase(updateCompanyProfile.rejected, (state, action) => {
+            state.isLoading = false;
+            state.error = action.payload as string;
+        });
+
         // Opportunities
         builder.addCase(fetchCompanyOpportunities.fulfilled, (state, action) => {
             state.opportunities = action.payload;
@@ -167,8 +200,12 @@ const companySlice = createSlice({
         });
 
         // Applicants
-        builder.addCase(fetchApplicants.pending, (state) => { state.isLoading = true; });
         builder.addCase(fetchApplicants.fulfilled, (state, action) => {
+            state.isLoading = false;
+            state.applicants = action.payload;
+        });
+        builder.addCase(fetchAllApplicants.pending, (state) => { state.isLoading = true; });
+        builder.addCase(fetchAllApplicants.fulfilled, (state, action) => {
             state.isLoading = false;
             state.applicants = action.payload;
         });

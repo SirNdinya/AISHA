@@ -1,15 +1,32 @@
 import { Text, Box } from '@chakra-ui/react';
 
 interface MarkdownTextProps {
-  content: string;
+  content: string | any[] | Record<string, any>;
   [key: string]: any;
 }
 
 const MarkdownText: React.FC<MarkdownTextProps> = ({ content, ...rest }) => {
   if (!content) return null;
 
-  // Split by line breaks and process
-  const lines = content.split('\n');
+  // Ensure content is a string before splitting
+  let contentString = '';
+  if (typeof content === 'string') {
+    contentString = content;
+  } else if (Array.isArray(content)) {
+    contentString = (content as any[]).map((item: any) => {
+      if (typeof item === 'object' && item !== null) {
+        return item.text || item.content || item.reason || item.insights || JSON.stringify(item);
+      }
+      return String(item);
+    }).join('\n');
+  } else if (typeof content === 'object' && content !== null) {
+    const obj = content as any;
+    contentString = obj.text || obj.content || obj.reason || obj.insights || JSON.stringify(content);
+  } else {
+    contentString = String(content || '');
+  }
+
+  const lines = contentString.split('\n');
   const elements: React.ReactNode[] = [];
   let currentList: string[] = [];
 
@@ -46,8 +63,19 @@ const MarkdownText: React.FC<MarkdownTextProps> = ({ content, ...rest }) => {
   lines.forEach((line, index) => {
     const trimmedLine = line.trim();
     
+    // Handle ### Heading
+    if (trimmedLine.startsWith('### ')) {
+      flushList(index);
+      elements.push(
+        <Box key={index} mt={4} mb={2} borderBottom="1px solid" borderColor="inherit" pb={1} opacity={0.8}>
+            <Text {...rest} fontWeight="black" fontSize="xs" letterSpacing="widest" textTransform="uppercase">
+                {renderFormattedText(trimmedLine.slice(4))}
+            </Text>
+        </Box>
+      );
+    }
     // Simple bullet point detection: - Item or * Item
-    if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
+    else if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
       currentList.push(trimmedLine.slice(2));
     } else {
       flushList(index);

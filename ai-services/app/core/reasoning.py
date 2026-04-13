@@ -23,8 +23,7 @@ class ReasoningEngine:
         - AUTONOMOUS_MATCHING: Analyze skills vs. job requirements.
         - DECISION_ANALYSIS: Evaluate placement offers and give career advice.
         - DOCUMENT_AUTOMATION: Handle placement letters and insurance documents.
-        - KNOWLEDGE_QUERY: System rules/NITA.
-        - MATCHING_ANALYSIS: Why a student matched.
+        - KNOWLEDGE_QUERY: System rules, regulations, placements.
         - CAREER_ADVICE: AI counseling.
         - GENERAL_LLM: Everything else (Greetings, general knowledge, etc).
         

@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ChakraProvider, Box } from '@chakra-ui/react';
+import { ChakraProvider } from '@chakra-ui/react';
 import { Provider } from 'react-redux';
 import { store } from './store';
 import { system } from './theme';
@@ -12,7 +12,6 @@ import StudentLayout from './components/layout/StudentLayout';
 import CompanyLayout from './components/layout/CompanyLayout';
 import PublicLayout from './components/layout/PublicLayout';
 import AdminLayout from './components/layout/AdminLayout';
-import CommunicationPortal from './components/common/CommunicationPortal';
 
 // Auth Components
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -28,7 +27,6 @@ import VerifyEmailPage from './pages/auth/VerifyEmailPage';
 // Student Pages
 import StudentDashboard from './pages/student/StudentDashboard';
 import StudentProfile from './pages/student/StudentProfile';
-import CVBuilder from './pages/student/CVBuilder';
 import StudentAttachments from './pages/student/StudentAttachments';
 import StudentSettings from './pages/student/StudentSettings';
 import LogbookManager from './pages/student/LogbookManager';
@@ -37,20 +35,17 @@ import LogbookReview from './components/common/LogbookReview';
 // Company Pages
 import CompanyDashboard from './pages/company/CompanyDashboard';
 import OpportunityManager from './pages/company/OpportunityManager';
-import CompanyApplicants from './pages/company/CompanyApplicants';
 import CompanyPlacementTracker from './pages/company/PlacementTracker';
-import CompanyStructure from './pages/company/CompanyStructure';
+import CompanySettings from './pages/company/CompanySettings';
 
 // Institution Pages
 import AdminPortalLayout from './pages/admin/AdminPortal/AdminPortalLayout';
 import AnalyticsOverview from './pages/admin/AdminPortal/AnalyticsOverview';
 import StudentSyncManager from './pages/admin/AdminPortal/StudentSyncManager';
-import DocumentHub from './pages/admin/AdminPortal/DocumentHub';
 import DepartmentManager from './pages/admin/AdminPortal/DepartmentManager';
-import AutonomousDashboard from './pages/admin/AdminPortal/AutonomousDashboard';
+import Broadcasting from './pages/admin/AdminPortal/Broadcasting';
 import PlacementTracker from './pages/admin/AdminPortal/PlacementTracker';
 import SettingsPage from './pages/admin/AdminPortal/SettingsPage';
-import AdminChatPortal from './pages/admin/AdminPortal/AdminChatPortal';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -80,12 +75,10 @@ const App: React.FC = () => {
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<StudentDashboard />} />
               <Route path="profile" element={<StudentProfile />} />
-              <Route path="cv-builder" element={<CVBuilder />} />
               <Route path="attachments" element={<StudentAttachments />} />
               <Route path="settings" element={<StudentSettings />} />
               <Route path="logbook" element={<LogbookManager />} />
               <Route path="notifications" element={<NotificationPage />} />
-              <Route path="chat" element={<CommunicationPortal />} />
             </Route>
             <Route path="*" element={<Navigate to="/login" replace />} />
           </>
@@ -108,13 +101,9 @@ const App: React.FC = () => {
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<CompanyDashboard />} />
               <Route path="opportunities" element={<OpportunityManager />} />
-              <Route path="opportunities/:id/applicants" element={<CompanyApplicants />} />
-              <Route path="applicants" element={<CompanyApplicants />} />
               <Route path="placements" element={<CompanyPlacementTracker />} />
-              <Route path="structure" element={<CompanyStructure />} />
-              <Route path="settings" element={<Box color="white" p={10}>Settings Page Coming Soon</Box>} />
+              <Route path="settings" element={<CompanySettings />} />
               <Route path="notifications" element={<NotificationPage />} />
-              <Route path="chat" element={<CommunicationPortal />} />
               <Route path="logbooks" element={<LogbookReview role="COMPANY" />} />
             </Route>
             <Route path="*" element={<Navigate to="/login" replace />} />
@@ -139,11 +128,7 @@ const App: React.FC = () => {
               <Route path="dashboard" element={<AnalyticsOverview />} />
               <Route path="departments" element={<DepartmentManager />} />
               <Route path="students" element={<StudentSyncManager />} />
-              <Route path="documents" element={<DocumentHub />} />
-              <Route path="chat" element={<CommunicationPortal />} />
-              <Route path="placements" element={<PlacementTracker />} />
               <Route path="settings" element={<SettingsPage />} />
-              <Route path="logbooks" element={<LogbookReview role="INSTITUTION" />} />
             </Route>
             <Route path="/department" element={
               <ProtectedRoute allowedRoles={['DEPARTMENT_ADMIN']}>
@@ -151,10 +136,9 @@ const App: React.FC = () => {
               </ProtectedRoute>
             }>
               <Route index element={<Navigate to="dashboard" replace />} />
-              <Route path="dashboard" element={<AutonomousDashboard />} />
-              <Route path="chat" element={<CommunicationPortal />} />
+              <Route path="dashboard" element={<Broadcasting />} />
               <Route path="students" element={<StudentSyncManager />} />
-              <Route path="documents" element={<DocumentHub />} />
+              <Route path="logbooks" element={<LogbookReview role="INSTITUTION" />} />
               <Route path="placements" element={<PlacementTracker />} />
               <Route path="settings" element={<SettingsPage />} />
             </Route>
@@ -203,7 +187,6 @@ const App: React.FC = () => {
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<StudentDashboard />} />
               <Route path="profile" element={<StudentProfile />} />
-              <Route path="cv-builder" element={<CVBuilder />} />
               <Route path="attachments" element={<StudentAttachments />} />
             </Route>
 
@@ -215,8 +198,7 @@ const App: React.FC = () => {
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<CompanyDashboard />} />
               <Route path="opportunities" element={<OpportunityManager />} />
-              <Route path="opportunities/:id/applicants" element={<CompanyApplicants />} />
-              <Route path="structure" element={<CompanyStructure />} />
+              <Route path="settings" element={<CompanySettings />} />
             </Route>
 
             <Route path="/institution" element={
@@ -226,11 +208,8 @@ const App: React.FC = () => {
             }>
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<AnalyticsOverview />} />
-              <Route path="chat" element={<AdminChatPortal />} />
               <Route path="departments" element={<DepartmentManager />} />
               <Route path="students" element={<StudentSyncManager />} />
-              <Route path="documents" element={<DocumentHub />} />
-              <Route path="placements" element={<PlacementTracker />} />
               <Route path="settings" element={<SettingsPage />} />
             </Route>
 
@@ -240,10 +219,8 @@ const App: React.FC = () => {
               </ProtectedRoute>
             }>
               <Route index element={<Navigate to="dashboard" replace />} />
-              <Route path="dashboard" element={<AutonomousDashboard />} />
-              <Route path="chat" element={<AdminChatPortal />} />
+              <Route path="dashboard" element={<Broadcasting />} />
               <Route path="students" element={<StudentSyncManager />} />
-              <Route path="documents" element={<DocumentHub />} />
               <Route path="placements" element={<PlacementTracker />} />
               <Route path="settings" element={<SettingsPage />} />
             </Route>

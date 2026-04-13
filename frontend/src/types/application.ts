@@ -9,6 +9,7 @@ export interface Application {
     match_reason?: string;
     status: ApplicationStatus;
     applied_at: string;
+    created_at?: string;
 
     // Joined Fields (for Student List)
     job_title?: string;
@@ -31,5 +32,14 @@ export interface Application {
     description?: string;
     requirements?: string | string[];
     requires_stipend?: boolean;
+    stipend_amount?: number;
     match_reasoning?: string;
+    profile_picture_url?: string;
+    acceptance_letter_template?: string;
+    
+    // Placement specifics
+    placement_status?: string;
+    first_assessment_date?: string | Date;
+    second_assessment_date?: string | Date;
+    start_date?: string | Date;
 }

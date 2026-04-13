@@ -21,7 +21,6 @@ import documentRoutes from './routes/documentRoutes';
 import notificationRoutes from './routes/notificationRoutes';
 import paymentRoutes from './routes/paymentRoutes';
 import learningRoutes from './routes/learningRoutes';
-import messageRoutes from './routes/messageRoutes';
 import placementRoutes from './routes/placementRoutes';
 import publicRoutes from './routes/publicRoutes';
 import aiRoutes from './routes/aiRoutes';
@@ -31,8 +30,8 @@ import assessmentRoutes from './routes/assessmentRoutes';
 app.use(helmet());
 app.use(cors());
 app.use(morgan('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '20mb' }));
+app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 // Allow cross-origin loading of profile pictures and other uploaded media
 app.use('/uploads', (req, res, next) => {
     res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
@@ -55,7 +54,6 @@ v1Router.use('/documents', documentRoutes);
 v1Router.use('/notifications', notificationRoutes);
 v1Router.use('/payments', paymentRoutes);
 v1Router.use('/learning', learningRoutes);
-v1Router.use('/messages', messageRoutes);
 v1Router.use('/placements', placementRoutes);
 v1Router.use('/public', publicRoutes);
 v1Router.use('/ai', aiRoutes);

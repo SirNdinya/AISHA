@@ -10,9 +10,12 @@ const companyController = new CompanyController();
 companyRouter.use(authenticate);
 companyRouter.use(restrictTo('COMPANY'));
 
+import { profileUpload } from '../middleware/uploadMiddleware';
+
 // Company Profile Routes
 companyRouter.get('/profile', companyController.getProfile);
 companyRouter.patch('/profile', companyController.updateProfile);
+companyRouter.post('/profile/upload', profileUpload.single('profile_picture'), companyController.uploadProfilePicture);
 
 // Department Routes
 companyRouter.get('/departments', companyController.getDepartments);

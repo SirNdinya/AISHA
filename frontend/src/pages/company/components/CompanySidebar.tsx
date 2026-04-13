@@ -1,29 +1,21 @@
 
 import React from 'react';
-import { Box, VStack, HStack, Text, Icon, Flex, Badge, Separator, IconButton } from '@chakra-ui/react';
+import { Box, VStack, HStack, Text, Icon, Flex, Separator, IconButton } from '@chakra-ui/react';
 import { NavLink } from 'react-router-dom';
 import {
     LuLayoutDashboard,
     LuBriefcase,
-    LuUsers,
     LuGrip,
     LuSettings,
     LuShield,
-    LuActivity,
-    LuMessageSquare,
-    LuFileText,
     LuPanelLeftClose,
     LuPanelLeftOpen
 } from 'react-icons/lu';
 
 const navItems = [
     { name: 'Dashboard', icon: LuLayoutDashboard, path: '/company/dashboard' },
-    { name: 'Structure & Staff', icon: LuUsers, path: '/company/structure' },
-    { name: 'Communications', icon: LuMessageSquare, path: '/company/chat' },
     { name: 'Job Manager', icon: LuBriefcase, path: '/company/opportunities' },
-    { name: 'Applicant Pipeline', icon: LuUsers, path: '/company/applicants' },
     { name: 'Active Placements', icon: LuGrip, path: '/company/placements' },
-    { name: 'Logbook Reviews', icon: LuFileText, path: '/company/logbooks' },
     { name: 'Enterprise Settings', icon: LuSettings, path: '/company/settings' },
 ];
 
@@ -124,35 +116,7 @@ const CompanySidebar: React.FC<CompanySidebarProps> = ({ isCollapsed, onToggle }
                     ))}
                 </VStack>
 
-                {/* Bottom Card */}
-                {!isCollapsed ? (
-                    <Box
-                        className="glass-panel-accent"
-                        p={4}
-                        borderRadius="2xl"
-                        position="relative"
-                        overflow="hidden"
-                    >
-                        <Icon as={LuActivity} position="absolute" right="-10px" bottom="-10px" boxSize="60px" opacity={0.1} />
-                        <HStack mb={2}>
-                            <Badge colorPalette="green" size="xs" variant="subtle">SYSTEM LIVE</Badge>
-                            <Text fontSize="10px" fontWeight="bold">STABLE</Text>
-                        </HStack>
-                        <Text fontSize="xs" color="blue.100" opacity={0.8}>
-                            Monitoring active placements and pending assessments.
-                        </Text>
-                    </Box>
-                ) : (
-                    <Flex justify="center">
-                        <Box
-                            w={3} h={3}
-                            borderRadius="full"
-                            bg="green.400"
-                            boxShadow="0 0 8px rgba(72, 187, 120, 0.6)"
-                            title="System Live - Stable"
-                        />
-                    </Flex>
-                )}
+
             </VStack>
         </Box>
     );

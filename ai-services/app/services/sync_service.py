@@ -62,7 +62,7 @@ class SyncService:
 
     def autonomous_multi_system_sync(self, placement_id: str) -> Dict[str, Any]:
         """
-        [Multi-Hop Sync] Student System -> Company -> Institution -> NITA
+        [Multi-Hop Sync] Student System -> Company -> Institution
         Triggers after placement acceptance.
         """
         placement = self.db.query(models.Placement).filter_by(id=placement_id).first()
@@ -78,11 +78,8 @@ class SyncService:
         # 2. Sync to Institution Records
         logger.info(f"Updating Institution with placement details for start date: {placement.start_date}")
 
-        # 3. Submit to NITA (Simulated)
-        logger.info(f"Auto-submitting digital NITA forms for student {student.admission_number}")
-
         return {
             "status": "success",
-            "systems_notified": ["Company", "Institution", "NITA"],
+            "systems_notified": ["Company", "Institution"],
             "sync_time": "real-time"
         }

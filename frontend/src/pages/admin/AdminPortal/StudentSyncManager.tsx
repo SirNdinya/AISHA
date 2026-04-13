@@ -164,14 +164,14 @@ const StudentSyncManager: React.FC = () => {
                                     </Table.Cell>
                                     <Table.Cell textAlign="right">
                                         <IconButton
-                                            aria-label="View Details"
-                                            size="sm"
-                                            variant="ghost"
-                                            color="gray.400"
-                                            _hover={{ color: "purple.400", bg: "rgba(167, 139, 250, 0.1)" }}
-                                        >
-                                            <ExternalLink size={16} />
-                                        </IconButton>
+  aria-label="Show Analysis"
+  size="sm"
+  variant="ghost"
+  color="gray.400"
+  _hover={{ color: "purple.400", bg: "rgba(167, 139, 250, 0.1)" }}
+>
+  <ExternalLink size={16} />
+</IconButton>
                                     </Table.Cell>
                                 </Table.Row>
                             ))}

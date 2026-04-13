@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import axios from 'axios';
 import pool from '../config/database';
 import { BaseController } from './BaseController';
+import { NotificationService } from '../services/NotificationService';
 
 export class AdminController extends BaseController {
     constructor() {
@@ -72,6 +73,14 @@ export class AdminController extends BaseController {
                 status: 'success',
                 data: result.rows[0]
             });
+
+            // Broadcast as notification
+            NotificationService.broadcastToSystem(
+                target_system || 'ALL',
+                `System ${type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()}`,
+                message,
+                type === 'GENERAL' ? 'INFO' : type as any
+            ).catch(err => console.error('Failed to broadcast notification:', err));
         } catch (error) {
             next(error);
         }
@@ -95,10 +104,6 @@ export class AdminController extends BaseController {
         }
     };
 
-    /**
-     * toggleBroadcast
-     * Toggles the active status of a broadcast.
-     */
     toggleBroadcast = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { id } = req.params;
@@ -110,6 +115,23 @@ export class AdminController extends BaseController {
             res.status(200).json({
                 status: 'success',
                 data: result.rows[0]
+            });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    /**
+     * deleteBroadcast
+     * Permanently removes a broadcast.
+     */
+    deleteBroadcast = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { id } = req.params;
+            await pool.query('DELETE FROM system_broadcasts WHERE id = $1', [id]);
+            res.status(200).json({
+                status: 'success',
+                message: 'Broadcast deleted successfully'
             });
         } catch (error) {
             next(error);

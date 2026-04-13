@@ -85,7 +85,8 @@ export class InstitutionSyncService {
                     
                     if (recordsRes.rows.length > 0) {
                         console.log(`[AI SERVICE] Initiating rapid transcript analysis for ${studentId}...`);
-                        const analysis = await AIService.analyzeTranscript(recordsRes.rows);
+                        const studentName = `${student.first_name || ''} ${student.last_name || ''}`.trim() || 'the student';
+                        const analysis = await AIService.analyzeTranscript(recordsRes.rows, studentName);
                         if (analysis) {
                             await pool.query('UPDATE students SET academic_analysis = $1 WHERE id = $2', [JSON.stringify(analysis), studentId]);
                             console.log(`[AI SERVICE] Transcript analysis completed and stored for student ${studentId}.`);

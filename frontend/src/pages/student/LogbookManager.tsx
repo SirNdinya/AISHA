@@ -1,28 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     Box, Heading, Text, VStack, HStack,
-    Button, Icon, Flex, Spinner,
-    Container, Badge, Card,
-    Input, Grid, Textarea, Select
+    Button, Flex, Spinner,
+    Container, Badge,
+    Input, Grid, Textarea
 } from '@chakra-ui/react';
 import {
     LuCheck, LuArrowLeft, LuDownload,
-    LuSave, LuCalendar
+    LuSave
 } from 'react-icons/lu';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import apiClient from '../../services/apiClient';
 import { toaster } from '../../components/ui/toaster';
+import type { RootState } from '../../store';
 
 const LogbookManager: React.FC = () => {
     const navigate = useNavigate();
+    const { profile } = useSelector((state: RootState) => state.student);
     
     // UI State
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+    const [isAutoSaving, setIsAutoSaving] = useState(false);
+    const autoSaveTimeout = useRef<NodeJS.Timeout | null>(null);
     
     // Logbook State
     const [allWeeks, setAllWeeks] = useState<any[]>([]);
     const [selectedWeekNum, setSelectedWeekNum] = useState<number>(1);
+    
+    // Export State
+    const [isExporting, setIsExporting] = useState(false);
     
     // Current Draft State
     const [entry, setEntry] = useState<any>({
@@ -55,18 +63,18 @@ const LogbookManager: React.FC = () => {
                 const maxWeek = Math.max(...data.map((d: any) => d.week_number));
                 loadWeekData(data, maxWeek);
             } else {
-                // Initialize Week 1 with current date as start_date (Monday)
-                const today = new Date();
+                const pStartDateStr = res.data.placement_start_date || new Date().toISOString();
+                const today = new Date(pStartDateStr);
                 const diff = today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1); // Adjust when day is Sunday
                 const monday = new Date(today.setDate(diff));
-                const saturday = new Date(monday);
-                saturday.setDate(monday.getDate() + 5);
+                const friday = new Date(monday);
+                friday.setDate(monday.getDate() + 4);
                 
                 setEntry({
                     ...entry,
                     week_number: 1,
                     start_date: monday.toISOString().split('T')[0],
-                    end_date: saturday.toISOString().split('T')[0]
+                    end_date: friday.toISOString().split('T')[0]
                 });
             }
         } catch (error) {
@@ -86,9 +94,9 @@ const LogbookManager: React.FC = () => {
             // Predict what start date should be if they add a new week
             const lastWeek = data.reduce((prev, current) => (prev.week_number > current.week_number) ? prev : current, { week_number: 0, end_date: new Date() });
             let newStart = new Date(lastWeek.end_date);
-            newStart.setDate(newStart.getDate() + 2); // Monday
+            newStart.setDate(newStart.getDate() + 3); // Monday (Since end_date is Friday, +3 is Monday)
             let newEnd = new Date(newStart);
-            newEnd.setDate(newEnd.getDate() + 5); // Saturday
+            newEnd.setDate(newEnd.getDate() + 4); // Friday
             
             setEntry({
                 week_number: weekNum,
@@ -113,10 +121,10 @@ const LogbookManager: React.FC = () => {
                 ...entry,
                 is_submitting: isSubmitting
             };
-            const res = await apiClient.post('/placements/logbook', payload);
+            await apiClient.post('/placements/logbook', payload);
             
             if (isSubmitting) {
-                toaster.create({ title: 'Logbook Signed & Submitted', type: 'success' });
+                toaster.create({ title: 'Logbook Confirmed & Sent', type: 'success' });
             } else {
                 toaster.create({ title: 'Draft Saved Successfully', type: 'success' });
             }
@@ -126,39 +134,72 @@ const LogbookManager: React.FC = () => {
             setAllWeeks(resData.data.data);
             loadWeekData(resData.data.data, selectedWeekNum);
         } catch (error) {
-            toaster.create({ title: 'Sync Failed', type: 'error' });
+            toaster.create({ title: 'Update Failed', type: 'error' });
         } finally {
             setIsSaving(false);
         }
     };
 
-    const handleDownloadPDF = async () => {
+    const handleFieldChange = (field: string, value: string) => {
+        const newEntry = { ...entry, [field]: value };
+        setEntry(newEntry);
+
+        if (newEntry.status === 'DRAFT' || !newEntry.status) {
+            if (autoSaveTimeout.current) clearTimeout(autoSaveTimeout.current);
+            autoSaveTimeout.current = setTimeout(() => {
+                executeAutoSave(newEntry);
+            }, 1000);
+        }
+    };
+
+    const executeAutoSave = async (payloadToSave: any) => {
+        setIsAutoSaving(true);
         try {
-            toaster.create({ title: 'Generating PDF...', type: 'info' });
-            // Download the specific week or all? Let's just download the specific week
-            const response = await apiClient.get(`/placements/logbook/export?week_number=${selectedWeekNum}`, { responseType: 'blob' });
+            const payload = { ...payloadToSave, is_submitting: false };
+            await apiClient.post('/placements/logbook', payload);
+        } catch (error) {
+            console.error('Autosave failed:', error);
+        } finally {
+            setIsAutoSaving(false);
+        }
+    };
+
+    const handleDownloadPDF = async (mode: 'current' | 'all' | 'range', start?: number, end?: number) => {
+        try {
+            setIsExporting(true);
+            let query = '';
+            if (mode === 'current') query = `?week_number=${selectedWeekNum}`;
+            else if (mode === 'range' && start && end) query = `?start_week=${start}&end_week=${end}`;
+            
+            const response = await apiClient.get(`/placements/logbook/export${query}`, { responseType: 'blob' });
+            
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', `Logbook_Week_${selectedWeekNum}.pdf`);
+            const fileName = mode === 'current' ? `Logbook_Week_${selectedWeekNum}.pdf` : `Full_Logbook_Archive.pdf`;
+            link.setAttribute('download', fileName);
             document.body.appendChild(link);
             link.click();
             toaster.create({ title: 'Export Successful', type: 'success' });
         } catch (error) {
             toaster.create({ title: 'Export Failed', type: 'error' });
+        } finally {
+            setIsExporting(false);
         }
     };
 
-    const handleFieldChange = (field: string, value: string) => {
-        setEntry({ ...entry, [field]: value });
-    };
-    
-    // Auto-calculate dates for fields
+
     const getFormattedDateForDay = (dayOffset: number) => {
         if (!entry.start_date) return '';
         const d = new Date(entry.start_date);
         d.setDate(d.getDate() + dayOffset);
-        return d.toLocaleDateString();
+        const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric', year: 'numeric' };
+        const dateStr = d.toLocaleDateString(undefined, options);
+        
+        const today = new Date();
+        const isToday = d.toDateString() === today.toDateString();
+        
+        return isToday ? `${dateStr} (Today)` : dateStr;
     };
 
     if (isLoading) return <Flex h="60vh" align="center" justify="center"><Spinner color="blue.400" /></Flex>;
@@ -184,8 +225,8 @@ const LogbookManager: React.FC = () => {
                                 <Heading size="md" color="gray.800">Logbook Manager</Heading>
                                 <HStack>
                                     <Text fontSize="xs" color="gray.500">Record your weekly attachment progress</Text>
-                                    <Badge colorPalette={entry.status === 'DRAFT' ? 'gray' : entry.status === 'COMPLETED' ? 'green' : 'orange'} size="xs">
-                                        {entry.status}
+                                    <Badge colorPalette={entry.status === 'ARCHIVED' ? 'green' : entry.status === 'DRAFT' ? 'gray' : 'orange'} size="xs" variant="solid" px={2} borderRadius="full">
+                                        {entry.status === 'ARCHIVED' ? 'VERIFIED ARCHIVE' : entry.status}
                                     </Badge>
                                 </HStack>
                             </VStack>
@@ -195,55 +236,96 @@ const LogbookManager: React.FC = () => {
                                 <LuSave /> Save Draft
                             </Button>
                             <Button size="sm" colorPalette="blue" onClick={() => handleSave(true)} loading={isSaving} disabled={isReadOnly}>
-                                <LuCheck /> Sign & Submit
+                                <LuCheck /> Confirm & Send
                             </Button>
-                            <Button size="sm" variant="surface" colorPalette="gray" onClick={handleDownloadPDF}>
-                                <LuDownload /> Export PDF
-                            </Button>
+                            <HStack gap={1} bg="gray.100" p={1} borderRadius="md" border="1px solid" borderColor="gray.200">
+                                <Button 
+                                    size="xs" 
+                                    variant="subtle" 
+                                    colorPalette="blue" 
+                                    color="blue.700"
+                                    onClick={() => handleDownloadPDF('current')}
+                                    disabled={isExporting || entry.status === 'DRAFT'}
+                                >
+                                    <LuDownload /> Week {selectedWeekNum}
+                                </Button>
+                                <Box w="1px" h="15px" bg="gray.300" />
+                                <Button 
+                                    size="xs" 
+                                    variant="subtle" 
+                                    colorPalette="purple" 
+                                    color="purple.700"
+                                    onClick={() => {
+                                        const r = window.prompt("Enter range (e.g. 1-4):");
+                                        if (r && r.includes('-')) {
+                                            const [s, e] = r.split('-').map(Number);
+                                            handleDownloadPDF('range', s, e);
+                                        }
+                                    }}
+                                    disabled={isExporting || allWeeks.length === 0}
+                                >
+                                    <LuDownload /> Range
+                                </Button>
+                                <Box w="1px" h="15px" bg="gray.300" />
+                                <Button 
+                                    size="xs" 
+                                    variant="subtle" 
+                                    colorPalette="green" 
+                                    color="green.700"
+                                    onClick={() => handleDownloadPDF('all')}
+                                    disabled={isExporting || allWeeks.length === 0}
+                                >
+                                    <LuDownload /> Full Archive
+                                </Button>
+                            </HStack>
                         </HStack>
                     </Flex>
                 </Container>
             </Box>
 
             <Container maxW="container.lg" pt={8}>
-                <Grid templateColumns={{ base: "1fr", lg: "1fr 4fr" }} gap={8} alignItems="start">
-
-                    {/* Left Sidebar: Week Selector */}
-                    <Box bg="white" p={4} borderRadius="xl" boxShadow="sm" border="1px solid" borderColor="gray.200">
-                        <HStack mb={4}>
-                            <Icon as={LuCalendar} color="blue.500" />
-                            <Heading size="xs">WEEKS</Heading>
-                        </HStack>
-                        <VStack align="stretch" gap={2}>
-                            {[...Array(12).keys()].map(i => {
-                                const w = i + 1;
-                                const weekData = allWeeks.find(week => week.week_number === w);
-                                const isActive = selectedWeekNum === w;
-                                return (
-                                    <Button 
-                                        key={w} 
-                                        variant={isActive ? "solid" : "ghost"}
-                                        colorPalette={isActive ? "blue" : "gray"}
-                                        justifyContent="space-between"
-                                        onClick={() => loadWeekData(allWeeks, w)}
-                                        size="sm"
-                                        w="full"
-                                    >
-                                        Week {w}
-                                        {weekData && <Badge size="xs" colorPalette={weekData.status === 'COMPLETED' ? 'green' : 'orange'}>{weekData.status.substring(0,1)}</Badge>}
-                                    </Button>
-                                );
-                            })}
-                        </VStack>
-                    </Box>
+                <VStack gap={8} alignItems="stretch">
 
                     {/* Main Logbook Area */}
                     <VStack gap={6} align="stretch">
                         
                         {/* Weekly Progress Chart */}
-                        <Box bg="white" borderRadius="xl" boxShadow="md" border="1px solid" borderColor="gray.200" overflow="hidden">
-                            <Box bg="blue.600" color="white" p={4} textAlign="center">
-                                <Heading size="md">WEEKLY PROGRESS CHART</Heading>
+                        <Box bg="white" borderRadius="xl" boxShadow="lg" border="1px solid" borderColor="gray.200" overflow="hidden" position="relative">
+                            {entry.status === 'ARCHIVED' && (
+                                <Box 
+                                    position="absolute" 
+                                    top="15px" 
+                                    right="-40px" 
+                                    bg="green.500" 
+                                    color="white" 
+                                    px={12} 
+                                    py={1} 
+                                    transform="rotate(45deg)" 
+                                    fontSize="xs" 
+                                    fontWeight="black"
+                                    zIndex={10}
+                                    boxShadow="md"
+                                >
+                                    ARCHIVED
+                                </Box>
+                            )}
+                            <Box bg={entry.status === 'ARCHIVED' ? "green.600" : "blue.600"} color="white" p={4}>
+                                <Flex justify="space-between" align="center">
+                                    <VStack align="start" gap={0}>
+                                        <Heading size="md">{entry.status === 'ARCHIVED' ? "VERIFIED LOGBOOK ARCHIVE" : "WEEKLY PROGRESS CHART"}</Heading>
+                                        <HStack gap={4} mt={1}>
+                                            <Text fontSize="xs" fontWeight="bold" opacity={0.9}>
+                                                STUDENT: {profile?.first_name} {profile?.last_name}
+                                            </Text>
+                                            <Text fontSize="xs" fontWeight="bold" opacity={0.9}>
+                                                REG NO: {profile?.admission_number}
+                                            </Text>
+                                        </HStack>
+                                    </VStack>
+                                    <Box px={3} py={1} borderRadius="md" bg="whiteAlpha.200" border="1px solid" borderColor="whiteAlpha.300">
+                                        <Text fontSize="xs" fontWeight="black">OFFICIAL RECORD</Text>
+                                    </Box>
+                                </Flex>
                             </Box>
                             
                             <Box p={6}>
@@ -275,19 +357,22 @@ const LogbookManager: React.FC = () => {
                                     ].map((row, idx) => (
                                         <Grid key={row.day} templateColumns="120px 1fr 150px" borderBottom={idx < 4 ? "1px solid" : "none"} borderColor="gray.200">
                                             <VStack align="start" justify="center" p={3} borderRight="1px solid" borderColor="gray.200" bg="gray.50">
-                                                <Text fontWeight="bold" fontSize="sm">{row.day}</Text>
-                                                <Text fontSize="xs" color="gray.500">{getFormattedDateForDay(row.offset)}</Text>
+                                                <Text fontWeight="black" fontSize="sm" color="black">{row.day}</Text>
+                                                <Text fontSize="xs" color="gray.600">{getFormattedDateForDay(row.offset)}</Text>
                                             </VStack>
                                             <Box p={2} borderRight="1px solid" borderColor="gray.200">
                                                 <Textarea 
                                                     value={entry[row.key]} 
                                                     onChange={(e) => handleFieldChange(row.key, e.target.value)}
                                                     placeholder="Enter details here..."
-                                                    variant="unstyled"
                                                     resize="none"
                                                     minH="80px"
-                                                    size="sm"
-                                                    disabled={isReadOnly}
+                                                    size="md"
+                                                    color="black !important"
+                                                    css={{ WebkitTextFillColor: 'black', fontWeight: 'bold', fontSize: '15px' }}
+                                                    readOnly={isReadOnly}
+                                                    _readOnly={{ bg: "transparent", cursor: "default", opacity: 1, borderColor: "transparent" }}
+                                                    _focus={{ bg: "white", borderColor: "blue.500" }}
                                                 />
                                             </Box>
                                             <Flex align="center" justify="center" p={3} opacity={0.3} bg="gray.50">
@@ -307,20 +392,6 @@ const LogbookManager: React.FC = () => {
                             </Box>
                             
                             <Box p={6}>
-                                <Grid templateColumns="120px 1fr" gap={4} mb={6}>
-                                    <VStack align="start" justify="center" p={3} bg="gray.50" borderRadius="md" border="1px solid" borderColor="gray.200">
-                                        <Text fontWeight="bold" fontSize="sm">SATURDAY</Text>
-                                        <Text fontSize="xs" color="gray.500">{getFormattedDateForDay(5)}</Text>
-                                    </VStack>
-                                    <Textarea 
-                                        value={entry.saturday_description} 
-                                        onChange={(e) => handleFieldChange('saturday_description', e.target.value)}
-                                        placeholder="Saturday activities (if any)..."
-                                        minH="80px"
-                                        disabled={isReadOnly}
-                                    />
-                                </Grid>
-
                                 <Box>
                                     <Text fontWeight="bold" mb={2} color="gray.700">Weekly Summary:</Text>
                                     <Textarea 
@@ -328,7 +399,12 @@ const LogbookManager: React.FC = () => {
                                         onChange={(e) => handleFieldChange('weekly_summary', e.target.value)}
                                         placeholder="Provide a comprehensive summary of the week's accomplishments and challenges..."
                                         minH="200px"
-                                        disabled={isReadOnly}
+                                        size="md"
+                                        color="black !important"
+                                        css={{ WebkitTextFillColor: 'black', fontWeight: 'bold', fontSize: '15px' }}
+                                        readOnly={isReadOnly}
+                                        _readOnly={{ bg: "transparent", cursor: "default", opacity: 1, borderColor: "transparent" }}
+                                        _focus={{ bg: "white", borderColor: "blue.500" }}
                                     />
                                 </Box>
                             </Box>
@@ -372,7 +448,44 @@ const LogbookManager: React.FC = () => {
                         </Box>
 
                     </VStack>
-                </Grid>
+                    
+                    {/* Horizontal Week Navigator */}
+                    <Flex justify="center" mt={6} pb={6}>
+                        <HStack gap={2} wrap="wrap">
+                            {[...Array(12).keys()].map(i => {
+                                const w = i + 1;
+                                const weekData = allWeeks.find(week => week.week_number === w);
+                                
+                                // Auto-extend the week count 
+                                const maxWeekDataObj = allWeeks.length > 0 ? allWeeks.reduce((prev, current) => (prev.week_number > current.week_number) ? prev : current) : null;
+                                const maxWeek = maxWeekDataObj ? maxWeekDataObj.week_number : 1;
+                                const shouldAllowNext = maxWeekDataObj && (maxWeekDataObj.status === 'COMPLETED' || maxWeekDataObj.status === 'SUBMITTED');
+                                
+                                const isAccessible = w <= maxWeek + (shouldAllowNext ? 1 : 0);
+                                
+                                if (!isAccessible) return null;
+
+                                const isActive = selectedWeekNum === w;
+                                return (
+                                    <Button
+                                        key={w}
+                                        variant={isActive ? "solid" : "ghost"}
+                                        colorPalette={isActive ? "blue" : weekData?.status === 'COMPLETED' ? "green" : "gray"}
+                                        onClick={() => loadWeekData(allWeeks, w)}
+                                        size="xs"
+                                        borderRadius="full"
+                                        px={4}
+                                        fontWeight="black"
+                                        shadow={isActive ? "md" : "none"}
+                                        _hover={{ bg: isActive ? "blue.500" : "blackAlpha.100" }}
+                                    >
+                                        WEEK {w}
+                                    </Button>
+                                );
+                            })}
+                        </HStack>
+                    </Flex>
+                </VStack>
             </Container>
         </Box>
     );

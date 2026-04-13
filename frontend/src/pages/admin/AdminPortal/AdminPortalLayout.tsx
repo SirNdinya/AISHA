@@ -6,7 +6,6 @@ import { type RootState } from '../../../store';
 import NotificationCenter from '../../../components/common/NotificationCenter';
 import { logout } from '../../../store/authSlice';
 import AishaAssistant from '../../../components/common/AishaAssistant';
-import BroadcastBanner from '../../../components/common/BroadcastBanner';
 import {
     LayoutDashboard,
     Users,
@@ -14,20 +13,15 @@ import {
     Briefcase,
     Settings,
     LogOut,
-    Menu,
-    X,
-    MessageSquare
+    Megaphone
 } from 'lucide-react';
+import { LuPanelLeftClose, LuPanelLeftOpen } from 'react-icons/lu';
 
 const navItems = [
-    { name: 'Analytics', path: '/institution/dashboard', icon: LayoutDashboard, roles: ['INSTITUTION'] },
-    { name: 'Dashboard', deptPath: '/department/dashboard', icon: LayoutDashboard, roles: ['DEPARTMENT_ADMIN'] },
-    { name: 'Communications', path: '/institution/chat', deptPath: '/department/chat', icon: MessageSquare, roles: ['INSTITUTION', 'DEPARTMENT_ADMIN'] },
+    { name: 'Institutional Overview', path: '/institution/dashboard', icon: LayoutDashboard, roles: ['INSTITUTION'] },
     { name: 'Departments', path: '/institution/departments', icon: Users, roles: ['INSTITUTION'] },
-    { name: 'Student Node', deptPath: '/department/students', icon: Users, roles: ['DEPARTMENT_ADMIN'] },
-    { name: 'Document Hub', deptPath: '/department/documents', icon: FileText, roles: ['DEPARTMENT_ADMIN'] },
-    { name: 'Logbook Hub', path: '/institution/logbooks', deptPath: '/department/logbooks', icon: FileText },
-    { name: 'Placement Hub', path: '/institution/placements', deptPath: '/department/placements', icon: Briefcase },
+    { name: 'Dashboard', deptPath: '/department/dashboard', icon: LayoutDashboard, roles: ['DEPARTMENT_ADMIN'] },
+    { name: 'Placement Hub', deptPath: '/department/placements', icon: Briefcase, roles: ['DEPARTMENT_ADMIN'] },
     { name: 'Settings', path: '/institution/settings', deptPath: '/department/settings', icon: Settings },
 ];
 
@@ -76,6 +70,21 @@ const AdminPortalLayout: React.FC = () => {
                         )}
                     </Flex>
 
+                    {/* Toggle Button */}
+                    <Flex justify={isSidebarOpen ? 'flex-end' : 'center'} px={isSidebarOpen ? 1 : 0}>
+                        <IconButton
+                            aria-label={isSidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+                            variant="ghost"
+                            color="whiteAlpha.500"
+                            _hover={{ color: 'white', bg: 'whiteAlpha.100' }}
+                            size="sm"
+                            rounded="lg"
+                            onClick={() => setSidebarOpen(!isSidebarOpen)}
+                        >
+                            {isSidebarOpen ? <LuPanelLeftClose /> : <LuPanelLeftOpen />}
+                        </IconButton>
+                    </Flex>
+
                     {/* Nav Links */}
                     <VStack gap={2} align="stretch">
                         {navItems.filter(item => {
@@ -117,7 +126,7 @@ const AdminPortalLayout: React.FC = () => {
                             onClick={handleLogout}
                         >
                             <Icon as={LogOut} boxSize={5} mr={isSidebarOpen ? 4 : 0} />
-                            {isSidebarOpen && <Text fontWeight="medium">Logout</Text>}
+                            {isSidebarOpen && <Text fontWeight="medium">Sign Out</Text>}
                         </Flex>
                     </Box>
                 </VStack>
@@ -125,7 +134,6 @@ const AdminPortalLayout: React.FC = () => {
 
             {/* Main Content */}
             <Box flex="1" h="100vh" overflowY="auto" position="relative">
-                <BroadcastBanner system="INSTITUTION" />
                 {/* Top bar */}
                 <Flex
                     h="70px"
@@ -134,19 +142,11 @@ const AdminPortalLayout: React.FC = () => {
                     px={8}
                     position="sticky"
                     top={0}
-                    zIndex={10}
+                    zIndex={1100}
                     className="sidebar-glass"
                     backdropFilter="blur(10px)"
                 >
-                    <IconButton
-                        aria-label="Toggle Sidebar"
-                        variant="ghost"
-                        color="gray.400"
-                        onClick={() => setSidebarOpen(!isSidebarOpen)}
-                        _hover={{ bg: "rgba(255, 255, 255, 0.05)" }}
-                    >
-                        {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
-                    </IconButton>
+                    <Box></Box>
 
                     <Flex align="center" gap={6}>
                         <NotificationCenter />

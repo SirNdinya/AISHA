@@ -28,34 +28,15 @@ const StudentService = {
         return response.data.data;
     },
 
-    // Example for future: uploads
-    uploadCV: async (file: File) => {
-        const formData = new FormData();
-        formData.append('cv', file);
-        const response = await apiClient.post('/students/documents/upload', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        });
-        return response.data;
-    },
 
     uploadProfilePicture: async (file: File) => {
         const formData = new FormData();
         formData.append('profile_picture', file);
-        const response = await apiClient.post('/students/profile-picture', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        const response = await apiClient.post('/students/profile-picture', formData);
         return response.data;
     },
 
-    uploadDocument: async (file: File, type: string = 'CERTIFICATION') => {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('type', type);
-        const response = await apiClient.post('/documents/upload', formData, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        });
-        return response.data.data;
-    },
+
 
     // Opportunity Discovery
     getOpportunities: async (): Promise<Opportunity[]> => {
@@ -65,8 +46,12 @@ const StudentService = {
     },
 
     // Application Logic
-    applyToOpportunity: async (opportunityId: string): Promise<Application> => {
-        const response = await apiClient.post<ApiResponse<Application>>('/applications/apply', { opportunity_id: opportunityId });
+    applyToOpportunity: async (opportunityId: string, matchScore?: number, matchReason?: string): Promise<Application> => {
+        const response = await apiClient.post<ApiResponse<Application>>('/applications/apply', { 
+            opportunity_id: opportunityId,
+            match_score: matchScore,
+            match_reason: matchReason
+        });
         return response.data.data;
     },
 
@@ -108,19 +93,7 @@ const StudentService = {
         return response.data.data;
     },
 
-    downloadPlacementLetter: async (applicationId: string): Promise<Blob> => {
-        const response = await apiClient.get(`/documents/placement-letter/${applicationId}`, {
-            responseType: 'blob'
-        });
-        return response.data;
-    },
 
-    downloadNITAForm: async (applicationId: string): Promise<Blob> => {
-        const response = await apiClient.get(`/documents/nita-form/${applicationId}`, {
-            responseType: 'blob'
-        });
-        return response.data;
-    },
 
     getAcademicRecords: async (): Promise<any[]> => {
         const response = await apiClient.get<ApiResponse<any[]>>('/students/academic-records');
@@ -132,15 +105,7 @@ const StudentService = {
         return response.data.data;
     },
 
-    generateAIResume: async (studentId: string, prompt: string): Promise<any> => {
-        // This calls the ai-services directly or via the main backend proxy
-        // Assuming the main backend proxies it or we call ai-services directly
-        // For now, assume it's under /students/generate-ai-resume in the main backend 
-        // OR we use the specialized ai-services port if configured.
-        // Let's assume the main backend provides this endpoint for simplicity in the frontend.
-        const response = await apiClient.post<ApiResponse<any>>(`/students/${studentId}/generate-ai-resume`, { prompt });
-        return response.data.data;
-    },
+
 
     downloadTranscriptReport: async (): Promise<void> => {
         const response = await apiClient.get('/students/transcript-report/download', {
@@ -170,18 +135,15 @@ const StudentService = {
         await apiClient.delete('/auth/account');
     },
 
-    getMyDocuments: async (): Promise<any[]> => {
-        const response = await apiClient.get<ApiResponse<any[]>>('/documents/mine');
-        return response.data.data;
-    },
-
     getAssessments: async (): Promise<any[]> => {
         const response = await apiClient.get<ApiResponse<any[]>>('/assessments');
         return response.data.data;
     },
 
-    deleteDocument: async (id: string): Promise<void> => {
-        await apiClient.delete(`/documents/${id}`);
+    initiatePayment: async (data: { phoneNumber: string, amount: number, opportunityId: string, type: string }): Promise<any> => {
+        // Payments are under /api/payments
+        const response = await apiClient.post<ApiResponse<any>>('/payments/initiate', data);
+        return response.data;
     }
 };
 

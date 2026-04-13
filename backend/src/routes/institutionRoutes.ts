@@ -19,7 +19,6 @@ router.get('/students', controller.getStudents);
 router.get('/sync-status', controller.getSyncStatus);
 router.patch('/settings', controller.updateSettings);
 router.get('/placements', controller.getPlacements);
-router.get('/documents', controller.getDocuments);
 
 // Department Management
 router.post('/departments', deptController.createDepartment);
@@ -33,7 +32,7 @@ router.patch('/departments/:id/status', deptController.toggleStatus);
 router.get('/:id/analytics', controller.getAnalytics);
 
 // Document Assignment
-const docController = new (require('../controllers/DocumentController').DocumentController)();
-router.post('/documents/assign', docController.assignDocumentToStudent);
+// const docController = new (require('../controllers/DocumentController').DocumentController)();
+// router.post('/documents/assign', docController.assignDocumentToStudent);
 
 export default router;

@@ -10,7 +10,7 @@ import type { AppDispatch, RootState } from '../../store';
 import { useNavigate } from 'react-router-dom';
 import {
     LuActivity, LuUsers, LuBriefcase,
-    LuShield, LuArrowRight, LuZap, LuShieldCheck, LuBrainCircuit,
+    LuShield, LuZap, LuBrainCircuit,
     LuCalendar, LuCheck, LuX
 } from 'react-icons/lu';
 import apiClient from '../../services/apiClient';
@@ -64,26 +64,30 @@ const CompanyDashboard: React.FC = () => {
                         {profile ? profile.name : 'Corporate Hub'}
                     </Heading>
                     <HStack mt={2}>
-                        <Text color="gray.400" fontSize="lg">Welcome back, {user?.firstName}. Operating from {profile?.location || 'Headquarters'}. System Status:</Text>
-                        <Badge colorPalette="green" variant="subtle" px={3} borderRadius="full">STABLE</Badge>
+                        <Text color="gray.400" fontSize="lg">Welcome back, {user?.firstName}. Operating from {profile?.address || 'Headquarters'}.</Text>
                     </HStack>
                 </Box>
                 <HStack gap={4}>
-                    <Button variant="outline" borderColor="whiteAlpha.200" color="white" rounded="full" size="sm">
-                        <Icon as={LuShieldCheck} mr={2} /> Encrypted Session
-                    </Button>
+
                 </HStack>
             </Flex>
 
             {/* Top Metrics Grid */}
-            <Grid templateColumns={{ base: "1fr", md: "repeat(4, 1fr)" }} gap={6} mb={10}>
+            <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={6} mb={10}>
                 {[
-                    { label: 'Live Opportunties', val: activeOpps.length, icon: LuBriefcase, color: 'blue' },
-                    { label: 'Total Applicants', val: totalApplicants, icon: LuUsers, color: 'purple' },
-                    { label: 'Platform Usage', val: 'High', icon: LuActivity, color: 'cyan' },
+                    { label: 'Active Opportunities', val: activeOpps.length, icon: LuBriefcase, color: 'blue' },
                     { label: 'Active Placements', val: analytics?.active_placements || 0, icon: LuShield, color: 'teal' }
                 ].map((stat, i) => (
-                    <Card.Root key={i} className="glass-panel" border="1px solid" borderColor="whiteAlpha.100" bg="whiteAlpha.50">
+                    <Card.Root 
+                        key={i} 
+                        className="glass-panel" 
+                        border="1px solid" 
+                        borderColor="whiteAlpha.100" 
+                        bg="whiteAlpha.50"
+                        cursor="default"
+                        _hover={{}}
+                        transition="all 0.2s"
+                    >
                         <Card.Body py={6}>
                             <Flex justify="space-between" align="center">
                                 <Box>
@@ -110,16 +114,16 @@ const CompanyDashboard: React.FC = () => {
                                 <Icon as={LuActivity} color="blue.400" boxSize={6} />
                             </Flex>
                             <VStack align="stretch" gap={4}>
-                                {[
-                                    { text: "New assessment submitted for John Doe", time: "2h ago" },
-                                    { text: "Logbook entry verified for Jane Smith", time: "5h ago" },
-                                    { text: "New internship opportunity posted", time: "Yesterday" }
-                                ].map((act, i) => (
-                                    <HStack key={i} justify="space-between" p={3} bg="whiteAlpha.50" borderRadius="xl">
-                                        <Text fontSize="sm" color="whiteAlpha.800">{act.text}</Text>
-                                        <Text fontSize="xs" color="gray.500">{act.time}</Text>
-                                    </HStack>
-                                ))}
+                                {analytics?.recent_activities && analytics.recent_activities.length > 0 ? (
+                                    analytics.recent_activities.map((act: any, i: number) => (
+                                        <HStack key={i} justify="space-between" p={3} bg="whiteAlpha.50" borderRadius="xl">
+                                            <Text fontSize="sm" color="whiteAlpha.800">{act.description || act.text}</Text>
+                                            <Text fontSize="xs" color="gray.500">{act.time}</Text>
+                                        </HStack>
+                                    ))
+                                ) : (
+                                    <Text fontSize="sm" color="gray.500" textAlign="center" py={4}>No recent activity</Text>
+                                )}
                             </VStack>
                         </Card.Body>
                     </Card.Root>
@@ -131,28 +135,40 @@ const CompanyDashboard: React.FC = () => {
                                 <Icon as={LuCalendar} color="purple.400" boxSize={6} />
                             </Flex>
                             <VStack align="stretch" gap={4}>
-                                {assessments.length === 0 ? (
-                                    <Text fontSize="sm" color="gray.500" textAlign="center" py={4}>No pending site visit requests.</Text>
-                                ) : assessments.map((assessment: any) => (
-                                    <Box key={assessment.id} p={4} bg="whiteAlpha.50" borderRadius="xl" border="1px solid" borderColor={assessment.status === 'PROPOSED' ? 'orange.500' : 'green.500'}>
-                                        <HStack justify="space-between" mb={2}>
-                                            <VStack align="start" gap={0}>
-                                                <Text fontWeight="bold" color="white">{assessment.placement?.first_name} {assessment.placement?.last_name}</Text>
-                                                <Text fontSize="xs" color="gray.400">{assessment.institution?.name}</Text>
-                                            </VStack>
-                                            <Badge colorPalette={assessment.status === 'PROPOSED' ? 'orange' : 'green'}>{assessment.status}</Badge>
-                                        </HStack>
-                                        <Text fontSize="sm" color="whiteAlpha.800" mb={3}>
-                                            Proposed Date: {new Date(assessment.proposed_date).toLocaleDateString()}
-                                        </Text>
-                                        {assessment.status === 'PROPOSED' && (
-                                            <HStack>
-                                                <Button size="xs" colorPalette="green" onClick={() => handleAssessmentAction(assessment.id, 'CONFIRMED')}><LuCheck /> Confirm</Button>
-                                                <Button size="xs" colorPalette="red" variant="outline" onClick={() => handleAssessmentAction(assessment.id, 'CANCELED')}><LuX /> Reject</Button>
+                                {(() => {
+                                    const oneWeekFromNow = new Date();
+                                    oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7);
+                                    
+                                    const upcomingAssessments = assessments.filter((a: any) => {
+                                        const proposed = new Date(a.proposed_date);
+                                        return proposed <= oneWeekFromNow && a.status !== 'COMPLETED';
+                                    });
+
+                                    if (upcomingAssessments.length === 0) {
+                                        return <Text fontSize="sm" color="gray.500" textAlign="center" py={4}>No upcoming assessments in the next 7 days.</Text>;
+                                    }
+
+                                    return upcomingAssessments.map((assessment: any) => (
+                                        <Box key={assessment.id} p={4} bg="whiteAlpha.50" borderRadius="xl" border="1px solid" borderColor={assessment.status === 'PROPOSED' ? 'orange.500' : 'green.500'}>
+                                            <HStack justify="space-between" mb={2}>
+                                                <VStack align="start" gap={0}>
+                                                    <Text fontWeight="bold" color="white">{assessment.placement?.first_name} {assessment.placement?.last_name}</Text>
+                                                    <Text fontSize="xs" color="gray.400">{assessment.institution?.name}</Text>
+                                                </VStack>
+                                                <Badge colorPalette={assessment.status === 'PROPOSED' ? 'orange' : 'green'}>{assessment.status}</Badge>
                                             </HStack>
-                                        )}
-                                    </Box>
-                                ))}
+                                            <Text fontSize="sm" color="whiteAlpha.800" mb={3}>
+                                                Proposed Date: {new Date(assessment.proposed_date).toLocaleDateString()}
+                                            </Text>
+                                            {assessment.status === 'PROPOSED' && (
+                                                <HStack>
+                                                    <Button size="xs" colorPalette="green" onClick={() => handleAssessmentAction(assessment.id, 'CONFIRMED')}><LuCheck /> Confirm</Button>
+                                                    <Button size="xs" colorPalette="red" variant="outline" onClick={() => handleAssessmentAction(assessment.id, 'CANCELED')}><LuX /> Reject</Button>
+                                                </HStack>
+                                            )}
+                                        </Box>
+                                    ));
+                                })()}
                             </VStack>
                         </Card.Body>
                     </Card.Root>
@@ -165,22 +181,16 @@ const CompanyDashboard: React.FC = () => {
                             <Icon as={LuBrainCircuit} position="absolute" right="-20px" top="-20px" boxSize="150px" opacity={0.05} color="blue.400" />
                             <HStack mb={6}>
                                 <Icon as={LuZap} color="yellow.400" />
-                                <Heading size="md" color="white" letterSpacing="widest">OPERATIONAL INSIGHTS</Heading>
+                                <Heading size="md" color="white" letterSpacing="widest">OPERATIONAL SYNERGY</Heading>
                             </HStack>
                             <VStack align="stretch" gap={6}>
                                 <Box bg="whiteAlpha.50" p={5} borderRadius="2xl" border="1px solid" borderColor="whiteAlpha.100">
                                     <Text fontSize="sm" fontWeight="bold" color="blue.300">Pending Assessments</Text>
-                                    <Text fontSize="xs" color="gray.400" mt={2}>You have 5 students awaiting final evaluation. Complete these to issue certificates.</Text>
+                                    <Text fontSize="xs" color="gray.400" mt={2}>You have {assessments.filter((a: any) => a.status === 'PROPOSED').length} students awaiting final evaluation. Complete these to issue certificates.</Text>
                                     <Button size="xs" colorPalette="blue" mt={4} variant="solid" rounded="lg" onClick={() => navigate('/company/placements')}>Review Now</Button>
                                 </Box>
-                                <Box bg="whiteAlpha.50" p={5} borderRadius="2xl" border="1px solid" borderColor="whiteAlpha.100">
-                                    <Text fontSize="sm" fontWeight="bold" color="purple.300">Unread Student Messages</Text>
-                                    <Text fontSize="xs" color="gray.400" mt={2}>3 candidates have responded to your interview invites.</Text>
-                                </Box>
                                 <Separator borderColor="whiteAlpha.100" />
-                                <Button variant="ghost" color="whiteAlpha.800" size="sm" justifyContent="space-between" _hover={{ bg: 'whiteAlpha.100', color: 'white' }}>
-                                    Full Operations Report <LuArrowRight />
-                                </Button>
+
                             </VStack>
                         </Box>
                     </Card.Root>
@@ -197,7 +207,7 @@ const CompanyDashboard: React.FC = () => {
                                     _hover={{ borderColor: 'blue.400', bg: 'whiteAlpha.100', transform: 'translateX(4px)' }}
                                     transition="0.3s"
                                     cursor="pointer"
-                                    onClick={() => navigate(`/company/opportunities/${opp.id}/applicants`)}
+                                    onClick={() => navigate('/company/placements')}
                                 >
                                     <Card.Body p={5}>
                                         <Flex justify="space-between" align="center">

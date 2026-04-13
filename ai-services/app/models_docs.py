@@ -9,7 +9,7 @@ class DocumentTemplate(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     institution_id = Column(UUID(as_uuid=True), nullable=False)
-    name = Column(String)  # e.g., "NITA Form", "Insurance Cover"
+    name = Column(String)  # e.g., "Insurance Cover"
     file_path = Column(String) # Path to the stored blank PDF
     signature_key_public = Column(String) # Public key to verify signatures
     signature_key_private = Column(String) # Private key (Encrypted in real app!) to sign

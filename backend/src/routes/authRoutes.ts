@@ -11,6 +11,6 @@ router.post('/verify-email', authController.verifyEmail);
 router.post('/forgot-password', authController.forgotPassword);
 router.post('/reset-password', authController.resetPassword);
 router.get('/me', authenticate, authController.getMe);
-router.delete('/account', authenticate, authController.deleteAccount);
+
 
 export default router;

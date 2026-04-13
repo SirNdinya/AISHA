@@ -97,7 +97,10 @@ async def analyze_transcript(data: Dict[str, Any]):
     """
     Analyze transcript records.
     """
-    analysis = await TranscriptService.analyze_performance(data.get("records", []))
+    analysis = await TranscriptService.analyze_performance(
+        data.get("records", []), 
+        student_name=data.get("student_name", "the student")
+    )
     return {"status": "success", "data": analysis}
 
 @router.post("/download-transcript")

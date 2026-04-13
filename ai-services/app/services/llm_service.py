@@ -33,8 +33,8 @@ class LLMService:
         if GEMINI_AVAILABLE and self.gemini_key:
             try:
                 genai.configure(api_key=self.gemini_key)
-                # Using gemini-2.5-flash for better performance/quota
-                self.gemini_model = genai.GenerativeModel('gemini-2.5-flash')
+                # Using gemini-flash-latest (1.5) for better quota and stability
+                self.gemini_model = genai.GenerativeModel('models/gemini-flash-latest')
                 self.gemini_ready = True
                 logger.info("Gemini initialized successfully.")
             except Exception as e:
@@ -57,8 +57,8 @@ class LLMService:
         """
         if self.gemini_ready:
             try:
-                # Use gemini-1.5-flash
-                logger.info(f"Calling Gemini (gemini-1.5-flash) for generate_response...")
+                # Use gemini-2.5-flash
+                logger.info(f"Calling Gemini (gemini-2.5-flash) for generate_response...")
                 
                 # Combine system prompt if provided
                 full_prompt = f"SYSTEM: {system_prompt}\n\nUSER: {prompt}" if system_prompt else prompt

@@ -35,7 +35,7 @@ const InstitutionLayout: React.FC = () => {
                         <ThemeToggle />
                         <HStack>
                             <Text fontSize="sm" fontWeight="bold">{user.firstName} (Coordinator)</Text>
-                            <Button size="sm" variant="outline" onClick={handleLogout}>Logout</Button>
+                            <Button size="sm" variant="outline" onClick={handleLogout}>Sign out</Button>
                         </HStack>
                     </HStack>
                 </Flex>

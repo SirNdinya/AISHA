@@ -27,9 +27,9 @@ class KnowledgeService:
         # In a real app, this would be backed by a Vector DB (e.g. Pinecone, Chroma)
         self.knowledge_base: List[Dict[str, Any]] = [
             {
-                "id": "nita_rules",
-                "content": "NITA (National Industrial Training Authority) requires all students to have a signed Industrial Attachment Contract Form before starting. The attachment period is typically 3 months.",
-                "tags": ["nita", "regulations", "attachment"]
+                "id": "attachment_rules",
+                "content": "Students must have accepted a placement offer before they can officially start. Placements are recorded on the ledger.",
+                "tags": ["rules", "attachment", "blockchain"]
             },
             {
                 "id": "insurance_info",

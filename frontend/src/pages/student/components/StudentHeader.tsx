@@ -41,7 +41,7 @@ const StudentHeader: React.FC = () => {
 
     return (
         <>
-            <Box bg="transparent" borderBottom="1px solid" borderColor="whiteAlpha.100" py={6} mb={8} pos="sticky" top={0} zIndex={10} backdropFilter="blur(20px)">
+            <Box bg="transparent" borderBottom="1px solid" borderColor="whiteAlpha.100" py={1} mb={1} pos="sticky" top={0} zIndex={1100} backdropFilter="blur(20px)">
                 <Container maxW="container.xl">
                     <Flex justify="space-between" align="flex-end">
                         <VStack align="start" gap={4}>
@@ -88,7 +88,7 @@ const StudentHeader: React.FC = () => {
                                     <Heading size="md" color="white" fontWeight="black" letterSpacing="tight">
                                         {greeting}, {profile?.last_name || '...'}
                                     </Heading>
-                                    {error && <Badge size="sm" colorPalette="red" variant="subtle" fontWeight="bold">SYNC_ERROR</Badge>}
+                                    {error && <Badge size="sm" colorPalette="red" variant="subtle" fontWeight="bold">SYNC ERROR</Badge>}
                                 </HStack>
                                 {/* Subtext removed per user request */}
                             </VStack>
@@ -115,7 +115,7 @@ const StudentHeader: React.FC = () => {
                                     _hover={{ bg: "cyan.900", color: "white" }}
                                     display={{ base: "flex", lg: "none" }}
                                 >
-                                    LOGOUT
+                                    SIGN OUT
                                 </Button>
                             </HStack>
                         </HStack>

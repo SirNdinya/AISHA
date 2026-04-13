@@ -3,6 +3,9 @@ import pool from '../config/database';
 import { BaseController } from './BaseController';
 import { NotificationService } from '../services/NotificationService';
 import { RealtimeService } from '../services/RealtimeService';
+import PDFDocument from 'pdfkit';
+import path from 'path';
+import fs from 'fs';
 
 export class ApplicationController extends BaseController {
     constructor() {
@@ -13,12 +16,18 @@ export class ApplicationController extends BaseController {
     apply = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const userId = (req as any).user?.id;
-            const { opportunity_id } = req.body;
+            const { opportunity_id, match_score, match_reason } = req.body;
+            
+            console.log(`[DEBUG] Apply Attempt - User: ${userId}, Opp: ${opportunity_id}, Score: ${match_score}`);
 
             // Get Student ID
             const studentRes = await pool.query('SELECT id FROM students WHERE user_id = $1', [userId]);
-            if (studentRes.rows.length === 0) return res.status(404).json({ message: 'Student profile not found' });
+            if (studentRes.rows.length === 0) {
+                console.warn(`[DEBUG] Apply Failed - No student profile for user ${userId}`);
+                return res.status(404).json({ message: 'Student profile not found' });
+            }
             const studentId = studentRes.rows[0].id;
+            console.log(`[DEBUG] Apply Proceeding - Student: ${studentId}`);
 
             // Check if already applied
             const checkRes = await pool.query(
@@ -27,6 +36,7 @@ export class ApplicationController extends BaseController {
             );
 
             if (checkRes.rows.length > 0) {
+                console.log(`[DEBUG] Apply - Application already exists for student ${studentId}`);
                 return res.status(200).json({ 
                     status: 'success', 
                     message: 'Application already exists', 
@@ -35,24 +45,13 @@ export class ApplicationController extends BaseController {
             }
 
             // Create Application
-            // TODO: In Phase 2.2, we will add AI Match Score calculation here
             const query = `
-                INSERT INTO applications (student_id, opportunity_id, status, match_score)
-                VALUES ($1, $2, 'PENDING', 0)
+                INSERT INTO applications (student_id, opportunity_id, status, match_score, match_reason)
+                VALUES ($1, $2, 'PENDING', $3, $4)
                 RETURNING *
             `;
-            const result = await pool.query(query, [studentId, opportunity_id]);
-
-            // 3. Trigger Autonomous Review (System Pilot)
-            const { AutomationService } = require('../services/AutomationService');
-            await AutomationService.runAutonomousReview(opportunity_id);
-
-            // 4. Notify Company
-            const compUserRes = await pool.query('SELECT user_id FROM companies WHERE id = (SELECT company_id FROM opportunities WHERE id = $1)', [opportunity_id]);
-            if (compUserRes.rows.length > 0) {
-                const studentName = (await pool.query('SELECT first_name, last_name FROM students WHERE id = $1', [studentId])).rows[0];
-                await NotificationService.notifyNewApplication(compUserRes.rows[0].user_id, `${studentName.first_name} ${studentName.last_name}`);
-            }
+            const result = await pool.query(query, [studentId, opportunity_id, match_score || 0, match_reason || '']);
+            console.log(`[DEBUG] Apply Success - New Application: ${result.rows[0].id}`);
 
             res.status(201).json({
                 status: 'success',
@@ -61,6 +60,7 @@ export class ApplicationController extends BaseController {
             });
 
         } catch (error) {
+            console.error(`[DEBUG] Apply Error:`, error);
             next(error);
         }
     };
@@ -69,10 +69,14 @@ export class ApplicationController extends BaseController {
     getMyApplications = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const userId = (req as any).user?.id;
+            console.log(`[DEBUG] GetMyApplications - User: ${userId}`);
 
             // Get Student ID
             const studentRes = await pool.query('SELECT id FROM students WHERE user_id = $1', [userId]);
-            if (studentRes.rows.length === 0) return res.status(404).json({ message: 'Student profile not found' });
+            if (studentRes.rows.length === 0) {
+                console.warn(`[DEBUG] GetMyApplications Failed - No student profile for user ${userId}`);
+                return res.status(404).json({ message: 'Student profile not found' });
+            }
             const studentId = studentRes.rows[0].id;
 
             const query = `
@@ -82,12 +86,21 @@ export class ApplicationController extends BaseController {
                     o.location, 
                     o.requirements, 
                     o.description, 
-                    o.match_reasoning,
+                    o.student_payment_required,
+                    o.student_payment_amount,
+                    o.stipend_amount,
                     c.name as company_name, 
-                    c.logo_url
+                    c.logo_url,
+                    c.profile_picture_url,
+                    c.acceptance_letter_template,
+                    c.acceptance_letter_requirements,
+                    p.first_assessment_date,
+                    p.second_assessment_date,
+                    p.status as placement_status
                 FROM applications a
                 JOIN opportunities o ON a.opportunity_id = o.id
                 JOIN companies c ON o.company_id = c.id
+                LEFT JOIN placements p ON p.application_id = a.id
                 WHERE a.student_id = $1
                 ORDER BY a.applied_at DESC
             `;
@@ -99,6 +112,40 @@ export class ApplicationController extends BaseController {
                 data: result.rows,
             });
 
+        } catch (error) {
+            next(error);
+        }
+    };
+
+
+    // Get all applicants for the logged-in company (across all jobs)
+    getAllApplicants = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const userId = (req as any).user?.id;
+
+            // Get company ID
+            const companyRes = await pool.query('SELECT id FROM companies WHERE user_id = $1', [userId]);
+            if (companyRes.rows.length === 0) return res.status(404).json({ message: 'Company not found' });
+            const companyId = companyRes.rows[0].id;
+
+            const query = `
+                SELECT 
+                    a.*, 
+                    s.first_name, s.last_name, s.course_of_study, s.skills,
+                    o.title as job_title
+                FROM applications a
+                JOIN students s ON a.student_id = s.id
+                JOIN opportunities o ON a.opportunity_id = o.id
+                WHERE o.company_id = $1
+                ORDER BY a.match_score DESC, a.applied_at DESC
+            `;
+            const result = await pool.query(query, [companyId]);
+
+            res.status(200).json({
+                status: 'success',
+                results: result.rows.length,
+                data: result.rows,
+            });
         } catch (error) {
             next(error);
         }
@@ -124,7 +171,7 @@ export class ApplicationController extends BaseController {
 
             // Fetch Applicants with Student Details
             const query = `
-                SELECT a.*, s.first_name, s.last_name, s.course_of_study, s.cv_url, s.resume_text, s.skills, s.user_id as student_user_id
+                SELECT a.*, s.first_name, s.last_name, s.course_of_study, s.skills, s.user_id as student_user_id
                 FROM applications a
                 JOIN students s ON a.student_id = s.id
                 WHERE a.opportunity_id = $1
@@ -280,13 +327,48 @@ export class ApplicationController extends BaseController {
                 const updatedApp = result.rows[0];
 
                 if (decision === 'ACCEPTED') {
-                    // 1. Decrement Vacancies
+                    // 1. Check if the student already has active placements
+                    const existingPlacementRes = await client.query(
+                        `SELECT p.id, a.opportunity_id, p.application_id 
+                         FROM placements p 
+                         JOIN applications a ON p.application_id = a.id 
+                         WHERE p.student_id = $1 AND p.status = 'ACTIVE'`,
+                        [app.student_id]
+                    );
+
+                    if (existingPlacementRes.rows.length > 0) {
+                        for (const oldPlacement of existingPlacementRes.rows) {
+                            // Release old slots
+                            await client.query(
+                                'UPDATE opportunities SET vacancies = vacancies + 1 WHERE id = $1',
+                                [oldPlacement.opportunity_id]
+                            );
+
+                            // Archive old placement completely
+                            await client.query(
+                                "DELETE FROM placements WHERE id = $1",
+                                [oldPlacement.id]
+                            );
+                            
+                            // Delete old application completely to erase traces
+                            if (oldPlacement.application_id) {
+                                await client.query(
+                                    "DELETE FROM applications WHERE id = $1",
+                                    [oldPlacement.application_id]
+                                );
+                            }
+
+                            console.log(`[PLACEMENT] Released student ${app.student_id} from old opportunity ${oldPlacement.opportunity_id} (Purged)`);
+                        }
+                    }
+
+                    // 2. Decrement Vacancies for the new opportunity
                     await client.query(
                         'UPDATE opportunities SET vacancies = vacancies - 1 WHERE id = $1 AND vacancies > 0',
                         [app.opportunity_id]
                     );
 
-                    // 2. Create Placement Record
+                    // 3. Create Placement Record
                     const durationMonths = app.duration_months || 3;
                     const startDate = new Date();
                     const endDate = new Date();
@@ -300,7 +382,7 @@ export class ApplicationController extends BaseController {
                         VALUES ($1, $2, $3, $4, $5, $6, 'ACTIVE')
                     `, [id, app.student_id, app.opportunity_id, app.company_id, startDate, endDate]);
 
-                    // 3. Trigger Payment Notification if required
+                    // 4. Trigger Payment Notification if required
                     const oppRes = await client.query(
                         'SELECT title, student_payment_required, student_payment_amount FROM opportunities WHERE id = $1',
                         [app.opportunity_id]
@@ -321,8 +403,8 @@ export class ApplicationController extends BaseController {
                 await client.query('COMMIT');
 
                 // Notify Company
+                // Notify Company
                 const { NotificationService } = require('../services/NotificationService');
-                const { MessageService } = require('../services/MessageService');
 
                 const title = decision === 'ACCEPTED' ? 'Offer Accepted!' : 'Offer Declined';
                 const msg = `Candidate has ${decision.toLowerCase()} your offer for ${app.job_title}.${feedback ? ` Feedback: ${feedback}` : ''}`;
@@ -341,19 +423,13 @@ export class ApplicationController extends BaseController {
                 const instRes = await client.query('SELECT institution_id FROM students WHERE user_id = $1', [userId]);
                 if (instRes.rows.length > 0) {
                     const instId = instRes.rows[0].institution_id;
+                    const { RealtimeService } = require('../services/RealtimeService');
                     RealtimeService.emitToInstitution(instId, 'placement_decision', {
                         application_id: id,
                         student_id: app.student_id,
                         decision: decision,
                         job_title: app.job_title,
                         timestamp: new Date().toISOString()
-                    });
-                }
-
-                // Send automatic message with feedback
-                if (feedback) {
-                    await MessageService.sendMessage(userId, app.company_user_id, `Response to Offer: ${decision}. ${feedback}`, {
-                        appId: id
                     });
                 }
 
@@ -367,6 +443,271 @@ export class ApplicationController extends BaseController {
             } finally {
                 client.release();
             }
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    downloadAcceptanceLetter = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const { id } = req.params; // Application ID
+            const userId = (req as any).user.id;
+
+            // Comprehensive query: pull ALL dynamic data for the letter
+            const query = `
+                SELECT 
+                    a.id as app_id, a.status, a.match_reason, a.applied_at,
+                    s.first_name, s.last_name, s.admission_number, s.course_of_study,
+                    i.name as institution_name, i.code as institution_code,
+                    c.name as company_name, c.logo_url, c.profile_picture_url, c.location as company_location,
+                    o.title as job_title, o.description as job_description, o.location as job_location,
+                    o.requirements as job_requirements, o.duration_months, o.start_date as opp_start_date,
+                    p.start_date as placement_start, p.end_date as placement_end,
+                    cs.name as supervisor_name, cs.email as supervisor_email,
+                    cd.name as department_name
+                FROM applications a
+                JOIN students s ON a.student_id = s.id
+                LEFT JOIN institutions i ON s.institution_id = i.id
+                JOIN opportunities o ON a.opportunity_id = o.id
+                JOIN companies c ON o.company_id = c.id
+                LEFT JOIN placements p ON a.id = p.application_id
+                LEFT JOIN company_supervisors cs ON p.supervisor_id = cs.id
+                LEFT JOIN company_departments cd ON p.department_id = cd.id
+                WHERE a.id = $1 AND (s.user_id = $2 OR c.user_id = $2)
+            `;
+            const result = await pool.query(query, [id, userId]);
+
+            if (result.rows.length === 0) {
+                return res.status(404).json({ message: 'Application not found or unauthorized.' });
+            }
+
+            const d = result.rows[0];
+            
+            if (d.status !== 'ACCEPTED') {
+                 return res.status(403).json({ message: 'Acceptance letter is only available for accepted placements.' });
+            }
+
+            // Resolve dates
+            const startDate = d.placement_start || d.opp_start_date || d.applied_at;
+            const startStr = startDate ? new Date(startDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : 'To Be Confirmed';
+            const endStr = d.placement_end ? new Date(d.placement_end).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : null;
+            const durationStr = d.duration_months ? `${d.duration_months} month${d.duration_months > 1 ? 's' : ''}` : '3 months';
+            const refNo = `AISHA/ATT/${d.app_id.split('-')[0].toUpperCase()}/${new Date().getFullYear()}`;
+
+            const doc = new PDFDocument({ margin: 55, size: 'A4' });
+            
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `attachment; filename=Acceptance_Letter_${d.last_name}_${d.first_name}.pdf`);
+            doc.pipe(res);
+
+            // ============================================================
+            // HEADER — Company Branding
+            // ============================================================
+            let logoRendered = false;
+            const logoPath = d.profile_picture_url || d.logo_url;
+            if (logoPath && logoPath.startsWith('/uploads')) {
+                const relPath = logoPath.startsWith('/') ? logoPath.substring(1) : logoPath;
+                const fullPath = path.join(__dirname, '../../', relPath);
+                if (fs.existsSync(fullPath)) {
+                    try {
+                        doc.image(fullPath, 55, 40, { width: 65 });
+                        logoRendered = true;
+                    } catch (e) { console.error('Logo embed error:', e); }
+                }
+            }
+
+            const headerX = logoRendered ? 135 : 55;
+            doc.fillColor('#0f2b46')
+               .fontSize(22)
+               .font('Helvetica-Bold')
+               .text(d.company_name.toUpperCase(), headerX, 45);
+            
+            const companyAddr = d.job_location || d.company_location || '';
+            if (companyAddr) {
+                doc.fillColor('#4a5568')
+                   .fontSize(9)
+                   .font('Helvetica')
+                   .text(companyAddr, headerX, 72);
+            }
+
+            // Divider
+            doc.strokeColor('#1a73e8').lineWidth(2)
+               .moveTo(55, 100).lineTo(540, 100).stroke();
+            doc.strokeColor('#e2e8f0').lineWidth(0.5)
+               .moveTo(55, 103).lineTo(540, 103).stroke();
+
+            // ============================================================
+            // DATE & REFERENCE
+            // ============================================================
+            doc.moveDown(1.5);
+            const dateY = 118;
+            doc.fillColor('#2d3748').fontSize(10).font('Helvetica')
+               .text(`Date: ${new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}`, 55, dateY)
+               .text(`Ref: ${refNo}`, 55, dateY + 15);
+
+            // ============================================================
+            // ADDRESSEE
+            // ============================================================
+            doc.moveDown(1.5);
+            const addrY = dateY + 45;
+            doc.font('Helvetica-Bold').fontSize(10).fillColor('#2d3748')
+               .text(`${d.first_name} ${d.last_name}`, 55, addrY);
+            doc.font('Helvetica').fontSize(10);
+            if (d.admission_number) doc.text(`Reg. No: ${d.admission_number}`);
+            if (d.course_of_study) doc.text(`${d.course_of_study}`);
+            if (d.institution_name) doc.text(`${d.institution_name}`);
+
+            // ============================================================
+            // SUBJECT LINE
+            // ============================================================
+            doc.moveDown(1.5);
+            doc.font('Helvetica-Bold').fontSize(11).fillColor('#0f2b46')
+               .text('RE: ACCEPTANCE FOR INDUSTRIAL ATTACHMENT', { underline: true });
+
+            // ============================================================
+            // BODY — Paragraph 1: Acceptance confirmation
+            // ============================================================
+            doc.moveDown(1);
+            doc.font('Helvetica').fontSize(10.5).fillColor('#2d3748');
+
+            const dearLine = `Dear ${d.first_name},`;
+            doc.text(dearLine).moveDown(0.7);
+
+            let bodyPara1 = `Following your application, we are pleased to inform you that ${d.company_name} has accepted you for an industrial attachment position as a **${d.job_title}**`;
+            if (d.department_name) bodyPara1 += ` in the ${d.department_name} department`;
+            bodyPara1 += `.`;
+
+            // Render with inline bold for job title
+            const parts1 = bodyPara1.split('**');
+            const bodyStartY = doc.y;
+            let inline = false;
+            parts1.forEach((part: string) => {
+                if (inline) {
+                    doc.font('Helvetica-Bold').text(part, { continued: true });
+                } else {
+                    doc.font('Helvetica').text(part, { continued: true });
+                }
+                inline = !inline;
+            });
+            doc.text('', { continued: false }); // flush
+            doc.moveDown(0.5);
+
+            // Body — Paragraph 2: Dates
+            let bodyPara2 = `Your attachment is scheduled to commence on ${startStr}`;
+            if (endStr) bodyPara2 += ` and conclude on ${endStr}`;
+            bodyPara2 += `, for a total duration of ${durationStr}.`;
+            if (d.supervisor_name) {
+                bodyPara2 += ` You will report to ${d.supervisor_name}`;
+                if (d.supervisor_email) bodyPara2 += ` (${d.supervisor_email})`;
+                bodyPara2 += ` who will serve as your industrial supervisor.`;
+            }
+            doc.font('Helvetica').text(bodyPara2, { align: 'justify', lineGap: 4 });
+            doc.moveDown(0.8);
+
+            // ============================================================
+            // PLACEMENT DETAILS TABLE
+            // ============================================================
+            doc.font('Helvetica-Bold').fontSize(10).fillColor('#0f2b46')
+               .text('PLACEMENT DETAILS');
+            doc.moveDown(0.3);
+
+            const tableData: [string, string][] = [
+                ['Position', d.job_title],
+                ['Department', d.department_name || 'General'],
+                ['Location', d.job_location || d.company_location || 'Company Headquarters'],
+                ['Duration', durationStr],
+                ['Commencement Date', startStr],
+            ];
+            if (endStr) tableData.push(['End Date', endStr]);
+            if (d.supervisor_name) tableData.push(['Supervisor', d.supervisor_name]);
+
+            const tableStartY = doc.y;
+            const col1X = 60;
+            const col2X = 220;
+            const rowH = 20;
+
+            // Table header background
+            doc.rect(col1X - 5, tableStartY, 480, rowH).fill('#0f2b46');
+            doc.fillColor('#ffffff').fontSize(9).font('Helvetica-Bold')
+               .text('Detail', col1X, tableStartY + 5)
+               .text('Information', col2X, tableStartY + 5);
+
+            tableData.forEach((row, idx) => {
+                const y = tableStartY + rowH * (idx + 1);
+                const bgColor = idx % 2 === 0 ? '#f7fafc' : '#edf2f7';
+                doc.rect(col1X - 5, y, 480, rowH).fill(bgColor);
+                doc.fillColor('#2d3748').fontSize(9)
+                   .font('Helvetica-Bold').text(row[0], col1X, y + 5)
+                   .font('Helvetica').text(row[1], col2X, y + 5);
+            });
+
+            doc.y = tableStartY + rowH * (tableData.length + 1) + 10;
+
+            // ============================================================
+            // REQUIREMENTS (from opportunity, if any)
+            // ============================================================
+            const reqs = d.job_requirements;
+            if (reqs && reqs.trim()) {
+                doc.moveDown(0.5);
+                doc.font('Helvetica-Bold').fontSize(10).fillColor('#0f2b46')
+                   .text('REQUIREMENTS & INSTRUCTIONS');
+                doc.moveDown(0.3);
+                doc.font('Helvetica').fontSize(10).fillColor('#2d3748');
+
+                // Try to split by commas, newlines, or numbered items
+                const reqItems = reqs.split(/[,\n]/)
+                    .map((r: string) => r.replace(/^\d+[\.\)]\s*/, '').trim())
+                    .filter((r: string) => r.length > 0);
+
+                if (reqItems.length > 1) {
+                    reqItems.forEach((item: string, i: number) => {
+                        doc.text(`${i + 1}. ${item}`, { indent: 15, lineGap: 3 });
+                    });
+                } else {
+                    doc.text(reqs.trim(), { align: 'justify', lineGap: 3 });
+                }
+                doc.moveDown(0.5);
+            }
+
+            // ============================================================
+            // CLOSING
+            // ============================================================
+            doc.moveDown(0.5);
+            doc.font('Helvetica').fontSize(10.5).fillColor('#2d3748')
+               .text('We look forward to welcoming you and trust that this attachment will provide you with valuable professional experience. Please report to our offices on the commencement date indicated above.', { align: 'justify', lineGap: 4 });
+
+            doc.moveDown(0.5);
+            doc.text('Please do not hesitate to contact us should you require any further information.', { align: 'justify', lineGap: 4 });
+
+            // ============================================================
+            // SIGNATURE BLOCK
+            // ============================================================
+            doc.moveDown(2);
+            doc.text('Yours faithfully,');
+            doc.moveDown(2.5);
+
+            // Signature line
+            doc.strokeColor('#2d3748').lineWidth(0.5)
+               .moveTo(55, doc.y).lineTo(250, doc.y).stroke();
+            doc.moveDown(0.3);
+            doc.font('Helvetica-Bold').fontSize(10)
+               .text('Human Resources Manager');
+            doc.font('Helvetica').fontSize(10)
+               .text(d.company_name);
+            if (companyAddr) doc.text(companyAddr);
+
+            // ============================================================
+            // FOOTER — System stamp
+            // ============================================================
+            const footerY = 780;
+            doc.strokeColor('#e2e8f0').lineWidth(0.5)
+               .moveTo(55, footerY).lineTo(540, footerY).stroke();
+            doc.fillColor('#a0aec0').fontSize(7).font('Helvetica')
+               .text('This letter was generated by AISHA — Automated Industrial Student & Host Alignment System.', 55, footerY + 5, { align: 'center' })
+               .text(`Ref: ${refNo}`, 55, footerY + 15, { align: 'center' });
+
+            doc.end();
+
         } catch (error) {
             next(error);
         }

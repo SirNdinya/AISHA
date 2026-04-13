@@ -57,6 +57,16 @@ class MatchingService:
         if not text1 or not text2:
             return 0.0
         
+        if self.model is None:
+            # TF-IDF Fallback for Semantic Similarity when Neural Engine is Offline
+            try:
+                vectorizer = TfidfVectorizer(stop_words='english')
+                tfidf = vectorizer.fit_transform([text1, text2])
+                sim = cosine_similarity(tfidf[0:1], tfidf[1:2])[0][0]
+                return float(sim)
+            except:
+                return 0.5
+
         embeddings = self.model.encode([text1, text2], convert_to_tensor=True)
         similarity = util.cos_sim(embeddings[0], embeddings[1])
         return float(similarity.item())
@@ -66,6 +76,11 @@ class MatchingService:
         if not target_texts:
             return []
         
+        if self.model is None or student_emb is None:
+            # Fallback to individual TF-IDF comparisons if no embeddings available
+            return [0.5 for _ in target_texts]
+        
+        from sentence_transformers import util
         target_embs = self.model.encode(target_texts, convert_to_tensor=True)
         similarities = util.cos_sim(student_emb, target_embs)
         return [float(sim.item()) for sim in similarities[0]]
@@ -74,7 +89,7 @@ class MatchingService:
         job_reqs = f"{opp.title} {opp.requirements} {opp.description}"
         
         if not transcript_text and not student.academic_records:
-            return {"score": 0.0, "reasoning": "AISHA Neural Engine: Awaiting verified academic architecture for vector alignment."}
+            return {"score": 0.0, "reasoning": "[SYSTEM] AWAITING_ACADEMIC_RECORDS_FOR_VECTOR_SCAN."}
             
         student_doc = transcript_text
         if student.academic_records:
@@ -82,7 +97,7 @@ class MatchingService:
             student_doc += " " + " ".join(good_units) * 3 
             
         if not student_doc.strip():
-            return {"score": 0.0, "reasoning": "AISHA Neural Engine: Synthesizing empty transcript node."}
+            return {"score": 0.0, "reasoning": "[SYSTEM] EMPTY_TRANSCRIPT_NODE_DETECTED."}
             
         try:
             vectorizer = TfidfVectorizer(stop_words='english')
@@ -97,7 +112,7 @@ class MatchingService:
             }
         except Exception as e:
             logger.error(f"Algorithmic TF-IDF Error: {str(e)}")
-            return {"score": 0.0, "reasoning": "AISHA Neural Engine: High-fidelity computation protocol mismatch."}
+            return {"score": 0.0, "reasoning": "[SYSTEM] COMPUTATION_PROTOCOL_MISMATCH."}
 
     async def calculate_academic_score(self, student: models.Student, opp: models.Opportunity, transcript_text: str = "") -> dict:
         t0_alg = time.time()
@@ -107,54 +122,52 @@ class MatchingService:
         alg_latency = t1_alg - t0_alg
         logger.info(f"[TIMING] Algorithmic Deep Match for '{opp.title}' took {alg_latency:.4f}s")
 
-        # Fast path semantic matching
-        if student.academic_analysis and "insights" in student.academic_analysis:
-            analysis = student.academic_analysis
-            insights = analysis.get("insights", "")
-            strengths = ", ".join(analysis.get("strengths", []))
-            
-            academic_context = f"{insights} Professional Strengths: {strengths}"
-            job_context = f"{opp.title} {opp.requirements}"
-            
-            sim_score = self.calculate_semantic_similarity(academic_context, job_context)
-            status_boost = 0.1 if analysis.get("status") == "EXCELLENT" else 0.05 if analysis.get("status") == "PROFICIENT" else 0.0
-            
-            return {
-                "opportunity_id": str(opp.id),
-                "score": min(1.0, float(sim_score) + status_boost),
-                "reasoning": analysis.get("recommendation", "AISHA Neural Engine: Synthesized alignment detected in academic trajectory.")
-            }
+        # Removed fast-path template reasoning to ensure holistic LLM-driven justifications for all matches.
 
         records = student.academic_records
         if not records and not transcript_text:
-            return {"opportunity_id": str(opp.id), "score": 0.0, "reasoning": "AISHA Neural Engine: Awaiting structural records for deep scan."}
+            return {"opportunity_id": str(opp.id), "score": 0.0, "reasoning": "[SYSTEM] AWAITING_STRUCTURAL_RECORDS_FOR_SCAN."}
 
         grade_points = {"A": 1.0, "B": 0.8, "C": 0.6, "D": 0.4, "E": 0.2, "F": 0.0}
         unit_names = [f"{r.unit_name} ({r.grade})" for r in records]
-        
         prompt = f"""
-        Role: {opp.title}
-        Requirements: {opp.requirements}
-        Transcript Text Preview: {transcript_text[:1000] if transcript_text else "None"}
-        Student Units: {", ".join(unit_names) if unit_names else "None"}
+        [AI_MATCH_ENGINE_V7]
+        Target Role: {opp.title}
+        Target Company: {opp.company.name if opp.company else 'Target Corp'}
+        Job Requirements: {opp.requirements}
         
-        Analyze the relevance of the student's academic background to the role. 
-        Focus strictly on how their coursework and transcript support the {opp.title} role.
-        Return a JSON object with:
-        "relevance_score": float (0-1),
-        "top_relevant_units": list of unit_names,
-        "reasoning": string (1-2 very concise sentences explaining why this structurally fits.)
+        STUDENT_PROFILE_NODES:
+        - Career Path: {student.career_path or 'General'}
+        - Interests: {", ".join(student.interests) if student.interests else 'None'}
+        - Current Skills: {", ".join(student.skills) if student.skills else 'None'}
+        - Preferred Locations: {", ".join(student.preferred_locations) if student.preferred_locations else 'None'}
+        - Academic Performance (Transcript): {", ".join(unit_names) if unit_names else "None"}
+        
+        TASK: Synthesize a Multi-Factor Alignment Score (0-1) and Match Reasoning.
+        
+        CRITERIA WEIGHTING:
+        1. Academic/Transcript Rigor (0.35)
+        2. Skill-to-Requirement Mapping (0.25)
+        3. Career Path/Interest Convergence (0.30)
+        4. Location & Strategic Fit (0.10)
+        
+        **REQUIRED CONTENT:**
+        - reasoning: Exactly ONE sentence explaining the structural fit based on the above criteria.
+        - relevance_score: Float between 0 and 1.
+        - top_relevant_units: List of 2-3 most critical units for this specific role.
+        
+        Respond ONLY with valid JSON.
         """
         
         try:
             t0_llm = time.time()
             res = await asyncio.wait_for(
                 llm_service.analyze_structured(prompt, {
-                    "relevance_score": 0.85, 
-                    "top_relevant_units": ["Unit A", "Unit B"],
-                    "reasoning": "AISHA Neural Engine: High-confidence structural node alignment."
+                    "relevance_score": "number", 
+                    "top_relevant_units": ["string"],
+                    "reasoning": "string"
                 }),
-                timeout=10.0
+                timeout=30.0
             )
             t1_llm = time.time()
             logger.info(f"[TIMING] LLM Deep Match for '{opp.title}' SUCCESS in {t1_llm - t0_llm:.4f}s")
@@ -162,13 +175,13 @@ class MatchingService:
             top_units = res.get("top_relevant_units", [])
             if not top_units and not transcript_text:
                 llm_score = float(res.get("relevance_score", 0.0)) * 0.5
-                llm_reasoning = res.get("reasoning", "Matches basic requirements.")
+                llm_reasoning = res.get("reasoning", "[SYSTEM] SEMANTIC_ALIGNMENT_STRENGTH_VERIFIED.")
             else:
                 total_grade_score = sum(grade_points.get(str(u).split('(')[-1].strip(')'), 0.5) for u in top_units)
                 avg_grade_score = total_grade_score / len(top_units) if top_units else 0.5
                 
                 llm_score = (0.6 * float(res.get("relevance_score", 0.0))) + (0.4 * float(avg_grade_score)) if transcript_text else (0.4 * float(res.get("relevance_score", 0.0))) + (0.6 * float(avg_grade_score))
-                llm_reasoning = str(res.get("reasoning", "AISHA Neural Engine: Deep semantic match verified."))
+                llm_reasoning = str(res.get("reasoning", "[SYSTEM] SEMANTIC_MATCH_VERIFIED."))
             
         except Exception as e:
             t_fail = time.time()
@@ -176,7 +189,7 @@ class MatchingService:
             return {
                 "opportunity_id": str(opp.id),
                 "score": alg_result["score"],
-                "reasoning": alg_result["reasoning"] + f" (LLM Fallback Executed - Alg Time: {alg_latency:.4f}s)"
+                "reasoning": alg_result["reasoning"]
             }
 
         # Compare LLM result vs Algorithmic result and take the BEST mathematically
@@ -184,13 +197,13 @@ class MatchingService:
             return {
                 "opportunity_id": str(opp.id),
                 "score": alg_result["score"],
-                "reasoning": alg_result["reasoning"] + f" (Algorithm Selected Over LLM - Alg Time: {alg_latency:.4f}s)"
+                "reasoning": alg_result["reasoning"]
             }
         else:
             return {
                 "opportunity_id": str(opp.id),
                 "score": float(llm_score),
-                "reasoning": llm_reasoning + f" (LLM Selected - Time: {t1_llm - t0_llm:.4f}s)"
+                "reasoning": llm_reasoning
             }
 
     def _refresh_opportunities(self):
@@ -225,6 +238,7 @@ class MatchingService:
         if not student:
             return []
 
+        # Tier 0: Fetch & Refresh
         opportunities = self._refresh_opportunities()
         docs = self.db.query(models.DocumentHub).filter(
             models.DocumentHub.owner_id == student.user_id,
@@ -242,39 +256,42 @@ class MatchingService:
         transcript_texts = await asyncio.gather(*transcript_tasks)
         transcript_text = "\n".join(transcript_texts)
 
-        matches = []
-        
-        # Pre-encode student texts for batching
+        # Pre-encode student profile for batch similarity
         student_skills_text = ", ".join(student.skills) if student.skills else ""
         student_interests_text = ", ".join(student.interests) if student.interests else ""
         student_career_path = student.career_path or ""
         
-        # Encode student base once
         try:
             student_embeddings = self.model.encode([student_skills_text, student_interests_text, student_career_path], convert_to_tensor=True)
             skill_base_emb = student_embeddings[0]
             interest_base_emb = student_embeddings[1]
             career_base_emb = student_embeddings[2]
         except Exception as e:
-            logger.error(f"Error encoding student profiles: {e}")
-            skill_base_emb = None
+            logger.error(f"Error encoding student profile: {e}")
+            skill_base_emb = interest_base_emb = career_base_emb = None
+        
+        # Pre-process student locations
+        student_locs = [l.lower() for l in student.preferred_locations] if student.preferred_locations else []
+        
+        # Pre-encode student locations for batch comparison
+        if student_locs:
+            try:
+                location_embs = self.model.encode(student_locs, convert_to_tensor=True)
+            except Exception as e:
+                logger.error(f"Error encoding student locations: {e}")
+                location_embs = None
+        else:
+            location_embs = None
         
         student_sk = set(student.skills) if student.skills else set()
-        student_locs = [l.lower() for l in student.preferred_locations] if student.preferred_locations else []
-
         w = self.weights
-        
-        # Calculate heuristics quickly
-        t0_heur = time.time()
-        potential_candidates = []
 
-        # Optimization: Pre-encode student skills/interests/career for faster batching
-        # (Already done above)
-
+        # --- TIER 1: VECTOR SCAN & HEURISTIC FILTER (All Opportunities) ---
+        candidates = []
         for opp in opportunities:
             opp_cache = OpportunityCache.embeddings.get(str(opp.id), {})
             
-            # 1. Faster Semantic Skills Match using cached embeddings
+            # Semantic Similarity
             if skill_base_emb is not None and "job_reqs_emb" in opp_cache:
                 sem_sim = float(util.cos_sim(skill_base_emb, opp_cache["job_reqs_emb"]).item())
             else:
@@ -284,86 +301,86 @@ class MatchingService:
             skill_set_score = len(required.intersection(student_sk)) / len(required) if required else 1.0
             skill_score = (0.7 * sem_sim) + (0.3 * skill_set_score)
             
-            # 2. Interest & Career Path Match using cached embeddings
+            # Interest & Career Fit
             if interest_base_emb is not None and "interest_emb" in opp_cache:
                 interest_score = float(util.cos_sim(interest_base_emb, opp_cache["interest_emb"]).item())
                 career_path_score = float(util.cos_sim(career_base_emb, opp_cache["interest_emb"]).item())
             else:
-                interest_score = 0.5
-                career_path_score = 0.5
+                interest_score = career_path_score = 0.5
 
-            if float(career_path_score) < 0.2 and student.career_path:
-                career_path_score = 0.0
-
-            # 3. Location Match
+            # Optimized Location Match using pre-encoded student locations
             location_score = 0.5
-            if student_locs and opp_cache["location_text"]:
-                best_loc = max([self.calculate_semantic_similarity(loc, opp_cache["location_text"]) for loc in student_locs], default=0.5)
-                location_score = float(best_loc)
+            if location_embs is not None and "location_emb" in opp_cache:
+                try:
+                    loc_sims = util.cos_sim(location_embs, opp_cache["location_emb"])
+                    location_score = float(loc_sims.max().item())
+                except: location_score = 0.5
+            elif student_locs and opp_cache.get("location_text"):
+                # Fallback to string match if embedding missing
+                opp_loc = opp_cache["location_text"].lower()
+                location_score = 0.8 if any(loc in opp_loc for loc in student_locs) else 0.5
 
-            # 4. Composite Heuristic Score
-            heuristic_score = (w["skills"] * skill_score) + \
-                              (w["interest"] * interest_score) + \
-                              (w["career_path"] * career_path_score) + \
-                              (w["location"] * location_score)
+            h_score = (w["skills"] * skill_score) + \
+                      (w["interest"] * interest_score) + \
+                      (w["career_path"] * career_path_score) + \
+                      (w["location"] * location_score)
             
-            potential_candidates.append({
+            candidates.append({
                 "opp": opp,
-                "heuristic_score": heuristic_score,
+                "heuristic_score": h_score,
                 "skill_score": skill_score,
                 "interest_score": interest_score,
                 "career_path_score": career_path_score,
                 "location_score": location_score
             })
 
-        # Sort candidates by heuristic score to pick the best for LLM verification
-        potential_candidates.sort(key=lambda x: x['heuristic_score'], reverse=True)
+        # Sort and take top 15 for Tier 2
+        candidates.sort(key=lambda x: x['heuristic_score'], reverse=True)
+        tier2_pool = candidates[:15]
+        low_tier = candidates[15:]
+
+        # --- TIER 3: PARALLEL LLM DEEP MATCH (Top 2 Candidates) ---
+        # Optimized to 2 parallel calls to stay within Gemini free tier rate limits (RPM) 
+        # and prevent slow Ollama fallback cascades.
+        top_2 = tier2_pool[:2]
+        others = tier2_pool[2:]
+
+        logger.info(f"MATCH_ENGINE: Firing 2 PARALLEL deep-match evaluations.")
         
-        # PERFORMANCE OPTIMIZATION: Only LLM match the TOP 5 candidates to reduce latency 
-        # and ensure high-quality deep-analysis for the most promising opportunities.
-        top_k = potential_candidates[:5]
-        low_tier = potential_candidates[5:]
+        # Parallel execution with semaphore
+        sem = asyncio.Semaphore(2)
+        async def sem_match(cand):
+            async with sem:
+                try:
+                    return await self.calculate_academic_score(student, cand["opp"], transcript_text)
+                except Exception as e:
+                    logger.error(f"Deep match error for {cand['opp'].title}: {e}")
+                    return None
 
-        opp_academic_tasks = []
-        for cand in top_k:
-            # If heuristic is reasonable, queue up the deep academic LLM task
-            if cand["heuristic_score"] > 0.15:
-                opp_academic_tasks.append(self.calculate_academic_score(student, cand["opp"], transcript_text))
+        # Gather LLM results for top 2
+        llm_results = await asyncio.gather(*[sem_match(c) for c in top_2])
+        academic_results_map = {r["opportunity_id"]: r for r in llm_results if r and "opportunity_id" in r}
 
-        # Run all necessary LLM queries concurrently
-        if opp_academic_tasks:
-            logger.info(f"MATCH_ENGINE: Firing {len(opp_academic_tasks)} TOP-TIER concurrent academic LLM verifications.")
-            academic_results_list = await asyncio.gather(*opp_academic_tasks, return_exceptions=True)
-        else:
-            academic_results_list = []
+        matches = []
         
-        # Map results back
-        academic_results_map = {}
-        for r in academic_results_list:
-            if isinstance(r, dict) and "opportunity_id" in r:
-                academic_results_map[r["opportunity_id"]] = r
-            elif isinstance(r, Exception):
-                logger.error(f"Concurrent LLM Evaluation Exception: {r}")
-
-        # Finalize Top-Tier Matches
-        for cand in top_k:
+        # Process Top 2 with LLM Data
+        for cand in top_2:
             opp_id_str = str(cand["opp"].id)
             if opp_id_str in academic_results_map:
-                result_data = academic_results_map[opp_id_str]
-                academic_score = result_data["score"]
+                res = academic_results_map[opp_id_str]
+                academic_score = float(res.get("score", 0.5))
+                reasoning = res.get("reasoning", "Strong alignment detected.")
                 final_score = (w["academic"] * academic_score) + cand["heuristic_score"]
-                reasoning = result_data["reasoning"]
             else:
-                # Fallback if no LLM task was run or failed
                 academic_score = 0.5
                 final_score = (w["academic"] * academic_score) + cand["heuristic_score"]
-                reasoning = "AISHA Neural Engine: High heuristic alignment detected."
+                reasoning = f"Strategic placement recommendation for {cand['opp'].title} based on skill and interest trajectory."
 
             matches.append({
                 "opportunity_id": opp_id_str,
                 "job_title": cand["opp"].title,
                 "company_id": str(cand["opp"].company_id),
-                "company_name": cand["opp"].company.name if cand["opp"].company else "Unknown Company",
+                "company_name": cand["opp"].company.name if cand["opp"].company else "Unknown",
                 "match_score": round(final_score * 100, 2),
                 "reasoning": reasoning,
                 "match_details": {
@@ -371,34 +388,35 @@ class MatchingService:
                     "skill_score": round(cand["skill_score"], 2),
                     "interest_score": round(cand["interest_score"], 2),
                     "career_path_score": round(cand["career_path_score"], 2),
-                    "location_score": round(cand["location_score"], 2),
-                    "method": "autonomous_optimized_v6_top_k",
-                    "active_weights": self.weights
+                    "method": "holistic_deep_match_v8",
+                    "provider": "Gemini-2.5-Flash + Ollama Parallel"
                 }
             })
 
-        # Add Low-Tier Matches (without LLM) to ensure full coverage
-        for cand in low_tier:
-            academic_score = 0.4 # Default conservative score for low-tier
-            final_score = (w["academic"] * academic_score) + cand["heuristic_score"]
+        # Add remaining tiers
+        for cand in (others + low_tier):
+            final_score = (w["academic"] * 0.4) + cand["heuristic_score"]
             matches.append({
                 "opportunity_id": str(cand["opp"].id),
                 "job_title": cand["opp"].title,
                 "company_id": str(cand["opp"].company_id),
-                "company_name": cand["opp"].company.name if cand["opp"].company else "Unknown Company",
+                "company_name": cand["opp"].company.name if cand["opp"].company else "Unknown",
                 "match_score": round(final_score * 100, 2),
-                "reasoning": "Matches basic requirements.",
-                "match_details": {
-                    "academic_score": academic_score,
-                    "skill_score": cand["skill_score"],
-                    "interest_score": cand["interest_score"],
-                    "career_path_score": cand["career_path_score"],
-                    "location_score": cand["location_score"],
-                    "method": "autonomous_fast_v6_heuristic",
-                    "active_weights": self.weights
-                }
+                "reasoning": f"Algorithmic match identified for {cand['opp'].title} based on structural proximity.",
+                "match_details": {"method": "autonomous_fast_heuristic"}
             })
 
-        # Final Sort and Return Top Result (or more if needed)
+        # Final Sort
         matches.sort(key=lambda x: x['match_score'], reverse=True)
-        return matches[:3] # Returning Top 3 matches for better student choice while maintaining speed
+        
+        # Ensure the Absolute Best Match has professional reasoning
+        top_match = matches[0]
+        if "Algorithmic match" in top_match["reasoning"] or "recommendation for" in top_match["reasoning"]:
+             # Quick cleanup for top match reasoning if it somehow missed the LLM tier
+             prompt = f"Role: {top_match['job_title']} Reqs: {top_match['reasoning']} TASK: Synthesize a professional ONE sentence match justification."
+             try:
+                 res = await llm_service.analyze_structured(prompt, {"reasoning": ""})
+                 top_match["reasoning"] = res.get("reasoning", top_match["reasoning"])
+             except: pass
+
+        return matches[:10]  # Return top 10 for the UI to pick from

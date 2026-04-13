@@ -38,7 +38,8 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
             setData(result || { student: null, records: [], analysis: { gpa: 0, insights: '', recommendation: '' } });
         } catch (error) {
             console.error('Failed to fetch transcript:', error);
-            setData({ student: null, records: [], analysis: { gpa: 0, insights: 'Service temporary unavailable.', recommendation: 'Retry later.' } });
+            setData({ student: null, records: [], analysis: { gpa: 0, insights: 'Analysis not available.', recommendation: 'Please try again later.' } });
+
         } finally {
             setLoading(false);
         }
@@ -70,7 +71,7 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                             <HStack>
                                 <Icon as={LuBookOpen} color="blue.600" />
                                 <DialogTitle color="black" fontWeight="black" letterSpacing="widest">
-                                    ACADEMIC_TRANSCRIPT_ANALYSIS
+                                    ACADEMIC TRANSCRIPT FEEDBACK
                                 </DialogTitle>
                             </HStack>
                             <DialogCloseTrigger color="gray.400" _hover={{ color: "black" }} />
@@ -82,7 +83,7 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                             <Flex justify="center" align="center" py={12}>
                                 <VStack gap={4}>
                                     <Spinner size="xl" color="blue.600" />
-                                    <Text color="blue.600" fontSize="xs" fontWeight="bold">SEQUENCING_RECORDS...</Text>
+                                    <Text color="blue.600" fontSize="xs" fontWeight="bold">SEQUENCING RECORDS...</Text>
                                 </VStack>
                             </Flex>
                         ) : data && data.records?.length > 0 ? (
@@ -92,13 +93,13 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                                     <Box bg="gray.50" p={6} rounded="xl" border="1px solid" borderColor="gray.100" borderLeft="6px solid" borderLeftColor="blue.600">
                                         <SimpleGrid columns={{ base: 1, md: 3 }} gap={6}>
                                             <VStack align="start" gap={1}>
-                                                <Text color="blue.600" fontSize="10px" fontWeight="black" letterSpacing="widest">STUDENT_NAME</Text>
+                                                <Text color="blue.600" fontSize="10px" fontWeight="black" letterSpacing="widest">STUDENT NAME</Text>
                                                 <Text color="black" fontSize="md" fontWeight="bold" textTransform="uppercase">
                                                     {data.student.first_name} {data.student.last_name}
                                                 </Text>
                                             </VStack>
                                             <VStack align="start" gap={1}>
-                                                <Text color="blue.600" fontSize="10px" fontWeight="black" letterSpacing="widest">REGISTRATION_NO</Text>
+                                                <Text color="blue.600" fontSize="10px" fontWeight="black" letterSpacing="widest">REGISTRATION NO</Text>
                                                 <Text color="black" fontSize="md" fontWeight="bold">
                                                     {data.student.admission_number || 'N/A'}
                                                 </Text>
@@ -118,18 +119,32 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                                     <HStack mb={4}>
                                         <Icon as={LuZap} color="blue.600" />
                                         <Heading size="xs" color="blue.900" textTransform="uppercase" letterSpacing="widest" fontWeight="black">
-                                            AI Skill Registry & Analysis
+                                            Skills & Transcript Feedback
                                         </Heading>
                                     </HStack>
-                                    {!data.analysis || !data.analysis.insights ? (
-                                        <HStack gap={4} py={2}>
-                                            <Spinner size="xs" color="blue.600" />
-                                            <Text color="blue.700" fontSize="xs" fontWeight="bold" fontStyle="italic">
-                                                STREAMS_SYNCHRONIZED. ANALYZING_PERFORMANCE_NODES...
-                                            </Text>
-                                        </HStack>
+                                    {!data.analysis || !data.analysis.insights || data.analysis.insights.includes('{') ? (
+                                        <VStack align="start" gap={4} py={2}>
+                                            <HStack gap={4}>
+                                                <Spinner size="xs" color="blue.600" />
+                                                <Text color="blue.700" fontSize="xs" fontWeight="bold" fontStyle="italic">
+                                                    {data.analysis?.insights?.includes('{') ? 'STALE DATA DETECTED. RE-CALIBRATING...' : 'STREAMS SYNCHRONIZED. ANALYZING PERFORMANCE NODES...'}
+                                                </Text>
+                                            </HStack>
+                                            <Button 
+                                                size="xs" 
+                                                variant="outline" 
+                                                colorPalette="blue" 
+                                                onClick={() => {
+                                                    if (data.student?.admission_number) {
+                                                        StudentService.syncProfile(data.student.admission_number).then(() => fetchData());
+                                                    }
+                                                }}
+                                            >
+                                                FORCE NEURAL RE-SYNC
+                                            </Button>
+                                        </VStack>
                                     ) : (
-                                        <VStack align="start" gap={4}>
+                                        <VStack align="stretch" gap={4}>
                                             <MarkdownText 
                                                 content={data.analysis?.insights} 
                                                 color="blue.900" 
@@ -137,12 +152,15 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                                                 lineHeight="tall" 
                                                 fontWeight="medium" 
                                             />
-                                            <Flex align="center" gap={2} bg="white" px={3} py={1} borderRadius="full" border="1px solid" borderColor="blue.200">
-                                                <Icon as={LuTrendingUp} color="green.600" size="xs" />
-                                                <Text color="green.700" fontSize="xs" fontWeight="black">
-                                                    RECOMMENDATION: {data.analysis?.recommendation}
+                                            <Box bg="white" p={4} borderRadius="xl" border="1px solid" borderColor="blue.200" boxShadow="sm">
+                                                <HStack mb={2}>
+                                                    <Icon as={LuTrendingUp} color="green.600" size="sm" />
+                                                    <Text color="green.700" fontSize="10px" fontWeight="black" letterSpacing="widest">OFFICIAL RECOMMENDATION</Text>
+                                                </HStack>
+                                                <Text color="blue.900" fontSize="sm" fontWeight="bold" lineHeight="relaxed">
+                                                    {data.analysis?.recommendation}
                                                 </Text>
-                                            </Flex>
+                                            </Box>
                                         </VStack>
                                     )}
                                 </Box>
@@ -162,8 +180,8 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                                             <TableRoot size="sm" variant="line" colorPalette="blue">
                                                 <TableHeader bg="gray.50">
                                                     <TableRow borderBottom="2px solid" borderColor="gray.200">
-                                                        <TableColumnHeader color="gray.600" py={3} fontWeight="black" fontSize="10px">UNIT_CODE</TableColumnHeader>
-                                                        <TableColumnHeader color="gray.600" py={3} fontWeight="black" fontSize="10px">UNIT_NAME</TableColumnHeader>
+                                                        <TableColumnHeader color="gray.600" py={3} fontWeight="black" fontSize="10px">UNIT CODE</TableColumnHeader>
+                                                        <TableColumnHeader color="gray.600" py={3} fontWeight="black" fontSize="10px">UNIT NAME</TableColumnHeader>
                                                         <TableColumnHeader color="gray.600" py={3} fontWeight="black" fontSize="10px" textAlign="center">MARK</TableColumnHeader>
                                                         <TableColumnHeader color="gray.600" py={3} fontWeight="black" fontSize="10px" textAlign="center">GRADE</TableColumnHeader>
                                                         <TableColumnHeader color="gray.600" py={3} fontWeight="black" fontSize="10px" textAlign="right">VERIFICATION</TableColumnHeader>
@@ -195,9 +213,9 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                             </VStack>
                         ) : (
                             <VStack py={20} gap={6}>
-                                <Text color="gray.400" textAlign="center" fontWeight="bold" letterSpacing="widest">NO_SYNC_RECORDS_FOUND</Text>
+                                <Text color="gray.400" textAlign="center" fontWeight="bold" letterSpacing="widest">NO SYNC RECORDS FOUND</Text>
                                 <Button variant="outline" size="sm" colorPalette="blue" onClick={fetchData} borderRadius="full" px={8}>
-                                    RE-INITIALIZE_SCAN
+                                    RE-INITIALIZE SCAN
                                 </Button>
                             </VStack>
                         )}
@@ -206,17 +224,17 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                     <DialogFooter borderTop="1px solid" borderColor="gray.100" bg="gray.50">
                         <HStack justify="space-between" w="full">
                             <Button variant="ghost" onClick={fetchData} size="sm" color="gray.600" fontWeight="bold">
-                                REFRESH_ACADEMIC_STREAM
+                                REFRESH ACADEMIC STREAM
                             </Button>
                             <HStack gap={4}>
+                                <Button colorPalette="blue" size="sm" onClick={handleDownload} disabled={!data || data.records?.length === 0} borderRadius="full" px={6} fontWeight="black">
+                                    <LuDownload /> DOWNLOAD PDF REPORT
+                                </Button>
                                 <DialogActionTrigger asChild>
                                     <Button variant="ghost" color="gray.500" size="sm" onClick={onClose} fontWeight="bold">
                                         CLOSE
                                     </Button>
                                 </DialogActionTrigger>
-                                <Button colorPalette="blue" size="sm" onClick={handleDownload} disabled={!data || data.records?.length === 0} borderRadius="full" px={6} fontWeight="black">
-                                    <LuDownload /> DOWNLOAD_PDF_REPORT
-                                </Button>
                             </HStack>
                         </HStack>
                     </DialogFooter>

@@ -7,7 +7,6 @@ import { WebSocketProvider } from '../../context/WebSocketContext';
 import StudentHeader from '../../pages/student/components/StudentHeader';
 import StudentSidebar from '../../pages/student/components/StudentSidebar';
 import AishaAssistant from '../common/AishaAssistant';
-import BroadcastBanner from '../common/BroadcastBanner';
 import type { RootState, AppDispatch } from '../../store';
 import { logout } from '../../store/authSlice';
 import '../../pages/student/DashboardTheme.css';
@@ -37,8 +36,7 @@ const StudentLayout: React.FC = () => {
 
     return (
         <WebSocketProvider userId={user.id}>
-            <Box className="dashboard-container" minH="100vh" bg="#0F172A" overflowX="hidden">
-                <BroadcastBanner system="STUDENT" />
+            <Box className="dashboard-container" h="100vh" bg="#0F172A" overflow="hidden" display="flex" flexDirection="column">
                 
                 <StudentSidebar 
                     isCollapsed={isSidebarCollapsed} 
@@ -50,9 +48,12 @@ const StudentLayout: React.FC = () => {
                     flex="1" 
                     transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
                     ml={{ base: 0, lg: sidebarWidth }}
+                    display="flex"
+                    flexDirection="column"
+                    overflow="hidden"
                 >
                     <StudentHeader />
-                    <Box as="main" p={{ base: 4, lg: 8 }} pt={0}>
+                    <Box as="main" p={{ base: 2, lg: 4 }} pt={0} flex={1} overflowY="auto" className="custom-scrollbar">
                         <Outlet />
                     </Box>
                 </Box>

@@ -70,7 +70,7 @@ VITE_PORTAL=admin npm run dev -- --port 5176
 
 **Features:**
 - Dashboard with AI insights and recommendations
-- Profile management and CV builder
+- Profile management
 - Browse and apply for opportunities
 - Application tracking
 - Payment management (M-Pesa integration)
@@ -80,7 +80,6 @@ VITE_PORTAL=admin npm run dev -- --port 5176
 **Routes:**
 - `/dashboard` - Student dashboard
 - `/profile` - Profile management
-- `/cv-builder` - CV creation tool
 - `/opportunities` - Browse opportunities
 - `/applications` - Track applications
 - `/payments` - Payment management

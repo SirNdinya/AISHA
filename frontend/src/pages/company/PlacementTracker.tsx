@@ -8,13 +8,13 @@ import {
     DialogBackdrop, DialogPositioner,
     Textarea, SimpleGrid
 } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
 import { AvatarRoot, AvatarFallback } from '@chakra-ui/react';
 import { toaster } from '../../components/ui/toaster';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchPlacements } from '../../store/companySlice';
 import CompanyService from '../../services/companyService';
 import type { AppDispatch, RootState } from '../../store';
-import DocumentUpload from '../../components/common/DocumentUpload';
 import apiClient from '../../services/apiClient';
 import {
     LuCalendar,
@@ -28,6 +28,7 @@ import {
 
 const CompanyPlacementTracker: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
+    const navigate = useNavigate();
     const { placements, isLoading } = useSelector((state: RootState) => state.company);
     const [selectedPlacement, setSelectedPlacement] = useState<any>(null);
     const [assessment, setAssessment] = useState({
@@ -37,47 +38,21 @@ const CompanyPlacementTracker: React.FC = () => {
         assessor_type: 'COMPANY'
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [existingDocs, setExistingDocs] = useState<any[]>([]);
-    const [departments, setDepartments] = useState<any[]>([]);
-    const [supervisors, setSupervisors] = useState<any[]>([]);
-    const [isManageOpen, setIsManageOpen] = useState(false);
-    const [manageData, setManageData] = useState({
-        department_id: '',
-        supervisor_id: ''
-    });
 
     useEffect(() => {
         dispatch(fetchPlacements());
-        fetchMetadata();
     }, [dispatch]);
 
-    const fetchMetadata = async () => {
-        try {
-            const [deps, sups] = await Promise.all([
-                CompanyService.getCompanyDepartments(),
-                CompanyService.getSupervisors()
-            ]);
-            setDepartments(deps);
-            setSupervisors(sups);
-        } catch (error) {
-            console.error('Failed to fetch metadata', error);
-        }
-    };
-
     useEffect(() => {
-        if (selectedPlacement) {
-            fetchDocs(selectedPlacement.id);
+        if (!selectedPlacement) {
+            setAssessment({
+                assessment_date: new Date().toISOString().split('T')[0],
+                comments: '',
+                digital_signature: '',
+                assessor_type: 'COMPANY'
+            });
         }
     }, [selectedPlacement]);
-
-    const fetchDocs = async (placementId: string) => {
-        try {
-            const res = await apiClient.get(`/documents/placement/${placementId}`);
-            setExistingDocs(res.data.data);
-        } catch (error) {
-            console.error('Failed to fetch docs', error);
-        }
-    };
 
     const handleSubmitAssessment = async () => {
         if (!selectedPlacement || !assessment.digital_signature) {
@@ -104,43 +79,26 @@ const CompanyPlacementTracker: React.FC = () => {
         }
     };
 
-    const handleGenerateCert = async (id: string) => {
-        try {
-            await CompanyService.generateCertificate(id);
-            toaster.create({
-                title: 'Certificate Generated',
-                description: 'Digital credential issued.',
-                type: 'success'
-            });
-            dispatch(fetchPlacements());
-        } catch (error) {
-            toaster.create({ title: 'Generation Failed', type: 'error' });
-        }
-    };
 
-    const handleUpdatePlacement = async () => {
-        if (!selectedPlacement) return;
-        setIsSubmitting(true);
-        try {
-            await CompanyService.updatePlacement(selectedPlacement.id, manageData);
-            toaster.create({
-                title: 'Placement Updated',
-                description: 'Department and supervisor assigned.',
-                type: 'success'
-            });
-            dispatch(fetchPlacements());
-            setIsManageOpen(false);
-            setSelectedPlacement(null);
-        } catch (error) {
-            toaster.create({ title: 'Update Failed', type: 'error' });
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
 
     if (isLoading && placements.length === 0) {
         return <Flex h="60vh" align="center" justify="center"><Spinner color="blue.500" /></Flex>;
     }
+
+    const uniquePlacementsMap = new Map();
+    placements.forEach(p => {
+        if (!uniquePlacementsMap.has(p.student_id)) {
+            uniquePlacementsMap.set(p.student_id, p);
+        }
+    });
+    const uniquePlacements = Array.from(uniquePlacementsMap.values());
+
+    const getStatusText = (startDateStr: string) => {
+        const today = new Date();
+        const start = new Date(startDateStr);
+        if (start > today) return "Waiting Reporting";
+        return "Ongoing";
+    };
 
     return (
         <Box animation="slideUp 0.5s ease-out">
@@ -167,13 +125,17 @@ const CompanyPlacementTracker: React.FC = () => {
                         <Table.Row borderBottom="1px solid rgba(255,255,255,0.05)">
                             <Table.ColumnHeader color="gray.400">STUDENT / COURSE</Table.ColumnHeader>
                             <Table.ColumnHeader color="gray.400">ASSIGNED ROLE</Table.ColumnHeader>
+                            <Table.ColumnHeader color="gray.400">DEPARTMENT</Table.ColumnHeader>
+                            <Table.ColumnHeader color="gray.400">AI SCORE</Table.ColumnHeader>
                             <Table.ColumnHeader color="gray.400">PERIOD</Table.ColumnHeader>
+                            <Table.ColumnHeader color="gray.400" w="130px">1ST ASSESSMENT</Table.ColumnHeader>
+                            <Table.ColumnHeader color="gray.400" w="130px">2ND ASSESSMENT</Table.ColumnHeader>
                             <Table.ColumnHeader color="gray.400">STATUS</Table.ColumnHeader>
                             <Table.ColumnHeader color="gray.400" textAlign="right">ACTIONS</Table.ColumnHeader>
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
-                        {placements.map((p) => (
+                        {uniquePlacements.map((p: any) => (
                             <Table.Row key={p.id} _hover={{ bg: "whiteAlpha.50" }} transition="0.2s" borderBottom="1px solid rgba(255,255,255,0.05)">
                                 <Table.Cell>
                                     <HStack gap={3}>
@@ -183,21 +145,23 @@ const CompanyPlacementTracker: React.FC = () => {
                                         <Box>
                                             <Text fontWeight="bold" color="white">{p.first_name} {p.last_name}</Text>
                                             <Text fontSize="xs" color="gray.500">{p.course_of_study}</Text>
-                                            {p.department_name && (
-                                                <Text fontSize="10px" color="blue.400" fontWeight="bold">
-                                                    Dept: {p.department_name}
-                                                </Text>
-                                            )}
                                         </Box>
                                     </HStack>
                                 </Table.Cell>
                                 <Table.Cell>
-                                    <VStack align="flex-start" gap={0}>
-                                        <Text fontWeight="medium" color="whiteAlpha.900">{p.job_title}</Text>
-                                        <Text fontSize="xs" color="whiteAlpha.600">
-                                            Supervisor: {p.supervisor_name || 'Unassigned'}
-                                        </Text>
-                                    </VStack>
+                                    <Text fontWeight="medium" color="whiteAlpha.900">{p.job_title}</Text>
+                                </Table.Cell>
+                                <Table.Cell>
+                                    <Text fontWeight="medium" color="whiteAlpha.900">{p.department_name || 'General'}</Text>
+                                </Table.Cell>
+                                <Table.Cell>
+                                    {p.match_score ? (
+                                        <VStack align="flex-start" gap={1}>
+                                            <Text fontWeight="black" fontSize="lg" color="blue.400" letterSpacing="tighter">{p.match_score}%</Text>
+                                        </VStack>
+                                    ) : (
+                                        <Text color="gray.500" fontSize="xs">N/A</Text>
+                                    )}
                                 </Table.Cell>
                                 <Table.Cell>
                                     <HStack gap={2} color="gray.400" fontSize="sm">
@@ -205,14 +169,20 @@ const CompanyPlacementTracker: React.FC = () => {
                                         <Text>{new Date(p.start_date).toLocaleDateString()} - {new Date(p.end_date).toLocaleDateString()}</Text>
                                     </HStack>
                                 </Table.Cell>
+                                <Table.Cell color="gray.400" fontSize="xs">
+                                    <Text>{p.first_assessment_date ? new Date(p.first_assessment_date).toLocaleDateString() : 'Not Set'}</Text>
+                                </Table.Cell>
+                                <Table.Cell color="gray.400" fontSize="xs">
+                                    <Text>{p.second_assessment_date ? new Date(p.second_assessment_date).toLocaleDateString() : 'Not Set'}</Text>
+                                </Table.Cell>
                                 <Table.Cell>
                                     <Badge
-                                        colorPalette={p.status === 'ACTIVE' ? 'blue' : 'green'}
+                                        colorPalette={getStatusText(p.start_date) === 'Ongoing' ? 'blue' : 'orange'}
                                         variant="outline"
                                         borderRadius="full"
                                         px={3}
                                     >
-                                        {p.status}
+                                        {getStatusText(p.start_date)}
                                     </Badge>
                                 </Table.Cell>
                                 <Table.Cell textAlign="right">
@@ -221,47 +191,17 @@ const CompanyPlacementTracker: React.FC = () => {
                                             size="sm"
                                             variant="ghost"
                                             color="blue.300"
-                                            onClick={() => {
-                                                setSelectedPlacement(p);
-                                                setManageData({
-                                                    department_id: p.department_id || '',
-                                                    supervisor_id: p.supervisor_id || ''
-                                                });
-                                                setIsManageOpen(true);
-                                            }}
-                                        >
-                                            <LuPen size={14} style={{ marginRight: '4px' }} /> Manage
-                                        </Button>
-                                        <Button
-                                            size="sm"
-                                            variant="ghost"
-                                            color="blue.300"
-                                            onClick={() => setSelectedPlacement(p)}
+                                            onClick={() => navigate(`/company/logbooks?student_id=${p.student_id}`)}
                                         >
                                             <Icon as={LuClipboardCheck} boxSize={4} /> Assess
                                         </Button>
-                                        {p.status === 'COMPLETED' ? (
-                                            <Button size="sm" colorPalette="green" variant="subtle" rounded="xl">
-                                                <LuTrophy style={{ marginRight: '4px' }} /> View Cert
-                                            </Button>
-                                        ) : (
-                                            <Button
-                                                size="sm"
-                                                colorPalette="blue"
-                                                variant="subtle"
-                                                rounded="xl"
-                                                onClick={() => handleGenerateCert(p.id)}
-                                            >
-                                                Complete
-                                            </Button>
-                                        )}
                                     </HStack>
                                 </Table.Cell>
                             </Table.Row>
                         ))}
                         {placements.length === 0 && (
                             <Table.Row>
-                                <Table.Cell colSpan={5} py={20} textAlign="center">
+                                <Table.Cell colSpan={6} py={20} textAlign="center">
                                     <VStack gap={4}>
                                         <Icon as={LuShield} boxSize={12} opacity={0.2} color="white" />
                                         <Text color="gray.500">No active student placements detected.</Text>
@@ -328,26 +268,6 @@ const CompanyPlacementTracker: React.FC = () => {
                                     </HStack>
                                 </Box>
 
-                                <Box borderTop="1px solid" borderColor="whiteAlpha.100" pt={4}>
-                                    <Text mb={4} fontSize="sm" fontWeight="bold" color="blue.300">Final Acceptance Letter (Upload Signed Copy)</Text>
-                                    <DocumentUpload
-                                        type="ACCEPTANCE_LETTER"
-                                        label="Upload PDF / Image"
-                                        onUploadSuccess={() => fetchDocs(selectedPlacement.id)}
-                                        metadata={{ placement_id: selectedPlacement?.id }}
-                                    />
-                                    {existingDocs.filter(d => d.type === 'ACCEPTANCE_LETTER').length > 0 && (
-                                        <HStack mt={3} p={2} bg="whiteAlpha.50" borderRadius="md" justify="space-between">
-                                            <HStack gap={2}>
-                                                <Icon as={LuCheck} color="green.400" />
-                                                <Text fontSize="xs">Document Uploaded</Text>
-                                            </HStack>
-                                            <Button size="xs" variant="ghost" colorPalette="blue" onClick={() => window.open(existingDocs.find(d => d.type === 'ACCEPTANCE_LETTER').file_url)}>
-                                                View
-                                            </Button>
-                                        </HStack>
-                                    )}
-                                </Box>
                             </VStack>
                         </DialogBody>
                         <DialogFooter borderTop="1px solid" borderColor="whiteAlpha.100" pt={4}>
@@ -367,64 +287,7 @@ const CompanyPlacementTracker: React.FC = () => {
                 </DialogPositioner>
             </DialogRoot>
 
-            {/* Manage Placement Modal */}
-            <DialogRoot
-                open={isManageOpen}
-                onOpenChange={(e) => !e.open && setIsManageOpen(false)}
-                size="md"
-            >
-                <DialogBackdrop />
-                <DialogPositioner>
-                    <DialogContent className="glass-panel" color="white" borderRadius="2xl" bg="gray.900" border="1px solid" borderColor="whiteAlpha.200">
-                        <DialogHeader>
-                            <DialogTitle color="white">Manage Placement: {selectedPlacement?.first_name}</DialogTitle>
-                        </DialogHeader>
-                        <DialogBody>
-                            <VStack gap={6} align="stretch" py={4}>
-                                <Box>
-                                    <Text mb={2} fontSize="sm" fontWeight="bold" color="blue.300">Assign Department</Text>
-                                    <select
-                                        style={{ width: '100%', padding: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'white' }}
-                                        value={manageData.department_id}
-                                        onChange={(e) => setManageData({ ...manageData, department_id: e.target.value })}
-                                    >
-                                        <option value="" style={{ background: '#1A202C' }}>Select Department</option>
-                                        {departments.map((d: any) => (
-                                            <option key={d.id} value={d.id} style={{ background: '#1A202C' }}>{d.name}</option>
-                                        ))}
-                                    </select>
-                                </Box>
-                                <Box>
-                                    <Text mb={2} fontSize="sm" fontWeight="bold" color="blue.300">Assign Supervisor</Text>
-                                    <select
-                                        style={{ width: '100%', padding: '10px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'white' }}
-                                        value={manageData.supervisor_id}
-                                        onChange={(e) => setManageData({ ...manageData, supervisor_id: e.target.value })}
-                                    >
-                                        <option value="" style={{ background: '#1A202C' }}>Select Supervisor</option>
-                                        {supervisors.map((s: any) => (
-                                            <option key={s.id} value={s.id} style={{ background: '#1A202C' }}>{s.name}</option>
-                                        ))}
-                                    </select>
-                                </Box>
-                            </VStack>
-                        </DialogBody>
-                        <DialogFooter borderTop="1px solid" borderColor="whiteAlpha.100" pt={4}>
-                            <DialogActionTrigger asChild>
-                                <Button variant="ghost" color="white" onClick={() => setIsManageOpen(false)}>Cancel</Button>
-                            </DialogActionTrigger>
-                            <Button
-                                colorPalette="blue"
-                                rounded="xl"
-                                loading={isSubmitting}
-                                onClick={handleUpdatePlacement}
-                            >
-                                Save Changes
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </DialogPositioner>
-            </DialogRoot>
+
         </Box>
     );
 };

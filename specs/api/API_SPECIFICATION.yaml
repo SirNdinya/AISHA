@@ -61,8 +61,6 @@ components:
             type: string
         transcript_url:
           type: string
-        cv_url:
-          type: string
         requires_stipend:
           type: boolean
         min_stipend:

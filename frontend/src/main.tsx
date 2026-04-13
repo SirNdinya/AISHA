@@ -3,15 +3,25 @@ import { createRoot } from 'react-dom/client'
 import App from './App'
 import './index.css'
 
-console.log("DEBUG: main.tsx starting...");
-const rootElement = document.getElementById('root');
+// === GLOBAL ERROR TRAP (debug only) ===
+window.onerror = (msg, src, line, col, err) => {
+  console.error('[GLOBAL onerror]', msg, '|', src, line, col, err);
+};
+window.addEventListener('unhandledrejection', (e) => {
+  console.error('[GLOBAL unhandledrejection]', e.reason);
+});
+const originalConsoleError = console.error.bind(console);
+console.error = (...args: any[]) => {
+  originalConsoleError('[CAUGHT console.error]', ...args);
+};
+// ======================================
 
+console.log("DEBUG: main.tsx restoring full App...");
+const rootElement = document.getElementById('root');
 if (rootElement) {
   createRoot(rootElement).render(
     <StrictMode>
       <App />
-    </StrictMode>,
-  )
-} else {
-  console.error("DEBUG: Root element not found!");
+    </StrictMode>
+  );
 }

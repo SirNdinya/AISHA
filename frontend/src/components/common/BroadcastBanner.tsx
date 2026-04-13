@@ -63,7 +63,7 @@ const BroadcastBanner: React.FC<BroadcastBannerProps> = ({ system }) => {
         <Box
             bg={bg}
             color="white"
-            py={2.5}
+            py={1}
             px={6}
             position="relative"
             overflow="hidden"

@@ -8,7 +8,54 @@ export class PlacementController extends BaseController {
         super('placements');
     }
 
-    // Get active placements for the logged-in company
+    // Get all placements for institution or department (for logbook reviews)
+    getAllPlacements = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const userId = (req as any).user?.id;
+            const userRole = (req as any).user?.role;
+            let institutionId = (req as any).user?.institution_id;
+            let deptId = (req as any).user?.department_id;
+
+            // Fetch institution mapping if not in jwt
+            if (!institutionId || (userRole === 'DEPARTMENT_ADMIN' && !deptId)) {
+                const userRes = await pool.query('SELECT institution_id FROM users WHERE id = $1', [userId]);
+                institutionId = userRes.rows[0]?.institution_id;
+                
+                if (userRole === 'DEPARTMENT_ADMIN') {
+                    const deptRes = await pool.query('SELECT id FROM departments WHERE user_id = $1', [userId]);
+                    if (deptRes.rows.length > 0) {
+                        deptId = deptRes.rows[0].id;
+                    }
+                }
+            }
+
+            const isDeptAdmin = userRole === 'DEPARTMENT_ADMIN';
+
+            const query = `
+                SELECT p.*, s.first_name, s.last_name, s.course_of_study, o.title as job_title,
+                       c.name as company_name
+                FROM placements p
+                JOIN students s ON p.student_id = s.id
+                JOIN applications a ON p.application_id = a.id
+                JOIN opportunities o ON a.opportunity_id = o.id
+                JOIN companies c ON p.company_id = c.id
+                WHERE s.institution_id = $1 AND p.status != 'REPLACED'
+                ${isDeptAdmin && deptId ? 'AND s.department_id = $2' : ''}
+                ORDER BY p.created_at DESC
+            `;
+            const params = isDeptAdmin && deptId ? [institutionId, deptId] : [institutionId];
+            const result = await pool.query(query, params);
+
+            res.status(200).json({
+                status: 'success',
+                results: result.rows.length,
+                data: result.rows,
+            });
+        } catch (error) {
+            next(error);
+        }
+    };
+
     getMyPlacements = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const userId = (req as any).user?.id;
@@ -20,13 +67,15 @@ export class PlacementController extends BaseController {
 
             const query = `
                 SELECT p.*, s.first_name, s.last_name, s.course_of_study, o.title as job_title,
-                       d.name as department_name, sup.name as supervisor_name
+                       d.name as department_name, sup.name as supervisor_name,
+                       a.match_score
                 FROM placements p
                 JOIN students s ON p.student_id = s.id
-                JOIN opportunities o ON p.opportunity_id = o.id
-                LEFT JOIN company_departments d ON p.department_id = d.id
+                JOIN applications a ON p.application_id = a.id
+                JOIN opportunities o ON a.opportunity_id = o.id
+                LEFT JOIN company_departments d ON o.department_id = d.id
                 LEFT JOIN company_supervisors sup ON p.supervisor_id = sup.id
-                WHERE p.company_id = $1
+                WHERE p.company_id = $1 AND p.status != 'REPLACED'
                 ORDER BY p.created_at DESC
             `;
             const result = await pool.query(query, [companyId]);
@@ -228,9 +277,19 @@ export class PlacementController extends BaseController {
 
             const result = await pool.query(query, params);
 
+            let placementStartDateStr = new Date().toISOString();
+            if (userRole === 'STUDENT') {
+                const plRes = await pool.query("SELECT start_date FROM placements WHERE student_id = (SELECT id FROM students WHERE user_id = $1) AND status = 'ACTIVE' LIMIT 1", [userId]);
+                if (plRes.rows.length > 0) placementStartDateStr = plRes.rows[0].start_date;
+            } else if (placement_id) {
+                const plRes = await pool.query("SELECT start_date FROM placements WHERE id = $1 LIMIT 1", [placement_id]);
+                if (plRes.rows.length > 0) placementStartDateStr = plRes.rows[0].start_date;
+            }
+
             res.status(200).json({
                 status: 'success',
                 results: result.rows.length,
+                placement_start_date: placementStartDateStr,
                 data: result.rows,
             });
         } catch (error) {
@@ -350,7 +409,7 @@ export class PlacementController extends BaseController {
                     UPDATE weekly_logbook_entries
                     SET university_supervisor_comments = $1, 
                         university_supervisor_signature_date = NOW(),
-                        status = 'COMPLETED',
+                        status = 'ARCHIVED',
                         updated_at = NOW()
                     WHERE id = $2
                     RETURNING *
@@ -376,7 +435,7 @@ export class PlacementController extends BaseController {
         try {
             const userId = (req as any).user?.id;
             const userRole = (req as any).user?.role;
-            const { placement_id, week_number } = req.query;
+            const { placement_id, week_number, start_week, end_week } = req.query;
 
             let entriesQuery = `
                 SELECT l.*, s.first_name, s.last_name, s.admission_number, i.name as institution_name
@@ -398,6 +457,9 @@ export class PlacementController extends BaseController {
             if (week_number) {
                 entriesQuery += ` AND l.week_number = $${params.length + 1}`;
                 params.push(week_number);
+            } else if (start_week && end_week) {
+                entriesQuery += ` AND l.week_number >= $${params.length + 1} AND l.week_number <= $${params.length + 2}`;
+                params.push(start_week, end_week);
             }
 
             entriesQuery += ' ORDER BY l.week_number ASC';
@@ -423,6 +485,11 @@ export class PlacementController extends BaseController {
                 
                 const studentRegNo = entry.admission_number || 'N/A';
                 const studentName = `${entry.first_name} ${entry.last_name}`;
+                
+                if (entry.status === 'ARCHIVED') {
+                    doc.fontSize(10).font('Helvetica-Bold').fillColor('green').text('CERTIFIED LOGBOOK ARCHIVE', { align: 'right' });
+                    doc.fillColor('black');
+                }
                 
                 // --- PAGE 1: WEEKLY PROGRESS CHART ---
                 doc.fontSize(16).font('Helvetica-Bold').text('WEEKLY PROGRESS CHART', { align: 'center' });
@@ -475,21 +542,6 @@ export class PlacementController extends BaseController {
                 doc.text(`SIGN: ${entry.student_signature_date ? 'Student Signed' : '_________'} `, { align: 'right' });
 
                 // --- PAGE 2: TRAINEE'S WEEKLY REPORT ---
-                doc.addPage();
-                
-                // Saturday Row Fragment
-                const rowHeight = 70;
-                y = doc.y;
-                doc.rect(50, y, 500, rowHeight).stroke();
-                doc.moveTo(155, y).lineTo(155, y + rowHeight).stroke();
-                doc.moveTo(410, y).lineTo(410, y + rowHeight).stroke();
-                
-                doc.font('Helvetica-Bold').text('SATURDAY', 55, y + 10);
-                doc.font('Helvetica').text('DATE:_________________', 55, y + 30);
-                doc.text(entry.saturday_description || '', 160, y + 5, { width: 240, height: rowHeight - 10 });
-                
-                doc.moveDown(2);
-                
                 doc.fontSize(14).font('Helvetica-Bold').text("TRAINEE'S WEEKLY REPORT");
                 doc.fontSize(10).font('Helvetica').text('(A summary of the whole week, sketches/diagrams may be attached where necessary)');
                 doc.moveDown();
@@ -586,6 +638,80 @@ export class PlacementController extends BaseController {
                 status: 'success',
                 data: result.rows[0],
             });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    setAssessmentDates = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const placementId = req.params.id;
+            const { first_assessment_date, second_assessment_date } = req.body;
+
+            // Get student userId for push notification
+            const studentRes = await pool.query(
+                `SELECT s.id as student_id, s.user_id 
+                 FROM placements p
+                 JOIN students s ON p.student_id = s.id
+                 WHERE p.id = $1`, [placementId]
+            );
+
+            if (studentRes.rows.length === 0) return res.status(404).json({ message: 'Placement not found' });
+
+            await pool.query(
+                `UPDATE placements 
+                 SET first_assessment_date = COALESCE($1, first_assessment_date),
+                     second_assessment_date = COALESCE($2, second_assessment_date)
+                 WHERE id = $3`,
+                [first_assessment_date || null, second_assessment_date || null, placementId]
+            );
+
+            const NotificationService = require('../services/NotificationService').NotificationService;
+            const notificationService = new NotificationService();
+            const studentUserId = studentRes.rows[0].user_id;
+
+            if (first_assessment_date) {
+                await notificationService.createNotification(
+                    studentUserId,
+                    'ASSESSMENT_SCHEDULED',
+                    'First Assessment Scheduled',
+                    `Your University Supervisor has scheduled your first assessment for ${new Date(first_assessment_date).toLocaleDateString()}. Please prepare your logbook properly.`
+                );
+            }
+            if (second_assessment_date) {
+                await notificationService.createNotification(
+                    studentUserId,
+                    'ASSESSMENT_SCHEDULED',
+                    'Second Assessment Scheduled',
+                    `Your University Supervisor has scheduled your second assessment for ${new Date(second_assessment_date).toLocaleDateString()}. Make sure your logbook tasks are finalized.`
+                );
+            }
+
+            res.status(200).json({ status: 'success' });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    // Supervisor draft comment
+    draftSupervisorComment = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const userRole = (req as any).user?.role;
+            const { logbook_id, comments } = req.body;
+
+            let query = '';
+            let params = [comments, logbook_id];
+
+            if (userRole === 'COMPANY' || userRole === 'SUPERVISOR') {
+                query = `UPDATE weekly_logbook_entries SET industry_supervisor_comments = $1 WHERE id = $2 RETURNING *`;
+            } else if (userRole === 'INSTITUTION' || userRole === 'ADMIN') {
+                query = `UPDATE weekly_logbook_entries SET university_supervisor_comments = $1 WHERE id = $2 RETURNING *`;
+            } else {
+                return res.status(403).json({ message: 'Forbidden' });
+            }
+
+            const result = await pool.query(query, params);
+            res.status(200).json({ status: 'success', data: result.rows[0] });
         } catch (error) {
             next(error);
         }

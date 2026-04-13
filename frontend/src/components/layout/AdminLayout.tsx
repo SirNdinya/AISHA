@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import ThemeToggle from '../common/ThemeToggle';
 import type { RootState } from '../../store';
 import { logout } from '../../store/authSlice';
-import BroadcastBanner from '../common/BroadcastBanner';
 
 const AdminLayout: React.FC = () => {
     const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
@@ -28,7 +27,6 @@ const AdminLayout: React.FC = () => {
 
     return (
         <Flex direction="column" minH="100vh">
-            <BroadcastBanner system="ADMIN" />
             <Box as="nav" bg="gray.800" color="white" px={8} py={4} shadow="md">
                 <Flex justify="space-between" align="center">
                     <Heading size="md">SAPS Admin</Heading>
@@ -37,7 +35,7 @@ const AdminLayout: React.FC = () => {
                         <ThemeToggle />
                         <HStack>
                             <Text fontSize="sm" fontWeight="bold">{user.firstName} (Admin)</Text>
-                            <Button size="sm" colorPalette="red" variant="solid" onClick={handleLogout}>Logout</Button>
+                            <Button size="sm" colorPalette="red" variant="solid" onClick={handleLogout}>Sign Out</Button>
                         </HStack>
                     </HStack>
                 </Flex>

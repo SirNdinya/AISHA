@@ -22,9 +22,7 @@ export interface Student {
     course_of_study?: string;
     skills: string[];
     interests: string[];
-    cv_url?: string;
     profile_picture_url?: string;
-    resume_text?: string; // Stores JSON content from CV Builder
     requires_stipend: boolean;
     min_stipend_amount: number;
     mpesa_number?: string;
@@ -40,6 +38,7 @@ export interface Student {
     sync_status?: 'SYNCED' | 'FAILED' | 'PENDING' | 'NOT_SYNCED';
     last_sync_at?: string;
     placement_duration?: number;
+    career_path?: string;
 }
 
 export interface Unit {
@@ -56,7 +55,6 @@ export interface AcademicPerformance {
 
 export interface ExternalStatus {
     mpesa: 'VERIFIED' | 'PENDING' | 'FAILED';
-    nita: 'APPROVED' | 'PENDING' | 'REJECTED';
     insurance: 'ACTIVE' | 'EXPIRED' | 'INACTIVE';
 }
 
@@ -76,12 +74,16 @@ export interface DashboardStats {
 
 export interface MatchIntelligence {
     id: string;
+    opportunity_id: string;
     job_title: string;
     company_name: string;
     match_score: number;
     match_reason: string;
+    reasoning?: string;
     applied_at: string;
     status: string;
+    logo_url?: string;
+    profile_picture_url?: string;
 }
 
 export interface AutomationLogEntry {
@@ -110,10 +112,10 @@ export interface UpdateStudentDto {
     course_of_study?: string;
     skills?: string[];
     interests?: string[];
-    resume_text?: string;
     requires_stipend?: boolean;
     min_stipend_amount?: number;
     mpesa_number?: string;
     preferred_locations?: string[];
     placement_duration?: number;
+    career_path?: string;
 }

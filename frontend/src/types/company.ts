@@ -12,6 +12,10 @@ export interface Company {
     contact_person_role?: string;
     is_verified: boolean;
     created_at: string;
+    website?: string;
+    profile_picture_url?: string;
+    acceptance_letter_template?: string;
+    acceptance_letter_requirements?: string;
 
     // Joined User fields
     email?: string;

@@ -1,26 +1,45 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Text, VStack, Badge, Flex, IconButton, Spinner } from '@chakra-ui/react';
+import { Box, Button, Text, VStack, Flex, IconButton, Spinner, HStack, Heading } from '@chakra-ui/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchNotifications, markNotificationsRead } from '../../store/notificationSlice';
 import type { AppDispatch, RootState } from '../../store';
-import { LuBell, LuBellRing, LuCheck, LuInfo, LuCircleCheck, LuTriangleAlert, LuCircleX, LuZap } from "react-icons/lu";
+import { LuBell, LuBellRing, LuCheck, LuInfo, LuCircleCheck, LuTriangleAlert, LuCircleX, LuZap, LuX } from "react-icons/lu";
+import { useSocket } from '../../context/SocketContext';
+import { type Notification as AppNotification } from '../../services/notificationService';
 import MpesaPaymentModal from './MpesaPaymentModal';
 
 const NotificationCenter: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const { notifications, unreadCount, isLoading: loading } = useSelector((state: RootState) => state.notifications);
     const [isOpen, setIsOpen] = useState(false);
+    const [selectedNotification, setSelectedNotification] = useState<AppNotification | null>(null);
     const [paymentModal, setPaymentModal] = useState<{ open: boolean, amount: number, opportunityId: string }>({
         open: false,
         amount: 0,
         opportunityId: ''
     });
 
+    const { socket } = useSocket();
+
     useEffect(() => {
         dispatch(fetchNotifications());
         const interval = setInterval(() => dispatch(fetchNotifications()), 30000);
         return () => clearInterval(interval);
     }, [dispatch]);
+
+    // Handle real-time updates via Socket.io
+    useEffect(() => {
+        if (!socket) return;
+
+        const handleNotification = () => {
+            dispatch(fetchNotifications());
+        };
+
+        socket.on('notification', handleNotification);
+        return () => {
+            socket.off('notification', handleNotification);
+        };
+    }, [socket, dispatch]);
 
     const toggleOpen = () => setIsOpen(!isOpen);
 
@@ -50,11 +69,12 @@ const NotificationCenter: React.FC = () => {
             >
                 {unreadCount > 0 ? <LuBellRing size={20} color="#f87171" /> : <LuBell size={20} />}
                 {unreadCount > 0 && (
-                    <Badge
-                        colorPalette="red"
+                    <Box
                         position="absolute"
-                        top="2px"
-                        right="2px"
+                        top="-2px"
+                        right="-2px"
+                        bg="red.500"
+                        color="white"
                         borderRadius="full"
                         minW="18px"
                         h="18px"
@@ -62,10 +82,12 @@ const NotificationCenter: React.FC = () => {
                         alignItems="center"
                         justifyContent="center"
                         fontSize="10px"
-                        boxShadow="0 0 10px rgba(248, 113, 113, 0.5)"
+                        fontWeight="bold"
+                        boxShadow="0 0 10px rgba(244, 63, 94, 0.6)"
+                        zIndex={2}
                     >
                         {unreadCount > 9 ? '9+' : unreadCount}
-                    </Badge>
+                    </Box>
                 )}
             </IconButton>
 
@@ -81,7 +103,7 @@ const NotificationCenter: React.FC = () => {
                     border="1px solid rgba(255, 255, 255, 0.125)"
                     shadow="2xl"
                     borderRadius="2xl"
-                    zIndex={1000}
+                    zIndex={2000}
                     overflow="hidden"
                     animation="fade-in 0.2s ease-out"
                 >
@@ -125,7 +147,10 @@ const NotificationCenter: React.FC = () => {
                                     borderBottom="1px solid rgba(255, 255, 255, 0.05)"
                                     _hover={{ bg: 'rgba(255, 255, 255, 0.05)' }}
                                     cursor="pointer"
-                                    onClick={() => dispatch(markNotificationsRead(n.id))}
+                                    onClick={() => {
+                                        dispatch(markNotificationsRead(n.id));
+                                        setSelectedNotification(n);
+                                    }}
                                     transition="all 0.2s"
                                 >
                                     <Flex gap={3} align="start">
@@ -168,15 +193,64 @@ const NotificationCenter: React.FC = () => {
                         )}
                     </VStack>
 
+                </Box>
+            )}
+
+            {/* Notification Detail Modal */}
+            {selectedNotification && (
+                <Box
+                    position="fixed"
+                    inset={0}
+                    zIndex={9999}
+                    bg="blackAlpha.800"
+                    backdropFilter="blur(8px)"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    onClick={() => setSelectedNotification(null)}
+                >
                     <Box
-                        p={2}
-                        textAlign="center"
-                        borderTop="1px solid rgba(255, 255, 255, 0.1)"
-                        bg="rgba(255, 255, 255, 0.02)"
+                        bg="#1a1c23"
+                        p={8}
+                        borderRadius="2xl"
+                        maxW="500px"
+                        w="full"
+                        mx={4}
+                        border="1px solid rgba(255,255,255,0.1)"
+                        onClick={(e) => e.stopPropagation()}
+                        animation="slide-up 0.3s ease-out"
                     >
-                        <Button w="full" size="xs" variant="ghost" color="gray.500" fontSize="xs">
-                            View All Notifications
-                        </Button>
+                        <Flex justify="space-between" align="center" mb={6}>
+                            <HStack gap={3}>
+                                {getIcon(selectedNotification.type)}
+                                <Heading size="md" color="white">{selectedNotification.title}</Heading>
+                            </HStack>
+                            <IconButton
+                                aria-label="Close"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setSelectedNotification(null)}
+                            >
+                                <LuX />
+                            </IconButton>
+                        </Flex>
+                        
+                        <Text color="gray.300" fontSize="md" lineHeight="tall" mb={8}>
+                            {selectedNotification.message}
+                        </Text>
+                        
+                        <Flex justify="space-between" align="center">
+                            <Text fontSize="xs" color="gray.500">
+                                {new Date(selectedNotification.created_at).toLocaleString()}
+                            </Text>
+                            <Button
+                                size="sm"
+                                colorPalette="purple"
+                                onClick={() => setSelectedNotification(null)}
+                            >
+                                Close
+                            </Button>
+                        </Flex>
                     </Box>
                 </Box>
             )}

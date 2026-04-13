@@ -89,7 +89,7 @@ def trigger_multi_system_sync(
     placement_id: UUID = Path(...),
     db: Session = Depends(get_db)
 ):
-    """Trigger multi-hop sync across Student, Company, Institution, and NITA systems."""
+    """Trigger multi-hop sync across Student, Company, and Institution systems."""
     service = SyncService(db)
     return service.autonomous_multi_system_sync(str(placement_id))
 

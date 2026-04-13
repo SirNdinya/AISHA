@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
     Box,
-    Grid,
-    GridItem,
     SimpleGrid,
     Badge,
     VStack,
@@ -12,45 +10,32 @@ import {
     Icon,
     Table,
     Spinner,
-    AvatarRoot,
-    AvatarFallback
+    Button,
+    HStack,
+    Separator
 } from '@chakra-ui/react';
 import {
     Users,
-    Briefcase,
-    FileCheck,
-    ArrowUpRight,
-    Activity
+    Building2,
+    Plus,
+    BarChart3,
+    ArrowRight,
+    Search
 } from 'lucide-react';
-import {
-    AreaChart,
-    Area,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer,
-    PieChart,
-    Pie,
-    Cell
-} from 'recharts';
+import { useNavigate } from 'react-router-dom';
 import InstitutionService from '../../../services/institutionService';
 import './AdminPortal.css';
 
 const AnalyticsOverview: React.FC = () => {
     const [analytics, setAnalytics] = useState<any>(null);
-    const [placements, setPlacements] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [analyticsData, placementsData] = await Promise.all([
-                    InstitutionService.getAnalytics(),
-                    InstitutionService.getPlacements()
-                ]);
-                setAnalytics(analyticsData);
-                setPlacements(placementsData);
+                const data = await InstitutionService.getAnalytics();
+                setAnalytics(data);
             } catch (error) {
                 console.error("Failed to fetch analytics", error);
             } finally {
@@ -62,150 +47,132 @@ const AnalyticsOverview: React.FC = () => {
 
     if (isLoading) return <Flex h="50vh" align="center" justify="center"><Spinner color="purple.400" /></Flex>;
 
-    const stats = [
-        { label: 'Total Enrolled', value: analytics?.overview?.total_enrolled || 0, icon: Users, color: 'blue.400' },
-        { label: 'Active Applications', value: analytics?.overview?.total_applications || 0, icon: Activity, color: 'teal.400' },
-        { label: 'Placed Students', value: analytics?.overview?.success_placements || 0, icon: Briefcase, color: 'blue.500' },
-        { label: 'Pending Offers', value: analytics?.overview?.pending_placements || 0, icon: FileCheck, color: 'cyan.400' },
-    ];
-
-    const pieData = (analytics?.departments || []).map((d: any, i: number) => ({
-        name: d.name,
-        value: parseInt(d.placed_count) || 0,
-        color: ['#a78bfa', '#2dd4bf', '#f59e0b', '#ec4899'][i % 4]
-    }));
+    const departments = analytics?.departments || [];
+    const totalStudents = analytics?.overview?.total_enrolled || 0;
+    const totalDepartments = analytics?.overview?.department_count || 0;
 
     return (
         <Box animation="fadeIn 0.5s ease-out">
-            <Flex justify="space-between" align="flex-end" mb={8}>
+            <Flex justify="space-between" align="center" mb={10}>
                 <Box>
-                    <Heading size="lg" fontWeight="black" letterSpacing="tight">Institutional Dashboard</Heading>
-                    <Text color="gray.500">System-wide monitoring of departmental data and placements.</Text>
+                    <Heading size="xl" fontWeight="black" letterSpacing="tight">Institutional Overview</Heading>
+                    <Text color="gray.500" fontSize="md">Monitoring departmental nodes and database student populations.</Text>
                 </Box>
+                <Button
+                    bg="linear-gradient(135deg, #a78bfa 0%, #2dd4bf 100%)"
+                    color="white"
+                    px={6}
+                    h={12}
+                    borderRadius="xl"
+                    _hover={{ transform: "translateY(-2px)", shadow: "0 10px 20px -10px rgba(167, 139, 250, 0.5)" }}
+                    transition="all 0.2s"
+                    onClick={() => navigate('/institution/departments')}
+                >
+                    <HStack gap={2}>
+                        <Icon as={Plus} boxSize={5} />
+                        <Text fontWeight="bold">Provision New Node</Text>
+                    </HStack>
+                </Button>
             </Flex>
 
-            {/* Stats Cards */}
-            <SimpleGrid columns={[1, 2, 4]} gap={6} mb={8}>
-                {stats.map((stat, i) => (
-                    <Box key={i} className="glass-card stats-card-bg" p={6} borderRadius="20px">
-                        <Flex justify="space-between" align="center" mb={4}>
-                            <Box p={2} borderRadius="12px" bg="rgba(167, 139, 250, 0.1)">
-                                <Icon as={stat.icon} boxSize={6} color={stat.color} />
-                            </Box>
-                        </Flex>
-                        <Box>
-                            <Text color="gray.500" fontWeight="medium" fontSize="sm">{stat.label}</Text>
-                            <Text fontSize="3xl" fontWeight="bold" color="white">{stat.value}</Text>
+            {/* Core Infrastructure Stats */}
+            <SimpleGrid columns={[1, 1, 3]} gap={8} mb={10}>
+                <Box className="glass-card" p={8} borderRadius="30px">
+                    <Flex justify="space-between" align="center" mb={4}>
+                        <Box p={3} borderRadius="15px" bg="rgba(167, 139, 250, 0.1)">
+                            <Icon as={Building2} boxSize={6} color="purple.400" />
                         </Box>
-                    </Box>
-                ))}
+                    </Flex>
+                    <VStack align="start" gap={0}>
+                        <Text color="gray.500" fontSize="xs" fontWeight="bold" textTransform="uppercase" letterSpacing="widest">Total Departmental Nodes</Text>
+                        <Heading size="3xl" fontWeight="black">{totalDepartments}</Heading>
+                    </VStack>
+                </Box>
+
+                <Box className="glass-card" p={8} borderRadius="30px">
+                    <Flex justify="space-between" align="center" mb={4}>
+                        <Box p={3} borderRadius="15px" bg="rgba(45, 212, 191, 0.1)">
+                            <Icon as={Users} boxSize={6} color="teal.400" />
+                        </Box>
+                    </Flex>
+                    <VStack align="start" gap={0}>
+                        <Text color="gray.500" fontSize="xs" fontWeight="bold" textTransform="uppercase" letterSpacing="widest">Database Student Count</Text>
+                        <Heading size="3xl" fontWeight="black">{totalStudents}</Heading>
+                    </VStack>
+                </Box>
+
+                <Box className="glass-card" p={8} borderRadius="30px" border="1px dashed rgba(255,255,255,0.1)">
+                    <VStack h="full" justify="center" align="center" gap={4}>
+                        <Icon as={BarChart3} boxSize={10} color="gray.600" />
+                        <Text color="gray.500" fontSize="sm" textAlign="center">Institutional Health is <b>Stable</b><br/>All schema nodes are synced.</Text>
+                    </VStack>
+                </Box>
             </SimpleGrid>
 
-            <Grid templateColumns={["1fr", "1fr", "repeat(3, 1fr)"]} gap={6} mb={8}>
-                <GridItem colSpan={2} className="glass-card" p={6} borderRadius="20px">
-                    <Heading size="md" mb={6}>Placements by Department</Heading>
-                    <Box h="300px" w="full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={analytics?.departments || []}>
-                                <defs>
-                                    <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#3182ce" stopOpacity={0.3} />
-                                        <stop offset="95%" stopColor="#3182ce" stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                                <XAxis dataKey="code" stroke="rgba(255,255,255,0.3)" fontSize={12} axisLine={false} tickLine={false} />
-                                <YAxis stroke="rgba(255,255,255,0.3)" fontSize={12} axisLine={false} tickLine={false} />
-                                <Tooltip
-                                    contentStyle={{ backgroundColor: 'rgba(13, 17, 23, 0.8)', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '12px' }}
-                                />
-                                <Area type="monotone" dataKey="placed_count" stroke="#a78bfa" strokeWidth={3} fillOpacity={1} fill="url(#colorValue)" />
-                            </AreaChart>
-                        </ResponsiveContainer>
-                    </Box>
-                </GridItem>
-
-                <GridItem colSpan={1} className="glass-card" p={6} borderRadius="20px">
-                    <Heading size="md" mb={6}>Placement Success</Heading>
-                    <Box h="200px" display="flex" alignItems="center" justifyContent="center">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie
-                                    data={pieData}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={50}
-                                    outerRadius={70}
-                                    paddingAngle={5}
-                                    dataKey="value"
-                                >
-                                    {pieData.map((entry: any, index: number) => (
-                                        <Cell key={`cell-${index}`} fill={entry.color} stroke="transparent" />
-                                    ))}
-                                </Pie>
-                                <Tooltip />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </Box>
-                    <VStack align="stretch" gap={2} mt={4}>
-                        {pieData.map((item: any) => (
-                            <Flex key={item.name} justify="space-between" align="center" fontSize="sm">
-                                <Flex align="center" gap={2}>
-                                    <Box w="10px" h="10px" borderRadius="full" bg={item.color} />
-                                    <Text color="gray.400" truncate maxW="150px">{item.name}</Text>
-                                </Flex>
-                                <Text fontWeight="bold">{item.value}</Text>
-                            </Flex>
-                        ))}
+            {/* Departmental Data Table */}
+            <Box className="glass-card" p={8} borderRadius="30px">
+                <Flex justify="space-between" align="center" mb={8}>
+                    <VStack align="start" gap={1}>
+                        <Heading size="md">Departmental Student Statistics</Heading>
+                        <Text fontSize="xs" color="gray.500">Live counts retrieved from institutional database schemas.</Text>
                     </VStack>
-                </GridItem>
-            </Grid>
-
-            {/* Recent Placements Table */}
-            <Box className="glass-card" p={6} borderRadius="20px">
-                <Flex justify="space-between" align="center" mb={6}>
-                    <Heading size="md">Live Placement Feed</Heading>
-                    <Badge colorPalette="teal" variant="outline" borderRadius="full" px={3}>
-                        Live Data
+                    <Badge variant="subtle" colorPalette="purple" px={3} py={1} borderRadius="full">
+                        DATABASE SYNC: ACTIVE
                     </Badge>
                 </Flex>
-                <Table.Root size="sm">
+
+                <Table.Root variant="line" size="lg">
                     <Table.Header borderBottom="1px solid rgba(255,255,255,0.05)">
                         <Table.Row>
-                            <Table.ColumnHeader color="gray.500">Student</Table.ColumnHeader>
-                            <Table.ColumnHeader color="gray.500">Company</Table.ColumnHeader>
-                            <Table.ColumnHeader color="gray.500">Role</Table.ColumnHeader>
-                            <Table.ColumnHeader color="gray.500" textAlign="right">Status</Table.ColumnHeader>
+                            <Table.ColumnHeader color="gray.500">NODE NAME</Table.ColumnHeader>
+                            <Table.ColumnHeader color="gray.500">DATABASE PIN</Table.ColumnHeader>
+                            <Table.ColumnHeader color="gray.500" textAlign="center">STUDENT POPULATION</Table.ColumnHeader>
+                            <Table.ColumnHeader color="gray.500" textAlign="right">MANAGEMENT</Table.ColumnHeader>
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
-                        {placements.slice(0, 10).map((p, i) => (
+                        {departments.map((dept: any, i: number) => (
                             <Table.Row key={i} _hover={{ bg: "rgba(255,255,255,0.02)" }} transition="0.2s">
-                                <Table.Cell py={4}>
-                                    <Flex align="center" gap={3}>
-                                        <AvatarRoot size="xs">
-                                            <AvatarFallback name={`${p.first_name} ${p.last_name}`} />
-                                        </AvatarRoot>
-                                        <Text fontWeight="medium">{p.first_name} {p.last_name}</Text>
-                                    </Flex>
+                                <Table.Cell py={6}>
+                                    <HStack gap={4}>
+                                        <Box p={2} borderRadius="10px" bg="rgba(167, 139, 250, 0.05)">
+                                            <Icon as={Building2} boxSize={4} color="purple.400" />
+                                        </Box>
+                                        <Text fontWeight="bold" fontSize="md">{dept.name}</Text>
+                                    </HStack>
                                 </Table.Cell>
-                                <Table.Cell color="gray.400">{p.company_name}</Table.Cell>
-                                <Table.Cell color="gray.400">{p.role}</Table.Cell>
+                                <Table.Cell>
+                                    <Badge colorPalette="gray" variant="outline" letterSpacing="tighter">{dept.code}</Badge>
+                                </Table.Cell>
+                                <Table.Cell textAlign="center">
+                                    <Text fontWeight="black" fontSize="lg" color="white">{dept.student_count}</Text>
+                                    <Text fontSize="10px" color="gray.600" mt={-1}>ENROLLED</Text>
+                                </Table.Cell>
                                 <Table.Cell textAlign="right">
-                                    <Badge
-                                        colorPalette={p.status === 'ACCEPTED' ? 'teal' : p.status === 'OFFERED' ? 'purple' : 'gray'}
-                                        variant="subtle"
-                                        borderRadius="full"
-                                        fontSize="10px"
-                                        px={2}
+                                    <Button
+                                        size="xs"
+                                        variant="ghost"
+                                        color="purple.400"
+                                        _hover={{ bg: "rgba(167, 139, 250, 0.1)" }}
+                                        onClick={() => navigate('/institution/departments')}
                                     >
-                                        {p.status}
-                                    </Badge>
+                                        <HStack gap={1}>
+                                            <Text fontSize="xs">Configure Node</Text>
+                                            <Icon as={ArrowRight} boxSize={3} />
+                                        </HStack>
+                                    </Button>
                                 </Table.Cell>
                             </Table.Row>
                         ))}
                     </Table.Body>
                 </Table.Root>
+
+                {departments.length === 0 && (
+                    <VStack py={20} gap={4}>
+                        <Icon as={Search} boxSize={10} color="gray.600" />
+                        <Text color="gray.500">No departmental nodes detected in the database.</Text>
+                    </VStack>
+                )}
             </Box>
         </Box>
     );
