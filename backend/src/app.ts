@@ -85,9 +85,11 @@ v1Router.get('/health', async (req: Request, res: Response) => {
 
     try {
         const { createClient } = require('redis');
-        const client = createClient({
-            url: `redis://${process.env.REDIS_HOST || 'localhost'}:${process.env.REDIS_PORT || 6379}`
-        });
+        const redisConfig = process.env.REDIS_URL 
+            ? { url: process.env.REDIS_URL }
+            : { url: `redis://${process.env.REDIS_HOST || 'localhost'}:${process.env.REDIS_PORT || 6379}` };
+            
+        const client = createClient(redisConfig);
         await client.connect();
         await client.ping();
         await client.quit();
