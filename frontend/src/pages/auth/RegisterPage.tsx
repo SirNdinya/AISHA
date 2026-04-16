@@ -7,7 +7,7 @@ import * as Yup from 'yup';
 import axios from 'axios';
 import apiClient from '../../services/apiClient';
 import AuthLayout from '../../components/layout/AuthLayout';
-import { FaUserGraduate, FaBuilding, FaUniversity, FaCheckCircle, FaExclamationCircle, FaArrowRight, FaArrowLeft, FaEnvelope, FaLock, FaUser, FaSearch, FaEye, FaEyeSlash, FaMagic } from 'react-icons/fa';
+import { FaUserGraduate, FaBuilding, FaUniversity, FaCheckCircle, FaExclamationCircle, FaArrowRight, FaArrowLeft, FaEnvelope, FaLock, FaUser, FaSearch, FaEye, FaEyeSlash, FaMagic, FaPhone } from 'react-icons/fa';
 import { ProgressBar } from '../../components/ui/progress';
 
 const MotionBox = motion(Box);
@@ -116,10 +116,7 @@ const RegisterPage: React.FC = () => {
             }),
             admissionNumber: Yup.string().when('role', {
                 is: 'STUDENT',
-                then: (schema) => schema
-                    .required('Registration/Admission number is required')
-                    .matches(/^[A-Za-z0-9/-]+$/, 'Only letters, numbers, hyphens, and slashes are allowed')
-                    .matches(/\//, 'Must match standard institution format (e.g., SIT/B/01-12345/2022)'),
+                then: (schema) => schema.required('Registration/Admission number is required'),
                 otherwise: (schema) => schema.notRequired(),
             }),
             name: Yup.string().when('role', {
@@ -248,7 +245,7 @@ const RegisterPage: React.FC = () => {
                             <Heading size="2xl" mb={1} color={`${currentConfig.color}.600`} fontWeight="black" letterSpacing="tight">
                                 {currentConfig.label} Registration
                             </Heading>
-                            <Text color="gray.800" fontWeight="bold">Create your {currentConfig.label.toLowerCase()} account Node</Text>
+                            <Text color="gray.800" fontWeight="bold">Create your {currentConfig.label.toLowerCase()} account</Text>
                         </Box>
                     </VStack>
 
@@ -276,7 +273,7 @@ const RegisterPage: React.FC = () => {
                                 }
                             </Text>
                             <Button asChild colorPalette={currentConfig.color} w="full" h={14} borderRadius="2xl">
-                                <RouterLink to="/login">Back to Login</RouterLink>
+                                <RouterLink to={`/login?portal=${role.toLowerCase()}`}>Back to Login</RouterLink>
                             </Button>
                         </VStack>
                     ) : (
@@ -300,7 +297,7 @@ const RegisterPage: React.FC = () => {
                                     >
                                         <HStack gap={1}>
                                             <Icon as={FaArrowLeft} />
-                                            <Text fontWeight="bold">Change Role</Text>
+                                            <Text fontWeight="bold">Switch Portal Type</Text>
                                         </HStack>
                                     </Button>
                                 )}
@@ -639,7 +636,7 @@ const RegisterPage: React.FC = () => {
                              <Flex justify="center" gap={2} align="center">
                                  <Text fontSize="sm" color="gray.800" fontWeight="bold">Already have an account?</Text>
                                  <Link asChild fontSize="sm" color="blue.600" fontWeight="black">
-                                     <RouterLink to="/login">Login Here</RouterLink>
+                                     <RouterLink to={`/login?portal=${role.toLowerCase()}`}>Login Here</RouterLink>
                                  </Link>
                              </Flex>
                         </>

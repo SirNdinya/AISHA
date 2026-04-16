@@ -136,7 +136,7 @@ const LoginPage: React.FC = () => {
                             <Heading size="2xl" mb={1} color={`${config.color}.600`} fontWeight="black" letterSpacing="tight">
                                 {config.title}
                             </Heading>
-                            <Text color="gray.800" fontWeight="bold">Secure Access Node • {config.label} Authorization</Text>
+                            <Text color="gray.800" fontWeight="bold">Secure Portal Access • {config.label} Authorization</Text>
                         </Box>
                     </VStack>
 
@@ -248,7 +248,7 @@ const LoginPage: React.FC = () => {
                     <Flex justify="center" gap={2} align="center">
                         <Text fontSize="sm" color="gray.800" fontWeight="bold">Don't have an account?</Text>
                         <Link asChild fontSize="sm" color={`${config.color}.600`} fontWeight="black">
-                            <RouterLink to="/register">Register Here</RouterLink>
+                            <RouterLink to={`/register?portal=${activePortal}`}>Register Here</RouterLink>
                         </Link>
                     </Flex>
                 </VStack>
