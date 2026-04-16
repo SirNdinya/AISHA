@@ -127,6 +127,28 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, portal }) => {
             align="center"
             justify="center"
         >
+            {/* Premium Background Layer */}
+            <Box
+                position="absolute"
+                top={0}
+                left={0}
+                right={0}
+                bottom={0}
+                backgroundImage="url('/landing-bg.png')"
+                backgroundSize="cover"
+                backgroundPosition="center"
+                zIndex={0}
+                _after={{
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    bg: 'rgba(15, 23, 42, 0.7)',
+                    backdropFilter: 'blur(4px)'
+                }}
+            />
             <AuthBackground themeColor={themeColor} portal={portal} />
 
             {/* Neural Connections Layer */}

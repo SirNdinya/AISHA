@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, Input, VStack, Heading, Text, Flex, Grid, SimpleGrid, Link, Alert, Icon, HStack, Spinner, List, IconButton, chakra } from '@chakra-ui/react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useNavigate, Link as RouterLink, useSearchParams } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
@@ -13,8 +13,10 @@ import { ProgressBar } from '../../components/ui/progress';
 const MotionBox = motion(Box);
 
 const RegisterPage: React.FC = () => {
-    const [step, setStep] = useState(1);
-    const [role, setRole] = useState(import.meta.env.VITE_PORTAL?.toUpperCase() || '');
+    const [searchParams] = useSearchParams();
+    const portalParam = searchParams.get('portal')?.toUpperCase() || import.meta.env.VITE_PORTAL?.toUpperCase() || '';
+    const [step, setStep] = useState(portalParam ? 2 : 1);
+    const [role, setRole] = useState(portalParam);
     const [loading, setLoading] = useState(false);
     const [serverError, setServerError] = useState('');
     const [success, setSuccess] = useState(false);
@@ -205,7 +207,7 @@ const RegisterPage: React.FC = () => {
     );
 
     return (
-        <AuthLayout portal={role.toLowerCase()}>
+        <AuthLayout portal={role.toLowerCase() || 'student'}>
             <Box
                 bg="rgba(255, 255, 255, 0.9)"
                 backdropFilter="blur(20px)"
