@@ -18,5 +18,5 @@ COPY . .
 # Expose port
 EXPOSE 8001
 
-# Run the application
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001", "--reload"]
+# Run the application using the PORT environment variable (default 10000 for Render)
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-10000}"]
