@@ -14,6 +14,11 @@
         "src/**/*"
     ],
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "src/tests/**/*",
+        "src/**/*.test.ts",
+        "src/populate_*.ts",
+        "src/scripts/purge_*.ts",
+        "src/api_test*.ts"
     ]
 }
