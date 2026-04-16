@@ -7,7 +7,9 @@ import { Server } from 'socket.io';
 import path from 'path';
 import { AutomationService } from './services/AutomationService';
 
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+if (process.env.NODE_ENV !== 'production') {
+    dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+}
 
 const PORT = process.env.PORT || 3000;
 
