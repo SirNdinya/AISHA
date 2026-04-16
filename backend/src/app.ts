@@ -63,6 +63,7 @@ v1Router.use('/assessments', assessmentRoutes);
 
 app.use('/api/v1', v1Router);
 app.use('/api', v1Router);
+app.use('/', v1Router);
 
 // Health Check Routes
 v1Router.get('/health', async (req: Request, res: Response) => {

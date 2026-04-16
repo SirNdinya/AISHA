@@ -26,11 +26,13 @@ export class AuthController extends BaseController {
                     i.is_admin_verified,
                     COALESCE(u.institution_id, i.id, d.institution_id, s.institution_id) as institution_id,
                     COALESCE(s.department_id, d.id) as department_id,
+                    c.id as company_id,
                     (SELECT user_id FROM institutions WHERE id = COALESCE(u.institution_id, i.id, d.institution_id, s.institution_id) LIMIT 1) as institution_admin_id
                 FROM users u
                 LEFT JOIN institutions i ON u.id = i.user_id AND u.role = 'INSTITUTION'
                 LEFT JOIN departments d ON u.id = d.user_id AND u.role = 'DEPARTMENT_ADMIN'
                 LEFT JOIN students s ON u.id = s.user_id AND u.role = 'STUDENT'
+                LEFT JOIN companies c ON u.id = c.user_id AND u.role = 'COMPANY'
                 WHERE u.email = $1
             `;
             const userResult = await pool.query(userQuery, [email]);
@@ -98,6 +100,7 @@ export class AuthController extends BaseController {
                     role: user.role,
                     institutionId: user.institution_id,
                     departmentId: user.department_id,
+                    companyId: user.company_id,
                     institutionAdminId: user.institution_admin_id
                 }
             });
