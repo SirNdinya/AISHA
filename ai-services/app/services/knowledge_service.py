@@ -1,7 +1,17 @@
 from typing import List, Dict, Any, Optional
-from sentence_transformers import util, SentenceTransformer
-import torch
+import numpy as np
 from app.core.ml_factory import model_factory
+
+def cos_sim(a, b):
+    a = np.array(a)
+    b = np.array(b)
+    if a.ndim == 1 and b.ndim == 1:
+        return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-9)
+    if a.ndim == 1 and b.ndim == 2:
+        return np.dot(b, a) / (np.linalg.norm(b, axis=1) * np.linalg.norm(a) + 1e-9)
+    norm_a = np.linalg.norm(a, axis=1, keepdims=True)
+    norm_b = np.linalg.norm(b, axis=1, keepdims=True)
+    return np.dot(a, b.T) / (np.dot(norm_a, norm_b.T) + 1e-9)
 
 class KnowledgeService:
     """
@@ -22,7 +32,7 @@ class KnowledgeService:
         if getattr(self, '_initialized', False):
             return
             
-        self.model: SentenceTransformer = model_factory.get_model()
+        self.model = model_factory.get_model()
         # Knowledge Base: A collection of semantic snippets
         # In a real app, this would be backed by a Vector DB (e.g. Pinecone, Chroma)
         self.knowledge_base: List[Dict[str, Any]] = [
@@ -56,8 +66,7 @@ class KnowledgeService:
         # Pre-compute embeddings for storage
         print("Pre-computing Knowledge Base embeddings...")
         self.kb_embeddings = self.model.encode(
-            [item["content"] for item in self.knowledge_base], 
-            convert_to_tensor=True
+            [item["content"] for item in self.knowledge_base]
         )
         self._initialized = True
 
@@ -65,21 +74,29 @@ class KnowledgeService:
         """
         Retrieves the most semantically relevant knowledge snippets for a query.
         """
-        query_embedding = self.model.encode(query, convert_to_tensor=True)
+        query_embedding = self.model.encode(query)
         
         # Compute cosine similarities
-        cosine_scores = util.cos_sim(query_embedding, self.kb_embeddings)[0]
+        cosine_scores = cos_sim(query_embedding, self.kb_embeddings)
         
-        # Get top-k indices
-        top_results = torch.topk(cosine_scores, k=min(top_k, len(self.knowledge_base)))
+        # Flatten and get top-k indices
+        if isinstance(cosine_scores, np.ndarray) and cosine_scores.ndim > 1:
+            cosine_scores = cosine_scores[0]
+        elif isinstance(cosine_scores, list) and isinstance(cosine_scores[0], list):
+            cosine_scores = cosine_scores[0]
+        
+        cosine_scores = np.array(cosine_scores)
+        top_k = min(top_k, len(self.knowledge_base))
+        top_indices = np.argsort(cosine_scores)[-top_k:][::-1]
         
         results = []
-        for score, idx in zip(top_results.values, top_results.indices):
+        for idx in top_indices:
+            score = cosine_scores[idx]
             if score > 0.3: # Minimum relevance threshold
                 results.append({
-                    "snippet": self.knowledge_base[idx.item()]["content"],
-                    "confidence": round(score.item(), 2),
-                    "id": self.knowledge_base[idx.item()]["id"]
+                    "snippet": self.knowledge_base[idx]["content"],
+                    "confidence": round(float(score), 2),
+                    "id": self.knowledge_base[idx]["id"]
                 })
                 
         return results
@@ -98,7 +115,6 @@ class KnowledgeService:
         })
         # Re-compute embeddings (In Vector DB this happens automatically)
         self.kb_embeddings = self.model.encode(
-            [item["content"] for item in self.knowledge_base], 
-            convert_to_tensor=True
+            [item["content"] for item in self.knowledge_base]
         )
         return new_id

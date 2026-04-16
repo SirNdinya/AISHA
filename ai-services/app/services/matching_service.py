@@ -1,17 +1,19 @@
-from sqlalchemy.orm import Session
-from sentence_transformers import SentenceTransformer
-from app import models
-from typing import List, Dict, Any
-from sentence_transformers import util
-from app.core.ml_factory import model_factory
-from app.services.llm_service import llm_service
-import json
 import logging
 import asyncio
 import time
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
+
+def cos_sim(a, b):
+    a = np.array(a)
+    b = np.array(b)
+    if a.ndim == 1 and b.ndim == 1:
+        return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-9)
+    elif a.ndim == 1 and b.ndim == 2:
+        return np.dot(b, a) / (np.linalg.norm(b, axis=1) * np.linalg.norm(a) + 1e-9)
+    # Default 2D vs 2D
+    norm_a = np.linalg.norm(a, axis=1, keepdims=True)
+    norm_b = np.linalg.norm(b, axis=1, keepdims=True)
+    return np.dot(a, b.T) / (np.dot(norm_a, norm_b.T) + 1e-9)
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +21,12 @@ from app.services.document_extraction_service import document_extraction_service
 import os
 
 # Global memory cache for opportunities to prevent fetching and processing redundantly
+from sqlalchemy.orm import Session
+from app import models
+from typing import List, Dict, Any
+from app.core.ml_factory import model_factory
+from app.services.llm_service import llm_service
+
 class OpportunityCache:
     opportunities: List[models.Opportunity] = []
     embeddings: Dict[str, Dict[str, Any]] = {}  # opp.id -> precomputed vectors or strings
@@ -28,7 +36,7 @@ class OpportunityCache:
 class MatchingService:
     def __init__(self, db: Session):
         self.db: Session = db
-        self.model: SentenceTransformer = model_factory.get_model()
+        self.model = model_factory.get_model()
         # Default weights - Can be autonomously adjusted by the system
         # Enhanced weights to prioritize career path and academic/transcript records
         self.weights = {
@@ -58,18 +66,16 @@ class MatchingService:
             return 0.0
         
         if self.model is None:
-            # TF-IDF Fallback for Semantic Similarity when Neural Engine is Offline
-            try:
-                vectorizer = TfidfVectorizer(stop_words='english')
-                tfidf = vectorizer.fit_transform([text1, text2])
-                sim = cosine_similarity(tfidf[0:1], tfidf[1:2])[0][0]
-                return float(sim)
-            except:
-                return 0.5
+            return 0.5
 
-        embeddings = self.model.encode([text1, text2], convert_to_tensor=True)
-        similarity = util.cos_sim(embeddings[0], embeddings[1])
-        return float(similarity.item())
+        try:
+            embeddings = self.model.encode([text1, text2])
+            similarity = cos_sim(embeddings[0], embeddings[1])
+            if isinstance(similarity, np.ndarray):
+                return float(similarity.item())
+            return float(similarity)
+        except Exception as e:
+            return 0.5
         
     def _calculate_batch_semantic_similarity(self, student_emb, target_texts: List[str]) -> List[float]:
         """Calculates similarity of one student embedding against multiple targets efficiently."""
@@ -77,13 +83,13 @@ class MatchingService:
             return []
         
         if self.model is None or student_emb is None:
-            # Fallback to individual TF-IDF comparisons if no embeddings available
             return [0.5 for _ in target_texts]
         
-        from sentence_transformers import util
-        target_embs = self.model.encode(target_texts, convert_to_tensor=True)
-        similarities = util.cos_sim(student_emb, target_embs)
-        return [float(sim.item()) for sim in similarities[0]]
+        target_embs = self.model.encode(target_texts)
+        similarities = cos_sim(student_emb, target_embs)
+        if isinstance(similarities, list):
+             return [float(sim) for sim in similarities]
+        return [float(sim) for sim in similarities.flatten()]
 
     def calculate_algorithmic_score(self, student: models.Student, opp: models.Opportunity, transcript_text: str = "") -> dict:
         job_reqs = f"{opp.title} {opp.requirements} {opp.description}"
@@ -100,18 +106,18 @@ class MatchingService:
             return {"score": 0.0, "reasoning": "[SYSTEM] EMPTY_TRANSCRIPT_NODE_DETECTED."}
             
         try:
-            vectorizer = TfidfVectorizer(stop_words='english')
-            tfidf_matrix = vectorizer.fit_transform([job_reqs, student_doc])
-            cos_sim = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix[1:2])[0][0]
+            embeddings = self.model.encode([job_reqs, student_doc])
+            cos_val = cos_sim(embeddings[0], embeddings[1])
+            sim_val = float(cos_val.item()) if isinstance(cos_val, np.ndarray) else float(cos_val)
             
-            final_alg_score = min(1.0, float(cos_sim) * 1.5) 
+            final_alg_score = min(1.0, sim_val * 1.5) 
             
             return {
                 "score": final_alg_score,
                 "reasoning": f"Algorithmic Match: Computed {final_alg_score * 100:.1f}% transcript vector alignment."
             }
         except Exception as e:
-            logger.error(f"Algorithmic TF-IDF Error: {str(e)}")
+            logger.error(f"Algorithmic Embedding Error: {str(e)}")
             return {"score": 0.0, "reasoning": "[SYSTEM] COMPUTATION_PROTOCOL_MISMATCH."}
 
     async def calculate_academic_score(self, student: models.Student, opp: models.Opportunity, transcript_text: str = "") -> dict:
@@ -291,7 +297,7 @@ class MatchingService:
             
             # Semantic Similarity
             if skill_base_emb is not None and "job_reqs_emb" in opp_cache:
-                sem_sim = float(util.cos_sim(skill_base_emb, opp_cache["job_reqs_emb"]).item())
+                sem_sim = float(cos_sim(skill_base_emb, opp_cache["job_reqs_emb"]).item()) if isinstance(cos_sim(skill_base_emb, opp_cache["job_reqs_emb"]), np.ndarray) else float(cos_sim(skill_base_emb, opp_cache["job_reqs_emb"]))
             else:
                 sem_sim = 0.5
                 
@@ -301,8 +307,10 @@ class MatchingService:
             
             # Interest & Career Fit
             if interest_base_emb is not None and "interest_emb" in opp_cache:
-                interest_score = float(util.cos_sim(interest_base_emb, opp_cache["interest_emb"]).item())
-                career_path_score = float(util.cos_sim(career_base_emb, opp_cache["interest_emb"]).item())
+                i_val = cos_sim(interest_base_emb, opp_cache["interest_emb"])
+                c_val = cos_sim(career_base_emb, opp_cache["interest_emb"])
+                interest_score = float(i_val.item()) if isinstance(i_val, np.ndarray) else float(i_val)
+                career_path_score = float(c_val.item()) if isinstance(c_val, np.ndarray) else float(c_val)
             else:
                 interest_score = career_path_score = 0.5
 
@@ -310,8 +318,8 @@ class MatchingService:
             location_score = 0.5
             if location_embs is not None and "location_emb" in opp_cache:
                 try:
-                    loc_sims = util.cos_sim(location_embs, opp_cache["location_emb"])
-                    location_score = float(loc_sims.max().item())
+                    loc_sims = cos_sim(location_embs, opp_cache["location_emb"])
+                    location_score = float(loc_sims.max().item()) if isinstance(loc_sims, np.ndarray) else float(max(loc_sims))
                 except: location_score = 0.5
             elif student_locs and opp_cache.get("location_text"):
                 # Fallback to string match if embedding missing
