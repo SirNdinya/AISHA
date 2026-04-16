@@ -1,29 +1,8 @@
 import pool from '../config/database';
-import { createClient } from 'redis';
+import redisClient from '../config/redis';
 import { RealtimeService } from './RealtimeService';
 
-const redisUrl = process.env.REDIS_URL 
-    || `redis://${process.env.REDIS_HOST || 'redis'}:${process.env.REDIS_PORT || 6379}`;
 
-console.log(`[Redis] Connecting via: ${redisUrl.replace(/:\/\/[^@]+@/, '://***@')}`);
-
-const redisConfig: any = { url: redisUrl };
-if (redisUrl.startsWith('rediss://')) {
-    // Upstash and other TLS-enabled Redis require explicit TLS socket config
-    redisConfig.socket = { 
-        tls: true, 
-        rejectUnauthorized: false,
-        reconnectStrategy: (retries: number) => Math.min(retries * 100, 3000)
-    };
-}
-
-const redisClient = createClient(redisConfig);
-
-if (process.env.NODE_ENV !== 'test') {
-    redisClient.on('error', (err) => console.error('Redis Client Error', err));
-    redisClient.on('connect', () => console.log('[Redis] Connected successfully!'));
-    redisClient.connect().catch(console.error);
-}
 
 export class NotificationService {
 
