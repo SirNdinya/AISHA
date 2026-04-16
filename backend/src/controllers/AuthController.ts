@@ -111,8 +111,17 @@ export class AuthController extends BaseController {
             });
 
         } catch (error: any) {
-            console.error('Login Error:', error.message);
-            res.status(500).json({ message: 'Internal Server Error' });
+            console.error('LOGIN_CRASH_DETAILED:', {
+                message: error.message,
+                stack: error.stack,
+                email: email,
+                active_portal: req.body.role
+            });
+            res.status(500).json({ 
+                status: 'error',
+                message: 'Internal Server Error during login',
+                detail: process.env.NODE_ENV === 'development' ? error.message : undefined
+            });
         }
     };
 

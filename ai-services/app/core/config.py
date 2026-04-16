@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     
     # Database settings
+    DATABASE_URL: str | None = os.getenv("DATABASE_URL")
     DB_HOST: str = os.getenv("DB_HOST", "localhost")
     DB_USER: str = os.getenv("DB_USER", "saps_user")
     DB_PASSWORD: str = os.getenv("DB_PASSWORD", "saps_password")
@@ -21,6 +22,12 @@ class Settings(BaseSettings):
 
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> str:
+        db_url = self.DATABASE_URL
+        if db_url:
+            # Handle potential 'postgres://' prefix from some providers (like Render)
+            if db_url.startswith("postgres://"):
+                return db_url.replace("postgres://", "postgresql://", 1)
+            return db_url
         return f"postgresql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
     model_config = {

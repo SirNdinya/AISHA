@@ -84,7 +84,7 @@ const LoginPage: React.FC = () => {
                 if (err.response?.status === 403 || err.response?.status === 404) {
                     setServerError(err.response.data.message || 'Authentication failed. Please check your credentials and portal.');
                 } else if (err.response?.status === 500) {
-                    setServerError('Server encountered an error. This has been logged and we are looking into it.');
+                    setServerError(err.response.data?.message || 'Server encountered an error. This has been logged and we are looking into it.');
                 } else {
                     setServerError(err.response?.data?.message || err.message || 'Login failed. Please check your credentials.');
                 }
