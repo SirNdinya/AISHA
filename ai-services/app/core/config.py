@@ -26,7 +26,17 @@ class Settings(BaseSettings):
         if db_url:
             # Handle potential 'postgres://' prefix from some providers (like Render)
             if db_url.startswith("postgres://"):
-                return db_url.replace("postgres://", "postgresql://", 1)
+                db_url = db_url.replace("postgres://", "postgresql://", 1)
+            
+            # Remove pgbouncer parameter which causes psycopg2.ProgrammingError
+            if "pgbouncer=" in db_url:
+                from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode
+                u = urlparse(db_url)
+                query = parse_qsl(u.query)
+                query = [(k, v) for k, v in query if k != "pgbouncer"]
+                u = u._replace(query=urlencode(query))
+                db_url = urlunparse(u)
+                
             return db_url
         return f"postgresql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
