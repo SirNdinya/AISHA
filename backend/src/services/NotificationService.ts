@@ -2,9 +2,13 @@ import pool from '../config/database';
 import { createClient } from 'redis';
 import { RealtimeService } from './RealtimeService';
 
-const redisConfig = process.env.REDIS_URL 
-    ? { url: process.env.REDIS_URL }
-    : { url: `redis://${process.env.REDIS_HOST || 'redis'}:${process.env.REDIS_PORT || 6379}` };
+const redisUrl = process.env.REDIS_URL 
+    || `redis://${process.env.REDIS_HOST || 'redis'}:${process.env.REDIS_PORT || 6379}`;
+
+const redisConfig: any = { url: redisUrl };
+if (redisUrl.startsWith('rediss://')) {
+    redisConfig.socket = { tls: true, rejectUnauthorized: false };
+}
 
 const redisClient = createClient(redisConfig);
 

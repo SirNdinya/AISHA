@@ -3,8 +3,11 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const poolConfig = process.env.DATABASE_URL 
-    ? { connectionString: process.env.DATABASE_URL }
+const poolConfig: any = process.env.DATABASE_URL 
+    ? { 
+        connectionString: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false }
+    }
     : {
         user: process.env.DB_USER || 'saps_user',
         host: process.env.DB_HOST || 'localhost',
@@ -17,7 +20,8 @@ const pool = new Pool(poolConfig);
 
 pool.on('error', (err) => {
     console.error('Unexpected error on idle client', err);
-    process.exit(-1);
+    // Don't exit in production to allow reconnection
+    if (process.env.NODE_ENV !== 'production') process.exit(-1);
 });
 
 export const query = (text: string, params?: any[]) => pool.query(text, params);
