@@ -1,9 +1,5 @@
 import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
-
 import path from 'path';
-
-dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 class EmailService {
     private transporter;
@@ -17,7 +13,12 @@ class EmailService {
             from: process.env.EMAIL_FROM
         });
 
-        const isGmail = process.env.SMTP_HOST?.includes('gmail');
+        const smtpHost = process.env.SMTP_HOST;
+        if (!smtpHost && process.env.NODE_ENV === 'production') {
+            console.error('[EmailService] WARNING: SMTP_HOST is not defined in production!');
+        }
+
+        const isGmail = smtpHost?.includes('gmail');
 
         this.transporter = nodemailer.createTransport(isGmail ? {
             service: 'gmail',
@@ -26,7 +27,7 @@ class EmailService {
                 pass: process.env.SMTP_PASS,
             }
         } : {
-            host: process.env.SMTP_HOST,
+            host: smtpHost,
             port: parseInt(process.env.SMTP_PORT || '587'),
             secure: false,
             auth: {
@@ -39,7 +40,7 @@ class EmailService {
         });
 
         // Verify connection as soon as service is initialized
-        this.transporter.verify((error, success) => {
+        this.transporter.verify((error: Error | null, success: boolean) => {
             if (error) {
                 console.error('[EmailService] Transporter Connection Error:', error);
             } else if (process.env.NODE_ENV !== 'test') {
