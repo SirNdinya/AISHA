@@ -22,12 +22,17 @@ export class AuthController extends BaseController {
             // 1. Find user by email with context join
             const userQuery = `
                 SELECT 
-                    u.*,
+                    u.id, 
+                    u.email, 
+                    u.password_hash, 
+                    u.role, 
+                    u.is_verified, 
+                    u.is_active,
                     i.is_admin_verified,
-                    COALESCE(u.institution_id, i.id, d.institution_id, s.institution_id) as institution_id,
+                    COALESCE(u.institution_id, s.institution_id, i.id, d.institution_id) as institution_id,
                     COALESCE(s.department_id, d.id) as department_id,
                     c.id as company_id,
-                    (SELECT user_id FROM institutions WHERE id = COALESCE(u.institution_id, i.id, d.institution_id, s.institution_id) LIMIT 1) as institution_admin_id
+                    (SELECT user_id FROM institutions WHERE id = COALESCE(u.institution_id, s.institution_id, i.id, d.institution_id) LIMIT 1) as institution_admin_id
                 FROM users u
                 LEFT JOIN institutions i ON u.id = i.user_id AND u.role = 'INSTITUTION'
                 LEFT JOIN departments d ON u.id = d.user_id AND u.role = 'DEPARTMENT_ADMIN'
