@@ -12,6 +12,7 @@ import StudentLayout from './components/layout/StudentLayout';
 import CompanyLayout from './components/layout/CompanyLayout';
 import PublicLayout from './components/layout/PublicLayout';
 import AdminLayout from './components/layout/AdminLayout';
+import PortalSelector from './pages/PortalSelector';
 
 // Auth Components
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -172,14 +173,12 @@ const App: React.FC = () => {
       default:
         return (
           <>
-            <Route path="/" element={<PublicLayout />}>
-              <Route index element={<Navigate to="/login" replace />} />
-              <Route path="login" element={<LoginPage />} />
-              <Route path="register" element={<RegisterPage />} />
-              <Route path="forgot-password" element={<ForgotPasswordPage />} />
-              <Route path="reset-password" element={<ResetPasswordPage />} />
-              <Route path="verify-email" element={<VerifyEmailPage />} />
-            </Route>
+            <Route path="/" element={<PortalSelector />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/verify-email" element={<VerifyEmailPage />} />
 
             <Route path="/student" element={
               <ProtectedRoute allowedRoles={['STUDENT']}>
