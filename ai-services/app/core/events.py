@@ -11,10 +11,13 @@ logger = logging.getLogger(__name__)
 
 class EventPublisher:
     def __init__(self):
-        # Use settings or env for Redis connection
-        host = os.getenv("REDIS_HOST", "localhost")
-        port = int(os.getenv("REDIS_PORT", "6379"))
-        self.redis = sync_redis.Redis(host=host, port=port, db=0, decode_responses=True)
+        redis_url = os.getenv("REDIS_URL")
+        if redis_url:
+            self.redis = sync_redis.from_url(redis_url, decode_responses=True)
+        else:
+            host = os.getenv("REDIS_HOST", "localhost")
+            port = int(os.getenv("REDIS_PORT", "6379"))
+            self.redis = sync_redis.Redis(host=host, port=port, db=0, decode_responses=True)
 
     def publish(self, channel: str, message: dict):
         """Publish a message to a specific channel."""
@@ -26,9 +29,13 @@ class EventPublisher:
 
 class EventListener:
     def __init__(self):
-        host = os.getenv("REDIS_HOST", "localhost")
-        port = int(os.getenv("REDIS_PORT", "6379"))
-        self.redis = async_redis.Redis(host=host, port=port, db=0, decode_responses=True)
+        redis_url = os.getenv("REDIS_URL")
+        if redis_url:
+            self.redis = async_redis.from_url(redis_url, decode_responses=True)
+        else:
+            host = os.getenv("REDIS_HOST", "localhost")
+            port = int(os.getenv("REDIS_PORT", "6379"))
+            self.redis = async_redis.Redis(host=host, port=port, db=0, decode_responses=True)
         self.pubsub = self.redis.pubsub()
         self.handlers = {}
 
