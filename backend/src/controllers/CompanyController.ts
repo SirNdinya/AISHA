@@ -15,7 +15,7 @@ export class CompanyController extends BaseController {
             }
 
             const query = `
-                SELECT c.*, u.email, u.phone_number 
+                SELECT c.*, u.email, u.phone_number as user_phone 
                 FROM companies c
                 JOIN users u ON c.user_id = u.id
                 WHERE c.user_id = $1
@@ -43,7 +43,12 @@ export class CompanyController extends BaseController {
     updateProfile = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const userId = (req as any).user?.id;
-            const { name, industry, description, website, logo_url, profile_picture_url, acceptance_letter_template, acceptance_letter_requirements } = req.body;
+            const { 
+                name, industry, description, website, logo_url, 
+                profile_picture_url, acceptance_letter_template, 
+                acceptance_letter_requirements, receiving_phone_number,
+                representative_phone
+            } = req.body;
 
             const query = `
                 UPDATE companies 
@@ -54,13 +59,18 @@ export class CompanyController extends BaseController {
                     logo_url = COALESCE($5, logo_url),
                     profile_picture_url = COALESCE($6, profile_picture_url),
                     acceptance_letter_template = COALESCE($7, acceptance_letter_template),
-                    acceptance_letter_requirements = COALESCE($8, acceptance_letter_requirements)
-                WHERE user_id = $9
+                    acceptance_letter_requirements = COALESCE($8, acceptance_letter_requirements),
+                    receiving_phone_number = COALESCE($9, receiving_phone_number),
+                    representative_phone = COALESCE($10, representative_phone)
+                WHERE user_id = $11
                 RETURNING *
             `;
 
             const result = await pool.query(query, [
-                name, industry, description, website, logo_url, profile_picture_url, acceptance_letter_template, acceptance_letter_requirements, userId
+                name, industry, description, website, logo_url, 
+                profile_picture_url, acceptance_letter_template, 
+                acceptance_letter_requirements, receiving_phone_number,
+                representative_phone, userId
             ]);
 
             if (result.rows.length === 0) {
@@ -88,12 +98,12 @@ export class CompanyController extends BaseController {
             const query = `
                 UPDATE companies 
                 SET profile_picture_url = $1,
-                    logo_url = COALESCE(logo_url, $1)
-                WHERE user_id = $2
+                    logo_url = COALESCE(logo_url, $2)
+                WHERE user_id = $3
                 RETURNING *
             `;
 
-            const result = await pool.query(query, [profilePictureUrl, userId]);
+            const result = await pool.query(query, [profilePictureUrl, profilePictureUrl, userId]);
 
             if (result.rows.length === 0) {
                 return res.status(404).json({ status: 'error', message: 'Company profile not found' });

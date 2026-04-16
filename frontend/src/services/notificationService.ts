@@ -23,6 +23,13 @@ const NotificationService = {
 
     markAsRead: async (id: string = 'all'): Promise<void> => {
         await apiClient.patch(`/notifications/${id}/read`, {});
+    },
+    deleteNotifications: async (idOrIds: string | string[]): Promise<void> => {
+        if (typeof idOrIds === 'string') {
+            await apiClient.delete(`/notifications/${idOrIds}`);
+        } else {
+            await apiClient.delete('/notifications', { data: { ids: idOrIds } });
+        }
     }
 };
 

@@ -26,7 +26,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({ student }) => {
                         <Avatar
                             size="2xl"
                             border="4px solid"
-                            borderColor="cyan.400"
+                            borderColor="indigo.400"
                             src={getMediaUrl(student.profile_picture_url)}
                             name={`${student.first_name} ${student.last_name}`}
                         />
@@ -35,14 +35,13 @@ const ProfileView: React.FC<ProfileViewProps> = ({ student }) => {
                                 <Heading size="xl" color="white" fontWeight="bold">
                                     {student.first_name} {student.last_name}
                                 </Heading>
-                                <Badge colorPalette="cyan" variant="outline" size="xs">OFFICIAL PROFILE</Badge>
                             </HStack>
-                            <Text fontSize="sm" color="cyan.400" fontWeight="mono" textTransform="uppercase" letterSpacing="widest">
-                                {student.course_of_study || '[NODE_UNASSIGNED]'}
+                            <Text fontSize="sm" color="var(--terminal-accent)" fontWeight="black" textTransform="uppercase" letterSpacing="widest">
+                                {student.course_of_study || ''}
                             </Text>
                             <HStack gap={2} mt={2}>
-                                <Icon as={LuTarget} color="whiteAlpha.400" size="sm" />
-                                <Text fontSize="xs" color="whiteAlpha.600">{student.institution_name || '[INSTITUTION_SYNC_PENDING]'}</Text>
+                                <Icon as={LuTarget} color="var(--terminal-accent)" size="sm" />
+                                <Text fontSize="xs" color="#F8FAFC" fontWeight="black">{student.institution_name}</Text>
                             </HStack>
                         </VStack>
                     </HStack>
@@ -55,29 +54,31 @@ const ProfileView: React.FC<ProfileViewProps> = ({ student }) => {
                 {/* Left Column: Contact & Basic Info */}
                 <VStack gap={6} align="stretch">
                     <Box className="terminal-card" p={6}>
-                        <Heading size="xs" color="whiteAlpha.700" mb={4} textTransform="uppercase" letterSpacing="widest">Contact Information</Heading>
+                        <Heading size="xs" color="var(--terminal-accent)" mb={4} textTransform="uppercase" letterSpacing="widest" fontWeight="black">Contact Information</Heading>
                         <VStack align="start" gap={4}>
                             <Box w="full">
-                                <Text fontSize="9px" color="cyan.400" textTransform="uppercase" fontWeight="bold">Email Node</Text>
-                                <Text color="white" fontSize="sm" fontWeight="mono">{student.email || 'N/A'}</Text>
+                                <Text fontSize="9px" color="var(--terminal-accent)" textTransform="uppercase" fontWeight="black">Email Address</Text>
+                                <Text color="white" fontSize="sm" fontWeight="bold">{student.email}</Text>
                             </Box>
                             <Box w="full">
-                                <Text fontSize="9px" color="cyan.400" textTransform="uppercase" fontWeight="bold">Voice Terminal</Text>
-                                <Text color="white" fontSize="sm" fontWeight="mono">{student.phone_number || 'N/A'}</Text>
+                                <Text fontSize="9px" color="var(--terminal-accent)" textTransform="uppercase" fontWeight="black">Full Name</Text>
+                                <Text color="white" fontSize="sm" fontWeight="bold">{student.first_name} {student.last_name}</Text>
                             </Box>
-                            <Box w="full">
-                                <Text fontSize="9px" color="cyan.400" textTransform="uppercase" fontWeight="bold">Fiscal Interface (M-Pesa)</Text>
-                                <Text color="white" fontSize="sm" fontWeight="mono">{student.mpesa_number || 'N/A'}</Text>
-                            </Box>
+                            {student.course_of_study && (
+                                <Box w="full">
+                                    <Text fontSize="9px" color="var(--terminal-accent)" textTransform="uppercase" fontWeight="black">Department</Text>
+                                    <Text color="white" fontSize="sm" fontWeight="bold">{student.course_of_study}</Text>
+                                </Box>
+                            )}
                         </VStack>
                     </Box>
 
                     <Box className="terminal-card" p={6}>
-                        <Heading size="xs" color="whiteAlpha.700" mb={4} textTransform="uppercase" letterSpacing="widest">Institutional Records</Heading>
+                        <Heading size="xs" color="var(--terminal-accent)" mb={4} textTransform="uppercase" letterSpacing="widest" fontWeight="black">Institutional Records</Heading>
                         <VStack align="start" gap={4}>
                             <Box w="full">
-                                <Text fontSize="9px" color="cyan.400" textTransform="uppercase" fontWeight="bold">Institutional ID</Text>
-                                <Text color="white" fontSize="sm" fontWeight="mono">{student.admission_number || 'UNASSIGNED'}</Text>
+                                <Text fontSize="9px" color="var(--terminal-accent)" textTransform="uppercase" fontWeight="black">Institutional ID</Text>
+                                <Text color="white" fontSize="sm" fontWeight="bold">{student.admission_number}</Text>
                             </Box>
                         </VStack>
                     </Box>
@@ -87,13 +88,13 @@ const ProfileView: React.FC<ProfileViewProps> = ({ student }) => {
                 <VStack gap={6} align="stretch">
                     <Box className="terminal-card" p={6}>
                         <HStack justify="space-between" mb={4}>
-                            <Heading size="xs" color="whiteAlpha.700" textTransform="uppercase" letterSpacing="widest">Professional Skills</Heading>
-                            <Icon as={LuZap} color="cyan.400" />
+                            <Heading size="xs" color="var(--terminal-accent)" textTransform="uppercase" letterSpacing="widest" fontWeight="black">Professional Skills</Heading>
+                            <Icon as={LuZap} color="var(--terminal-accent)" />
                         </HStack>
                         <Flex wrap="wrap" gap={3}>
                             {student.skills && student.skills.length > 0 ? (
                                 student.skills.map((skill, idx) => (
-                                    <Badge key={idx} colorPalette="cyan" variant="surface" size="md" fontWeight="mono">{skill}</Badge>
+                                    <Badge key={idx} colorPalette="brand" variant="solid" size="md" fontWeight="black">{skill}</Badge>
                                 ))
                             ) : (
                                 <Text color="whiteAlpha.400" fontSize="xs" fontStyle="italic">Waiting for skill injection...</Text>
@@ -103,13 +104,13 @@ const ProfileView: React.FC<ProfileViewProps> = ({ student }) => {
 
                     <Box className="terminal-card" p={6}>
                         <HStack justify="space-between" mb={4}>
-                            <Heading size="xs" color="whiteAlpha.700" textTransform="uppercase" letterSpacing="widest">Interests & Domains</Heading>
-                            <Icon as={LuActivity} color="cyan.400" />
+                            <Heading size="xs" color="var(--terminal-accent)" textTransform="uppercase" letterSpacing="widest" fontWeight="black">Interests & Domains</Heading>
+                            <Icon as={LuActivity} color="var(--terminal-accent)" />
                         </HStack>
                         <Flex wrap="wrap" gap={3}>
                             {student.interests && student.interests.length > 0 ? (
                                 student.interests.map((interest, idx) => (
-                                    <Badge key={idx} colorPalette="whiteAlpha" variant="outline" size="sm">{interest}</Badge>
+                                    <Badge key={idx} colorPalette="brand" variant="solid" size="sm" fontWeight="black">{interest}</Badge>
                                 ))
                             ) : (
                                 <Text color="whiteAlpha.400" fontSize="xs" fontStyle="italic">No interests indexed.</Text>

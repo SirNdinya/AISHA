@@ -89,7 +89,7 @@ const InstitutionsManager: React.FC = () => {
         if (!inst.email_verified) {
             return <Badge colorPalette="red" gap={1}><LuMailX /> Email Pending</Badge>;
         }
-        return <Badge colorPalette="orange" gap={1}><LuShieldX /> Admin Pending</Badge>;
+        return <Badge colorPalette="indigo" gap={1}><LuShieldX /> Admin Pending</Badge>;
     };
 
     return (
@@ -122,9 +122,9 @@ const InstitutionsManager: React.FC = () => {
 
             <Box className="glass-panel" borderRadius="xl" overflowX="auto" p={4}>
                 {loading ? (
-                    <Flex justify="center" py={10}><Spinner color="cyan.400" /></Flex>
+                    <Flex justify="center" py={10}><Spinner color="indigo.400" /></Flex>
                 ) : institutions.length === 0 ? (
-                    <Text textAlign="center" py={10} color="gray.500">
+                    <Text textAlign="center" py={10} color="slate.500">
                         No institutions found for the selected filter.
                     </Text>
                 ) : (
@@ -145,7 +145,7 @@ const InstitutionsManager: React.FC = () => {
                                 <Table.Row key={inst.id}>
                                     <Table.Cell fontWeight="bold">{inst.name}</Table.Cell>
                                     <Table.Cell>
-                                        <Badge variant="outline" colorPalette="blue">{inst.code}</Badge>
+                                        <Badge variant="outline" colorPalette="indigo">{inst.code}</Badge>
                                     </Table.Cell>
                                     <Table.Cell fontSize="sm" color="gray.400">{inst.email}</Table.Cell>
                                     <Table.Cell>
@@ -154,7 +154,7 @@ const InstitutionsManager: React.FC = () => {
                                             : <Badge colorPalette="red" gap={1}><LuMailX /> Unverified</Badge>}
                                     </Table.Cell>
                                     <Table.Cell>{getStatusBadge(inst)}</Table.Cell>
-                                    <Table.Cell fontSize="sm" color="gray.500">
+                                    <Table.Cell fontSize="sm" color="slate.500">
                                         {new Date(inst.created_at).toLocaleDateString()}
                                     </Table.Cell>
                                     <Table.Cell textAlign="right">

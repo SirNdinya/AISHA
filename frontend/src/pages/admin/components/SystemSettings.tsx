@@ -89,7 +89,7 @@ const SystemSettings: React.FC = () => {
                                         <Text fontWeight="bold" fontSize="sm" color="purple.300">
                                             {setting.key.replace(/_/g, ' ')}
                                         </Text>
-                                        <Text fontSize="10px" color="gray.500">
+                                        <Text fontSize="10px" color="slate.500">
                                             Last Modified: {new Date(setting.updated_at).toLocaleString()}
                                         </Text>
                                     </VStack>
@@ -120,10 +120,10 @@ const SystemSettings: React.FC = () => {
                 </Table.Root>
             </Box>
 
-            <Box bg="orange.900/20" p={4} borderRadius="lg" border="1px solid" borderColor="orange.500/30">
+            <Box bg="indigo.900/20" p={4} borderRadius="lg" border="1px solid" borderColor="indigo.500/30">
                 <HStack gap={3}>
-                    <Box color="orange.400" as="span">⚠️</Box>
-                    <Text fontSize="xs" color="orange.200">
+                    <Box color="indigo.400" as="span">⚠️</Box>
+                    <Text fontSize="xs" color="indigo.200">
                         <b>Critical Warning:</b> Changing global infrastructure modes (like Maintenance Mode) will affect all concurrent user sessions immediately across all portals.
                     </Text>
                 </HStack>

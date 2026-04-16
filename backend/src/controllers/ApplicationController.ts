@@ -96,7 +96,13 @@ export class ApplicationController extends BaseController {
                     c.acceptance_letter_requirements,
                     p.first_assessment_date,
                     p.second_assessment_date,
-                    p.status as placement_status
+                    p.status as placement_status,
+                    EXISTS (
+                        SELECT 1 FROM payments pay 
+                        WHERE pay.student_id = a.student_id 
+                        AND pay.opportunity_id = a.opportunity_id 
+                        AND pay.status = 'COMPLETED'
+                    ) as is_paid
                 FROM applications a
                 JOIN opportunities o ON a.opportunity_id = o.id
                 JOIN companies c ON o.company_id = c.id
@@ -459,7 +465,8 @@ export class ApplicationController extends BaseController {
                     a.id as app_id, a.status, a.match_reason, a.applied_at,
                     s.first_name, s.last_name, s.admission_number, s.course_of_study,
                     i.name as institution_name, i.code as institution_code,
-                    c.name as company_name, c.logo_url, c.profile_picture_url, c.location as company_location,
+                    c.name as company_name, c.logo_url, c.profile_picture_url, c.location as company_location, 
+                    c.acceptance_letter_requirements, c.representative_phone,
                     o.title as job_title, o.description as job_description, o.location as job_location,
                     o.requirements as job_requirements, o.duration_months, o.start_date as opp_start_date,
                     p.start_date as placement_start, p.end_date as placement_end,
@@ -472,7 +479,7 @@ export class ApplicationController extends BaseController {
                 JOIN companies c ON o.company_id = c.id
                 LEFT JOIN placements p ON a.id = p.application_id
                 LEFT JOIN company_supervisors cs ON p.supervisor_id = cs.id
-                LEFT JOIN company_departments cd ON p.department_id = cd.id
+                LEFT JOIN company_departments cd ON COALESCE(p.department_id, o.department_id) = cd.id
                 WHERE a.id = $1 AND (s.user_id = $2 OR c.user_id = $2)
             `;
             const result = await pool.query(query, [id, userId]);
@@ -579,17 +586,16 @@ export class ApplicationController extends BaseController {
 
             // Render with inline bold for job title
             const parts1 = bodyPara1.split('**');
-            const bodyStartY = doc.y;
             let inline = false;
-            parts1.forEach((part: string) => {
+            parts1.forEach((part: string, index: number) => {
+                const isLast = index === parts1.length - 1;
                 if (inline) {
-                    doc.font('Helvetica-Bold').text(part, { continued: true });
+                    doc.font('Helvetica-Bold').text(part, { continued: !isLast });
                 } else {
-                    doc.font('Helvetica').text(part, { continued: true });
+                    doc.font('Helvetica').text(part, { continued: !isLast });
                 }
                 inline = !inline;
             });
-            doc.text('', { continued: false }); // flush
             doc.moveDown(0.5);
 
             // Body — Paragraph 2: Dates
@@ -626,14 +632,20 @@ export class ApplicationController extends BaseController {
             const col2X = 220;
             const rowH = 20;
 
+            if (doc.y + (tableData.length * rowH) + 50 > doc.page.height - doc.page.margins.bottom) {
+                doc.addPage();
+            }
+
             // Table header background
-            doc.rect(col1X - 5, tableStartY, 480, rowH).fill('#0f2b46');
+            doc.rect(col1X - 5, doc.y, 480, rowH).fill('#0f2b46');
             doc.fillColor('#ffffff').fontSize(9).font('Helvetica-Bold')
-               .text('Detail', col1X, tableStartY + 5)
-               .text('Information', col2X, tableStartY + 5);
+               .text('Detail', col1X, doc.y + 5)
+               .text('Information', col2X, doc.y + 5);
+            
+            let currentTableY = doc.y - 5;
 
             tableData.forEach((row, idx) => {
-                const y = tableStartY + rowH * (idx + 1);
+                const y = currentTableY + rowH * (idx + 1);
                 const bgColor = idx % 2 === 0 ? '#f7fafc' : '#edf2f7';
                 doc.rect(col1X - 5, y, 480, rowH).fill(bgColor);
                 doc.fillColor('#2d3748').fontSize(9)
@@ -641,33 +653,52 @@ export class ApplicationController extends BaseController {
                    .font('Helvetica').text(row[1], col2X, y + 5);
             });
 
-            doc.y = tableStartY + rowH * (tableData.length + 1) + 10;
+            // Reset the X coordinates back to the left margin before continuing normal text flow
+            doc.x = 55;
+            doc.y = currentTableY + rowH * (tableData.length + 1) + 15;
 
             // ============================================================
-            // REQUIREMENTS (from opportunity, if any)
+            // REQUIREMENTS & INSTRUCTIONS
             // ============================================================
             const reqs = d.job_requirements;
-            if (reqs && reqs.trim()) {
-                doc.moveDown(0.5);
-                doc.font('Helvetica-Bold').fontSize(10).fillColor('#0f2b46')
-                   .text('REQUIREMENTS & INSTRUCTIONS');
-                doc.moveDown(0.3);
-                doc.font('Helvetica').fontSize(10).fillColor('#2d3748');
+            const docReqs = d.acceptance_letter_requirements;
 
-                // Try to split by commas, newlines, or numbered items
-                const reqItems = reqs.split(/[,\n]/)
+            doc.moveDown(0.5);
+            doc.font('Helvetica-Bold').fontSize(10).fillColor('#0f2b46')
+               .text('REQUIREMENTS & INSTRUCTIONS');
+            doc.moveDown(0.3);
+            doc.font('Helvetica').fontSize(10).fillColor('#2d3748');
+
+            doc.text('Please ensure you report with the following items:', { lineGap: 3, indent: 0 });
+            
+            const reqItems = docReqs && docReqs.trim() ? docReqs.split(/[,\n]/)
+                .map((r: string) => r.replace(/^\d+[\.\)]\s*/, '').trim())
+                .filter((r: string) => r.length > 0) : [];
+            
+            // Explicitly force the letter as a requirement
+            reqItems.push('A printed copy of this Acceptance Letter');
+
+            reqItems.forEach((item: string) => {
+                doc.text(`• ${item}`, { indent: 15, lineGap: 3 });
+            });
+            doc.moveDown(0.3);
+
+            if (reqs && reqs.trim()) {
+                doc.font('Helvetica-Bold').text('Job Requirements:', { lineGap: 3, indent: 0 });
+                doc.font('Helvetica');
+                const jobReqItems = reqs.split(/[,\n]/)
                     .map((r: string) => r.replace(/^\d+[\.\)]\s*/, '').trim())
                     .filter((r: string) => r.length > 0);
 
-                if (reqItems.length > 1) {
-                    reqItems.forEach((item: string, i: number) => {
+                if (jobReqItems.length > 1) {
+                    jobReqItems.forEach((item: string, i: number) => {
                         doc.text(`${i + 1}. ${item}`, { indent: 15, lineGap: 3 });
                     });
                 } else {
                     doc.text(reqs.trim(), { align: 'justify', lineGap: 3 });
                 }
-                doc.moveDown(0.5);
             }
+            doc.moveDown(0.5);
 
             // ============================================================
             // CLOSING
@@ -683,28 +714,48 @@ export class ApplicationController extends BaseController {
             // SIGNATURE BLOCK
             // ============================================================
             doc.moveDown(2);
-            doc.text('Yours faithfully,');
-            doc.moveDown(2.5);
+            if (doc.y + 80 > doc.page.height - doc.page.margins.bottom) {
+                doc.addPage();
+            }
+            const startY = doc.y;
 
-            // Signature line
+            // Company Signature
+            doc.text('Yours faithfully,', 55, startY);
+            
             doc.strokeColor('#2d3748').lineWidth(0.5)
-               .moveTo(55, doc.y).lineTo(250, doc.y).stroke();
-            doc.moveDown(0.3);
+               .moveTo(55, startY + 40).lineTo(250, startY + 40).stroke();
+               
             doc.font('Helvetica-Bold').fontSize(10)
-               .text('Human Resources Manager');
+               .text('Human Resources Manager', 55, startY + 45);
             doc.font('Helvetica').fontSize(10)
-               .text(d.company_name);
-            if (companyAddr) doc.text(companyAddr);
+               .text(d.company_name, 55, startY + 58);
+            if (companyAddr) doc.text(companyAddr, 55, startY + 71);
+            if (d.representative_phone) {
+                const phoneY = companyAddr ? startY + 84 : startY + 71;
+                doc.text(`Contact: ${d.representative_phone}`, 55, phoneY);
+            }
+
+            // Student Signature
+            doc.font('Helvetica').text('Accepted By (Student):', 300, startY);
+            
+            doc.strokeColor('#2d3748').lineWidth(0.5)
+               .moveTo(300, startY + 40).lineTo(540, startY + 40).stroke();
+               
+            doc.font('Helvetica').fontSize(10)
+               .text('Signature & Date', 300, startY + 45);
+            doc.text(`${d.first_name} ${d.last_name}`, 300, startY + 58);
+
 
             // ============================================================
             // FOOTER — System stamp
             // ============================================================
-            const footerY = 780;
+            doc.page.margins.bottom = 0; // Disable bottom margin for footer
+            const footerY = doc.page.height - 40;
             doc.strokeColor('#e2e8f0').lineWidth(0.5)
                .moveTo(55, footerY).lineTo(540, footerY).stroke();
             doc.fillColor('#a0aec0').fontSize(7).font('Helvetica')
-               .text('This letter was generated by AISHA — Automated Industrial Student & Host Alignment System.', 55, footerY + 5, { align: 'center' })
-               .text(`Ref: ${refNo}`, 55, footerY + 15, { align: 'center' });
+               .text('This letter was generated by AISHA', 55, footerY + 5, { align: 'center', lineBreak: false })
+               .text(`Ref: ${refNo}`, 55, footerY + 15, { align: 'center', lineBreak: false });
 
             doc.end();
 

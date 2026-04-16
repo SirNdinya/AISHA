@@ -23,8 +23,13 @@ const MpesaPaymentModal: React.FC<MpesaPaymentModalProps> = ({ isOpen, onClose, 
     if (!isOpen) return null;
 
     const handlePayment = async () => {
+        const phoneRegex = /^0[71]\d{8}$/;
         if (!phoneNumber) {
             setError('Please enter your M-Pesa phone number.');
+            return;
+        }
+        if (!phoneRegex.test(phoneNumber)) {
+            setError('Phone number must start with 07 or 01 and be 10 digits.');
             return;
         }
 
@@ -32,7 +37,7 @@ const MpesaPaymentModal: React.FC<MpesaPaymentModalProps> = ({ isOpen, onClose, 
         setError(null);
 
         try {
-            const response = await apiClient.post('/payments/initiate', {
+            const response = await apiClient.post('/payments/pay', {
                 phoneNumber,
                 amount,
                 opportunityId,
@@ -95,14 +100,14 @@ const MpesaPaymentModal: React.FC<MpesaPaymentModalProps> = ({ isOpen, onClose, 
                             </Box>
 
                             <Box>
-                                <Text color="gray.500" fontSize="xs" mb={2}>M-PESA PHONE NUMBER</Text>
+                                <Text color="slate.500" fontSize="xs" mb={2}>M-PESA PHONE NUMBER</Text>
                                 <Input
                                     placeholder="e.g. 0712345678"
                                     bg="whiteAlpha.100" border="none" color="white" h={12}
                                     value={phoneNumber}
                                     onChange={e => setPhoneNumber(e.target.value)}
                                 />
-                                <Text fontSize="10px" color="gray.600" mt={2}>
+                                <Text fontSize="10px" color="slate.600" mt={2}>
                                     A payment request will be sent to this device.
                                 </Text>
                             </Box>
@@ -145,7 +150,7 @@ const MpesaPaymentModal: React.FC<MpesaPaymentModalProps> = ({ isOpen, onClose, 
                             <Text color="gray.400" fontSize="sm">
                                 Your placement has been finalized. You can now access your logbook and company materials.
                             </Text>
-                            <Button w="full" colorPalette="blue" mt={4} onClick={onClose} rounded="xl">
+                            <Button w="full" colorPalette="indigo" mt={4} onClick={onClose} rounded="xl">
                                 Continue to Workspace
                             </Button>
                         </VStack>

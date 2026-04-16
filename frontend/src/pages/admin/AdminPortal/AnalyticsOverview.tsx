@@ -45,7 +45,7 @@ const AnalyticsOverview: React.FC = () => {
         fetchData();
     }, []);
 
-    if (isLoading) return <Flex h="50vh" align="center" justify="center"><Spinner color="purple.400" /></Flex>;
+    if (isLoading) return <Flex h="50vh" align="center" justify="center"><Spinner color="brand.500" /></Flex>;
 
     const departments = analytics?.departments || [];
     const totalStudents = analytics?.overview?.total_enrolled || 0;
@@ -55,16 +55,16 @@ const AnalyticsOverview: React.FC = () => {
         <Box animation="fadeIn 0.5s ease-out">
             <Flex justify="space-between" align="center" mb={10}>
                 <Box>
-                    <Heading size="xl" fontWeight="black" letterSpacing="tight">Institutional Overview</Heading>
-                    <Text color="gray.500" fontSize="md">Monitoring departmental nodes and database student populations.</Text>
+                    <Heading size="xl" fontWeight="black" letterSpacing="tight" color="#F8FAFC">Institutional Overview</Heading>
+                    <Text color="var(--terminal-accent)" fontSize="md">Monitoring departmental nodes and database student populations.</Text>
                 </Box>
                 <Button
-                    bg="linear-gradient(135deg, #a78bfa 0%, #2dd4bf 100%)"
-                    color="white"
+                    bg="var(--terminal-accent)"
+                    color="black"
                     px={6}
                     h={12}
                     borderRadius="xl"
-                    _hover={{ transform: "translateY(-2px)", shadow: "0 10px 20px -10px rgba(167, 139, 250, 0.5)" }}
+                    _hover={{ transform: "translateY(-2px)", shadow: "lg", bg: "var(--terminal-accent)", opacity: 0.9 }}
                     transition="all 0.2s"
                     onClick={() => navigate('/institution/departments')}
                 >
@@ -79,32 +79,32 @@ const AnalyticsOverview: React.FC = () => {
             <SimpleGrid columns={[1, 1, 3]} gap={8} mb={10}>
                 <Box className="glass-card" p={8} borderRadius="30px">
                     <Flex justify="space-between" align="center" mb={4}>
-                        <Box p={3} borderRadius="15px" bg="rgba(167, 139, 250, 0.1)">
-                            <Icon as={Building2} boxSize={6} color="purple.400" />
+                        <Box p={3} borderRadius="15px" bg="whiteAlpha.100">
+                            <Icon as={Building2} boxSize={6} color="var(--terminal-accent)" />
                         </Box>
                     </Flex>
                     <VStack align="start" gap={0}>
-                        <Text color="gray.500" fontSize="xs" fontWeight="bold" textTransform="uppercase" letterSpacing="widest">Total Departmental Nodes</Text>
-                        <Heading size="3xl" fontWeight="black">{totalDepartments}</Heading>
+                        <Text color="whiteAlpha.600" fontSize="xs" fontWeight="bold" textTransform="uppercase" letterSpacing="widest">Total Departmental Nodes</Text>
+                        <Heading size="3xl" fontWeight="black" color="#F8FAFC">{totalDepartments}</Heading>
                     </VStack>
                 </Box>
 
                 <Box className="glass-card" p={8} borderRadius="30px">
                     <Flex justify="space-between" align="center" mb={4}>
-                        <Box p={3} borderRadius="15px" bg="rgba(45, 212, 191, 0.1)">
-                            <Icon as={Users} boxSize={6} color="teal.400" />
+                        <Box p={3} borderRadius="15px" bg="whiteAlpha.100">
+                            <Icon as={Users} boxSize={6} color="teal.300" />
                         </Box>
                     </Flex>
                     <VStack align="start" gap={0}>
-                        <Text color="gray.500" fontSize="xs" fontWeight="bold" textTransform="uppercase" letterSpacing="widest">Database Student Count</Text>
-                        <Heading size="3xl" fontWeight="black">{totalStudents}</Heading>
+                        <Text color="whiteAlpha.600" fontSize="xs" fontWeight="bold" textTransform="uppercase" letterSpacing="widest">Database Student Count</Text>
+                        <Heading size="3xl" fontWeight="black" color="#F8FAFC">{totalStudents}</Heading>
                     </VStack>
                 </Box>
 
-                <Box className="glass-card" p={8} borderRadius="30px" border="1px dashed rgba(255,255,255,0.1)">
+                <Box className="glass-card" p={8} borderRadius="30px" border="1px dashed" borderColor="var(--terminal-border)">
                     <VStack h="full" justify="center" align="center" gap={4}>
-                        <Icon as={BarChart3} boxSize={10} color="gray.600" />
-                        <Text color="gray.500" fontSize="sm" textAlign="center">Institutional Health is <b>Stable</b><br/>All schema nodes are synced.</Text>
+                        <Icon as={BarChart3} boxSize={10} color="whiteAlpha.400" />
+                        <Text color="whiteAlpha.600" fontSize="sm" textAlign="center">Institutional Health is <Text as="span" color="var(--terminal-accent)" fontWeight="bold">Stable</Text><br/>All schema nodes are synced.</Text>
                     </VStack>
                 </Box>
             </SimpleGrid>
@@ -113,47 +113,47 @@ const AnalyticsOverview: React.FC = () => {
             <Box className="glass-card" p={8} borderRadius="30px">
                 <Flex justify="space-between" align="center" mb={8}>
                     <VStack align="start" gap={1}>
-                        <Heading size="md">Departmental Student Statistics</Heading>
-                        <Text fontSize="xs" color="gray.500">Live counts retrieved from institutional database schemas.</Text>
+                        <Heading size="md" color="#F8FAFC">Departmental Student Statistics</Heading>
+                        <Text fontSize="xs" color="whiteAlpha.600">Live counts retrieved from institutional database schemas.</Text>
                     </VStack>
-                    <Badge variant="subtle" colorPalette="purple" px={3} py={1} borderRadius="full">
+                    <Badge variant="subtle" colorPalette="cyan" px={3} py={1} borderRadius="full" bg="whiteAlpha.100" color="var(--terminal-accent)">
                         DATABASE SYNC: ACTIVE
                     </Badge>
                 </Flex>
 
                 <Table.Root variant="line" size="lg">
-                    <Table.Header borderBottom="1px solid rgba(255,255,255,0.05)">
+                    <Table.Header borderBottom="1px solid" borderColor="var(--terminal-border)">
                         <Table.Row>
-                            <Table.ColumnHeader color="gray.500">NODE NAME</Table.ColumnHeader>
-                            <Table.ColumnHeader color="gray.500">DATABASE PIN</Table.ColumnHeader>
-                            <Table.ColumnHeader color="gray.500" textAlign="center">STUDENT POPULATION</Table.ColumnHeader>
-                            <Table.ColumnHeader color="gray.500" textAlign="right">MANAGEMENT</Table.ColumnHeader>
+                            <Table.ColumnHeader color="var(--terminal-accent)">NODE NAME</Table.ColumnHeader>
+                            <Table.ColumnHeader color="var(--terminal-accent)">DATABASE PIN</Table.ColumnHeader>
+                            <Table.ColumnHeader color="var(--terminal-accent)" textAlign="center">STUDENT POPULATION</Table.ColumnHeader>
+                            <Table.ColumnHeader color="var(--terminal-accent)" textAlign="right">MANAGEMENT</Table.ColumnHeader>
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
                         {departments.map((dept: any, i: number) => (
-                            <Table.Row key={i} _hover={{ bg: "rgba(255,255,255,0.02)" }} transition="0.2s">
+                            <Table.Row key={i} _hover={{ bg: "whiteAlpha.50" }} transition="0.2s">
                                 <Table.Cell py={6}>
                                     <HStack gap={4}>
-                                        <Box p={2} borderRadius="10px" bg="rgba(167, 139, 250, 0.05)">
-                                            <Icon as={Building2} boxSize={4} color="purple.400" />
+                                        <Box p={2} borderRadius="10px" bg="whiteAlpha.100">
+                                            <Icon as={Building2} boxSize={4} color="var(--terminal-accent)" />
                                         </Box>
-                                        <Text fontWeight="bold" fontSize="md">{dept.name}</Text>
+                                        <Text fontWeight="bold" fontSize="md" color="#F8FAFC">{dept.name}</Text>
                                     </HStack>
                                 </Table.Cell>
                                 <Table.Cell>
-                                    <Badge colorPalette="gray" variant="outline" letterSpacing="tighter">{dept.code}</Badge>
+                                    <Badge colorPalette="gray" variant="outline" borderColor="whiteAlpha.200" color="whiteAlpha.700" letterSpacing="tighter">{dept.code}</Badge>
                                 </Table.Cell>
                                 <Table.Cell textAlign="center">
-                                    <Text fontWeight="black" fontSize="lg" color="white">{dept.student_count}</Text>
-                                    <Text fontSize="10px" color="gray.600" mt={-1}>ENROLLED</Text>
+                                    <Text fontWeight="black" fontSize="lg" color="#F8FAFC">{dept.student_count}</Text>
+                                    <Text fontSize="10px" color="whiteAlpha.600" mt={-1}>ENROLLED</Text>
                                 </Table.Cell>
                                 <Table.Cell textAlign="right">
                                     <Button
                                         size="xs"
                                         variant="ghost"
-                                        color="purple.400"
-                                        _hover={{ bg: "rgba(167, 139, 250, 0.1)" }}
+                                        color="var(--terminal-accent)"
+                                        _hover={{ bg: "whiteAlpha.100" }}
                                         onClick={() => navigate('/institution/departments')}
                                     >
                                         <HStack gap={1}>
@@ -169,8 +169,8 @@ const AnalyticsOverview: React.FC = () => {
 
                 {departments.length === 0 && (
                     <VStack py={20} gap={4}>
-                        <Icon as={Search} boxSize={10} color="gray.600" />
-                        <Text color="gray.500">No departmental nodes detected in the database.</Text>
+                        <Icon as={Search} boxSize={10} color="slate.600" />
+                        <Text color="slate.600">No departmental nodes detected in the database.</Text>
                     </VStack>
                 )}
             </Box>

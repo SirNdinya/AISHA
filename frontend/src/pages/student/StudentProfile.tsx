@@ -27,7 +27,7 @@ const StudentProfile: React.FC = () => {
     if (isLoading && !profile && !error) {
         return (
             <Flex h="50vh" align="center" justify="center">
-                <Spinner size="xl" color="cyan.400" />
+                <Spinner size="xl" color="indigo.400" />
             </Flex>
         );
     }
@@ -47,7 +47,7 @@ const StudentProfile: React.FC = () => {
     if (!profile && !isLoading && !isProfileMissing) {
         return (
             <Flex h="50vh" align="center" justify="center">
-                <Spinner size="xl" color="cyan.400" />
+                <Spinner size="xl" color="indigo.400" />
             </Flex>
         );
     }

@@ -16,7 +16,7 @@ const portals: PortalOption[] = [
         title: 'Student Portal',
         description: 'Dashboard, attachment management, and profile synchronization',
         icon: FaGraduationCap,
-        color: 'blue.500',
+        color: 'indigo.500',
         path: '/login?portal=student'
     },
     {
@@ -50,13 +50,13 @@ const PortalSelector: React.FC = () => {
         >
             <VStack gap={8} maxW="1200px" w="full">
                 <VStack gap={2} textAlign="center">
-                    <Heading size="2xl" color="blue.600" _dark={{ color: 'blue.400' }}>
+                    <Heading size="2xl" color="indigo.600" _dark={{ color: 'indigo.400' }}>
                         AISHA
                     </Heading>
-                    <Text fontSize="xl" color="gray.600" _dark={{ color: 'gray.400' }}>
+                    <Text fontSize="xl" color="slate.600" _dark={{ color: 'gray.400' }}>
                         Student Attachment Placement System
                     </Text>
-                    <Text fontSize="md" color="gray.500" _dark={{ color: 'gray.500' }}>
+                    <Text fontSize="md" color="slate.500" _dark={{ color: 'gray.500' }}>
                         Select your portal to continue
                     </Text>
                 </VStack>
@@ -98,7 +98,7 @@ const PortalSelector: React.FC = () => {
                                         <Heading size="lg">{portal.title}</Heading>
                                     </HStack>
 
-                                    <Text color="gray.600" _dark={{ color: 'gray.400' }}>
+                                    <Text color="slate.600" _dark={{ color: 'gray.400' }}>
                                         {portal.description}
                                     </Text>
 
@@ -117,7 +117,7 @@ const PortalSelector: React.FC = () => {
                     ))}
                 </Box>
 
-                <Text fontSize="sm" color="gray.500" textAlign="center">
+                <Text fontSize="sm" color="slate.500" textAlign="center">
                     © 2026 AISHA - Powered by AI & Blockchain Technology
                 </Text>
             </VStack>

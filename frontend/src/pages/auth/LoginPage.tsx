@@ -127,16 +127,16 @@ const LoginPage: React.FC = () => {
                             p={4}
                             bg={`${config.color}.500`}
                             borderRadius="2xl"
-                            color="white"
+                            color="gray.900"
                             boxShadow={`0 10px 20px -5px var(--chakra-colors-${config.color}-500)`}
                         >
                             <Icon as={config.icon} boxSize={8} />
                         </Box>
                         <Box>
-                            <Heading size="2xl" mb={1} color={`${config.color}.700`} fontWeight="black" letterSpacing="tight">
+                            <Heading size="2xl" mb={1} color={`${config.color}.600`} fontWeight="black" letterSpacing="tight">
                                 {config.title}
                             </Heading>
-                            <Text color="gray.500" fontWeight="medium">Secure Access Node • {config.label} Authorization</Text>
+                            <Text color="gray.800" fontWeight="bold">Secure Access Node • {config.label} Authorization</Text>
                         </Box>
                     </VStack>
 
@@ -152,9 +152,9 @@ const LoginPage: React.FC = () => {
                     <form onSubmit={formik.handleSubmit}>
                         <VStack gap={5}>
                             <Box w="full">
-                                <Flex align="center" mb={1.5} gap={2} color="gray.500">
+                                <Flex align="center" mb={1.5} gap={2} color="gray.800">
                                     <Icon as={FaEnvelope} fontSize="xs" />
-                                    <Text fontSize="xs" fontWeight="bold" letterSpacing="widest" textTransform="uppercase">Email Address</Text>
+                                    <Text fontSize="xs" fontWeight="black" letterSpacing="widest" textTransform="uppercase">Email Address</Text>
                                 </Flex>
                                 <Input
                                     id="email"
@@ -167,7 +167,7 @@ const LoginPage: React.FC = () => {
                                     h={14}
                                     borderRadius="2xl"
                                     bg="white"
-                                    color="gray.800"
+                                    color="#1e293b"
                                     border="1px solid"
                                     borderColor={formik.touched.email && formik.errors.email ? "red.300" : "gray.200"}
                                     _focus={{ borderColor: `${config.color}.400`, boxShadow: `0 0 0 1px var(--chakra-colors-${config.color}-400)` }}
@@ -179,9 +179,9 @@ const LoginPage: React.FC = () => {
 
                             <Box w="full">
                                 <Flex justify="space-between" mb={1.5}>
-                                    <Flex align="center" gap={2} color="gray.500">
+                                    <Flex align="center" gap={2} color="gray.800">
                                         <Icon as={FaLock} fontSize="xs" />
-                                        <Text fontSize="xs" fontWeight="bold" letterSpacing="widest" textTransform="uppercase">Password</Text>
+                                        <Text fontSize="xs" fontWeight="black" letterSpacing="widest" textTransform="uppercase">Password</Text>
                                     </Flex>
                                     <Link asChild fontSize="xs" fontWeight="bold" color={`${config.color}.600`}>
                                         <RouterLink to="/forgot-password">Forgot Password?</RouterLink>
@@ -199,7 +199,7 @@ const LoginPage: React.FC = () => {
                                         h={14}
                                         borderRadius="2xl"
                                         bg="white"
-                                        color="gray.800"
+                                        color="#1e293b"
                                         border="1px solid"
                                         borderColor={formik.touched.password && formik.errors.password ? "red.300" : "gray.200"}
                                         _focus={{ borderColor: `${config.color}.400`, boxShadow: `0 0 0 1px var(--chakra-colors-${config.color}-400)` }}
@@ -213,7 +213,7 @@ const LoginPage: React.FC = () => {
                                         top="50%"
                                         transform="translateY(-50%)"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        color="gray.400"
+                                        color="gray.600"
                                         _hover={{ bg: "transparent", color: "gray.600" }}
                                     >
                                         <Icon as={showPassword ? FaEyeSlash : FaEye} />
@@ -246,8 +246,8 @@ const LoginPage: React.FC = () => {
                     </form>
 
                     <Flex justify="center" gap={2} align="center">
-                        <Text fontSize="sm" color="gray.500" fontWeight="medium">Don't have an account?</Text>
-                        <Link asChild fontSize="sm" color={`${config.color}.600`} fontWeight="bold">
+                        <Text fontSize="sm" color="gray.800" fontWeight="bold">Don't have an account?</Text>
+                        <Link asChild fontSize="sm" color={`${config.color}.600`} fontWeight="black">
                             <RouterLink to="/register">Register Here</RouterLink>
                         </Link>
                     </Flex>

@@ -32,7 +32,9 @@ const StudentService = {
     uploadProfilePicture: async (file: File) => {
         const formData = new FormData();
         formData.append('profile_picture', file);
-        const response = await apiClient.post('/students/profile-picture', formData);
+        const response = await apiClient.post('/students/profile-picture', formData, {
+            headers: { 'Content-Type': undefined }  // Let axios auto-set multipart/form-data with boundary
+        });
         return response.data;
     },
 

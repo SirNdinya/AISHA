@@ -65,14 +65,13 @@ export class AutomationService {
             }
 
             if (canRematch) {
-                const checkRes = await pool.query('SELECT id FROM applications WHERE student_id = $1 AND opportunity_id = $2 AND status != \'REPLACED\'', [student.id, oppId]);
+                const checkRes = await pool.query('SELECT id FROM applications WHERE student_id = $1 AND opportunity_id = $2 AND status = \'ACCEPTED\'', [student.id, oppId]);
                 
                 if (checkRes.rows.length === 0) {
                     console.log(`[AI SERVICE] Rematching student ${studentId} to higher confidence node: ${oppId}`);
                     
-                    // Atomic Purge of existing matches and applications
-                    await pool.query('UPDATE placements SET status = \'REPLACED\', updated_at = NOW() WHERE student_id = $1 AND status = \'ACTIVE\'', [student.id]);
-                    await pool.query('UPDATE applications SET status = \'REPLACED\', updated_at = NOW() WHERE student_id = $1 AND status != \'REPLACED\'', [student.id]);
+                    // Atomic Purge - Delete all existing history to guarantee clean state and fresh placement
+                    await pool.query('DELETE FROM applications WHERE student_id = $1', [student.id]);
 
                     const insertQuery = `
                         INSERT INTO applications (student_id, opportunity_id, match_score, match_reason, status)
@@ -99,23 +98,8 @@ export class AutomationService {
 
                     return { matches_found: 1, message: `Successfully rematched student to ${bestMatch.title || bestMatch.job_title}.` };
                 } else {
-                    // Exact same active priority match remained highest rated
-                    await NotificationService.createNotification(
-                        userId,
-                        'Match Verified',
-                        `We processed your updated preferences, but ${bestMatch.title || bestMatch.job_title} remains your most optimal mathematical match (${totalScore}%).`,
-                        'INFO'
-                    );
+                    // Exact same active priority match remained highest rated - do nothing silently
                 }
-            }
-
-            if (!canRematch) {
-                await NotificationService.createNotification(
-                    userId,
-                    'New Potential Match Evaluated',
-                    `AISHA evaluated ${bestMatch.title || bestMatch.job_title}. However, your match window is locked.`,
-                    'INFO'
-                );
             }
         }
 

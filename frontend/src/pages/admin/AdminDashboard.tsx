@@ -26,17 +26,17 @@ const AdminDashboard: React.FC = () => {
     };
 
     return (
-        <Box className="glass-background" minH="100vh" p={8}>
+        <Box minH="100vh" p={8}>
             <Toaster />
-            <Heading mb={2}>Admin Portal</Heading>
-            <Text color="gray.400" mb={8}>System Oversight & Verification</Text>
+            <Heading mb={2} color="#F8FAFC">Admin Portal</Heading>
+            <Text color="var(--terminal-accent)" mb={8}>System Oversight & Verification</Text>
 
-            <Tabs.Root defaultValue="verification" variant="enclosed" colorPalette="purple">
-                <Tabs.List bg="whiteAlpha.50" p={1} borderRadius="xl" border="1px solid" borderColor="whiteAlpha.100" mb={6}>
+            <Tabs.Root defaultValue="verification" variant="enclosed" colorPalette="brand">
+                <Tabs.List bg="rgba(255, 255, 255, 0.05)" p={1} borderRadius="xl" border="1px solid" borderColor="var(--terminal-border)" mb={6}>
                     <Tabs.Trigger value="verification" gap={2}>
                         <LuShieldCheck size={18} />
                         Verification
-                        <Badge variant="solid" colorPalette="purple" size="xs" borderRadius="full">
+                        <Badge variant="solid" colorPalette="brand" size="xs" borderRadius="full">
                             {users.length}
                         </Badge>
                     </Tabs.Trigger>
@@ -56,7 +56,9 @@ const AdminDashboard: React.FC = () => {
 
                 <Tabs.Content value="verification">
                     <MotionBox
-                        className="glass-panel"
+                        bg="var(--terminal-card)"
+                        border="1px solid"
+                        borderColor="var(--terminal-border)"
                         borderRadius="xl"
                         shadow="sm"
                         overflowX="auto" p={4}
@@ -78,7 +80,7 @@ const AdminDashboard: React.FC = () => {
                                     <Table.Row key={user.id}>
                                         <Table.Cell fontWeight="bold">{user.email}</Table.Cell>
                                         <Table.Cell>
-                                            <Badge colorPalette="purple">{user.role}</Badge>
+                                            <Badge colorPalette="brand">{user.role}</Badge>
                                         </Table.Cell>
                                         <Table.Cell>{new Date(user.created_at).toLocaleDateString()}</Table.Cell>
                                         <Table.Cell textAlign="right">
@@ -91,9 +93,9 @@ const AdminDashboard: React.FC = () => {
                             </Table.Body>
                         </Table.Root>
                         {users.length === 0 && !isLoading && (
-                            <Text textAlign="center" py={8} color="gray.500">No pending verifications.</Text>
+                            <Text textAlign="center" py={8} color="slate.500">No pending verifications.</Text>
                         )}
-                        {isLoading && <Flex justify="center" py={8}><Spinner color="cyan.400" /></Flex>}
+                        {isLoading && <Flex justify="center" py={8}><Spinner color="var(--terminal-accent)" /></Flex>}
                     </MotionBox>
                 </Tabs.Content>
 

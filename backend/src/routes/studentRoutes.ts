@@ -11,7 +11,7 @@ const studentController = new StudentController();
 
 const profileStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/profiles/');
+        cb(null, path.resolve(__dirname, '../../uploads/profiles/'));
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);

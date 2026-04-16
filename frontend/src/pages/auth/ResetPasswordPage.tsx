@@ -78,7 +78,7 @@ const ResetPasswordPage: React.FC = () => {
     });
 
     const strength = calculateStrength(formik.values.password);
-    const strengthColor = strength < 40 ? 'red' : strength < 80 ? 'orange' : 'green';
+    const strengthColor = strength < 40 ? 'red' : strength < 80 ? 'indigo' : 'green';
 
     if (!token) {
         return (
@@ -110,7 +110,7 @@ const ResetPasswordPage: React.FC = () => {
                         <Heading size="2xl" mb={2} fontWeight="black" color={`${activeColor}.600`}>
                             {portal.charAt(0).toUpperCase() + portal.slice(1)} Reset
                         </Heading>
-                        <Text color="gray.500" fontWeight="medium">Secure your account with a new password</Text>
+                        <Text color="gray.800" fontWeight="bold">Secure your account with a new password</Text>
                     </Box>
 
                     {success && (
@@ -130,9 +130,9 @@ const ResetPasswordPage: React.FC = () => {
                     <form onSubmit={formik.handleSubmit}>
                         <VStack gap={6}>
                             <Box w="full">
-                                <Flex align="center" mb={1.5} gap={2} color="gray.500">
+                                <Flex align="center" mb={1.5} gap={2} color="gray.800">
                                     <Icon as={FaShieldAlt} fontSize="xs" />
-                                    <Text fontSize="xs" fontWeight="bold" letterSpacing="widest" textTransform="uppercase">New Password</Text>
+                                    <Text fontSize="xs" fontWeight="black" letterSpacing="widest" textTransform="uppercase">New Password</Text>
                                 </Flex>
                                 <Box position="relative">
                                     <Input
@@ -146,7 +146,7 @@ const ResetPasswordPage: React.FC = () => {
                                         h={14}
                                         borderRadius="2xl"
                                         bg="white"
-                                        color="gray.800"
+                                        color="gray.900"
                                         borderColor={formik.touched.password && formik.errors.password ? "red.300" : "gray.200"}
                                         _focus={{ borderColor: `${activeColor}.400`, boxShadow: `0 0 0 1px var(--chakra-colors-${activeColor}-400)` }}
                                         pr={12}
@@ -168,7 +168,7 @@ const ResetPasswordPage: React.FC = () => {
                                 </Box>
                                 <ProgressBar colorPalette={strengthColor} size="xs" value={strength} mt={3} borderRadius="full" />
                                 <Flex justify="space-between" mt={1}>
-                                    <Text fontSize="2xs" color="gray.400" fontWeight="bold">STRENGTH</Text>
+                                    <Text fontSize="2xs" color="gray.800" fontWeight="black">STRENGTH</Text>
                                     <Text fontSize="2xs" color={`${strengthColor}.500`} fontWeight="black">
                                         {strength < 40 ? 'WEAK' : strength < 80 ? 'MODERATE' : 'STRONG'}
                                     </Text>
@@ -179,9 +179,9 @@ const ResetPasswordPage: React.FC = () => {
                             </Box>
 
                             <Box w="full">
-                                <Flex align="center" mb={1.5} gap={2} color="gray.500">
+                                <Flex align="center" mb={1.5} gap={2} color="gray.800">
                                     <Icon as={FaCheckCircle} fontSize="xs" />
-                                    <Text fontSize="xs" fontWeight="bold" letterSpacing="widest" textTransform="uppercase">Confirm Password</Text>
+                                    <Text fontSize="xs" fontWeight="black" letterSpacing="widest" textTransform="uppercase">Confirm Password</Text>
                                 </Flex>
                                 <Box position="relative">
                                     <Input
@@ -195,7 +195,7 @@ const ResetPasswordPage: React.FC = () => {
                                         h={14}
                                         borderRadius="2xl"
                                         bg="white"
-                                        color="gray.800"
+                                        color="gray.900"
                                         borderColor={formik.touched.confirmPassword && formik.errors.confirmPassword ? "red.300" : "gray.200"}
                                         _focus={{ borderColor: "brand.400", boxShadow: "0 0 0 1px var(--chakra-colors-brand-400)" }}
                                         pr={12}

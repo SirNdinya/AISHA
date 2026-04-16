@@ -43,4 +43,24 @@ export class NotificationController extends BaseController {
             next(error);
         }
     };
+
+    deleteNotifications = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const userId = (req as any).user?.id;
+            const { id } = req.params; // 'all' or specific UUID
+            const { ids } = req.body; // Array of UUIDs for mass deletion
+
+            if (id === 'all') {
+                await pool.query('DELETE FROM notifications WHERE user_id = $1', [userId]);
+            } else if (ids && Array.isArray(ids)) {
+                await pool.query('DELETE FROM notifications WHERE id = ANY($1) AND user_id = $2', [ids, userId]);
+            } else {
+                await pool.query('DELETE FROM notifications WHERE id = $1 AND user_id = $2', [id, userId]);
+            }
+
+            res.status(200).json({ status: 'success', message: 'Notifications deleted' });
+        } catch (error) {
+            next(error);
+        }
+    };
 }

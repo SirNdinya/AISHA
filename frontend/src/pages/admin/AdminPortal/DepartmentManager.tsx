@@ -45,6 +45,7 @@ interface Department {
     description: string;
     student_count: number;
     placed_count: number;
+    total_institutional_students: number;
     user_id: string | null;
     admin_email: string | null;
     is_active: boolean;
@@ -144,24 +145,23 @@ const DepartmentManager: React.FC = () => {
     };
 
     if (isLoading && departments.length === 0) {
-        return <Flex h="50vh" align="center" justify="center"><Spinner color="purple.400" /></Flex>;
+        return <Flex h="50vh" align="center" justify="center" bg="var(--terminal-bg)"><Spinner color="var(--terminal-accent)" /></Flex>;
     }
 
     return (
         <Box animation="fadeIn 0.5s ease-out">
             <Flex justify="space-between" align="center" mb={10}>
                 <Box>
-                    <Heading size="xl" fontWeight="black" letterSpacing="tight">Departmental Infrastructure</Heading>
-                    <Text color="gray.500" fontSize="md">Manage administrative authority for pre-existing institutional nodes</Text>
+                    <Heading size="xl" fontWeight="black" letterSpacing="tight" color="#F8FAFC">Departmental Infrastructure</Heading>
+                    <Text color="var(--terminal-accent)" fontSize="md" fontWeight="bold">Manage administrative authority for pre-existing institutional nodes</Text>
                 </Box>
                 <Button
-                    bg="rgba(255, 255, 255, 0.05)"
-                    border="1px solid rgba(255, 255, 255, 0.1)"
-                    color="white"
+                    bg="var(--terminal-accent)"
+                    color="black"
                     borderRadius="xl"
                     px={6}
                     h={12}
-                    _hover={{ bg: "rgba(255, 255, 255, 0.1)", transform: "translateY(-2px)" }}
+                    _hover={{ opacity: 0.9, transform: "translateY(-2px)" }}
                     transition="all 0.2s"
                     onClick={() => {
                         setSelectedDept(null);
@@ -172,75 +172,79 @@ const DepartmentManager: React.FC = () => {
                 >
                     <HStack gap={2}>
                         <Icon as={Plus} boxSize={5} />
-                        <Text>Provision Admin</Text>
+                        <Text fontWeight="bold">Provision Admin</Text>
                     </HStack>
                 </Button>
             </Flex>
 
             {/* Top Highlights */}
             <SimpleGrid columns={[1, 2, 4]} gap={6} mb={10}>
-                <Box className="glass-card" p={6} borderRadius="24px">
+                <Box className="glass-card" bg="var(--terminal-card)" border="1px solid" borderColor="var(--terminal-border)" p={6} borderRadius="24px">
                     <VStack align="start" gap={1}>
-                        <Text color="gray.500" fontSize="xs" fontWeight="bold" textTransform="uppercase">Total Depts</Text>
-                        <Heading size="lg">{departments.length}</Heading>
+                        <Text color="var(--terminal-accent)" fontSize="xs" fontWeight="bold" textTransform="uppercase">Total Depts</Text>
+                        <Heading size="lg" color="#F8FAFC">{departments.length}</Heading>
                     </VStack>
                 </Box>
-                <Box className="glass-card" p={6} borderRadius="24px">
+                <Box className="glass-card" bg="var(--terminal-card)" border="1px solid" borderColor="var(--terminal-border)" p={6} borderRadius="24px">
                     <VStack align="start" gap={1}>
-                        <Text color="gray.500" fontSize="xs" fontWeight="bold" textTransform="uppercase">Managed Depts</Text>
-                        <Heading size="lg" color="purple.300">{departments.filter(d => d.user_id).length}</Heading>
+                        <Text color="var(--terminal-accent)" fontSize="xs" fontWeight="bold" textTransform="uppercase">Managed Depts</Text>
+                        <Heading size="lg" color="#F8FAFC">{departments.filter(d => d.user_id).length}</Heading>
                     </VStack>
                 </Box>
-                <Box className="glass-card" p={6} borderRadius="24px">
+                <Box className="glass-card" bg="var(--terminal-card)" border="1px solid" borderColor="var(--terminal-border)" p={6} borderRadius="24px">
                     <VStack align="start" gap={1}>
-                        <Text color="gray.500" fontSize="xs" fontWeight="bold" textTransform="uppercase">Provisioning Status</Text>
+                        <Text color="var(--terminal-accent)" fontSize="xs" fontWeight="bold" textTransform="uppercase">Provisioning Status</Text>
                         <Badge colorPalette={departments.every(d => d.user_id) ? "green" : "orange"} variant="subtle">
                             {departments.every(d => d.user_id) ? "FULLY MANAGED" : "PENDING ADMINS"}
                         </Badge>
                     </VStack>
                 </Box>
-                <Box className="glass-card" p={6} borderRadius="24px">
+                <Box className="glass-card" bg="var(--terminal-card)" border="1px solid" borderColor="var(--terminal-border)" p={6} borderRadius="24px">
                     <VStack align="start" gap={1}>
-                        <Text color="gray.500" fontSize="xs" fontWeight="bold" textTransform="uppercase">Institutional Health</Text>
+                        <Text color="var(--terminal-accent)" fontSize="xs" fontWeight="bold" textTransform="uppercase">Institutional Health</Text>
                         <HStack>
                             <Box w={2} h={2} bg="green.400" borderRadius="full" />
-                            <Heading size="sm">Active</Heading>
+                            <Heading size="sm" color="#F8FAFC">Active</Heading>
                         </HStack>
                     </VStack>
                 </Box>
             </SimpleGrid>
 
             {/* List Table */}
-            <Box className="glass-card" p={8} borderRadius="30px">
+            <Box className="glass-card" bg="var(--terminal-card)" border="1px solid" borderColor="var(--terminal-border)" p={8} borderRadius="30px">
                 <Flex justify="space-between" align="center" mb={8}>
                     <HStack gap={4}>
-                        <Heading size="md">Institutional Master List</Heading>
-                        <Badge variant="subtle" colorPalette="purple" px={3} borderRadius="full">
+                        <Heading size="md" color="#F8FAFC">Institutional Master List</Heading>
+                        <Badge variant="subtle" colorPalette="cyan" px={3} borderRadius="full" bg="whiteAlpha.100" color="var(--terminal-accent)">
                             EXISTING RECORDS
                         </Badge>
                     </HStack>
                     <Box position="relative" w="300px">
                         <Input
                             placeholder="Find department..."
-                            bg="rgba(255,255,255,0.03)"
-                            border="none"
+                            bg="whiteAlpha.50"
+                            border="1px solid"
+                            borderColor="var(--terminal-border)"
                             pl={10}
                             borderRadius="xl"
+                            color="#F8FAFC"
+                            _placeholder={{ color: "whiteAlpha.400" }}
+                            _focus={{ bg: "whiteAlpha.100", ring: 1, ringColor: "var(--terminal-accent)" }}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
-                        <Icon as={Search} position="absolute" left={3} top="50%" transform="translateY(-50%)" color="gray.500" />
+                        <Icon as={Search} position="absolute" left={3} top="50%" transform="translateY(-50%)" color="whiteAlpha.400" />
                     </Box>
                 </Flex>
 
                 <Table.Root variant="line" size="lg">
-                    <Table.Header borderBottom="1px solid rgba(255,255,255,0.05)">
+                    <Table.Header borderBottom="1px solid" borderColor="gray.100">
                         <Table.Row>
-                            <Table.ColumnHeader color="gray.500">DEPARTMENT</Table.ColumnHeader>
-                            <Table.ColumnHeader color="gray.500">STUDENT DATA</Table.ColumnHeader>
-                            <Table.ColumnHeader color="gray.500">ADMINISTRATIVE ACCOUNT</Table.ColumnHeader>
-                            <Table.ColumnHeader color="gray.500">PORTAL STATUS</Table.ColumnHeader>
-                            <Table.ColumnHeader color="gray.500" textAlign="right">ACTIONS</Table.ColumnHeader>
+                            <Table.ColumnHeader color="var(--terminal-accent)">DEPARTMENT</Table.ColumnHeader>
+                            <Table.ColumnHeader color="var(--terminal-accent)">STUDENT DATA</Table.ColumnHeader>
+                            <Table.ColumnHeader color="var(--terminal-accent)">ADMINISTRATIVE ACCOUNT</Table.ColumnHeader>
+                            <Table.ColumnHeader color="var(--terminal-accent)">PORTAL STATUS</Table.ColumnHeader>
+                            <Table.ColumnHeader color="var(--terminal-accent)" textAlign="right">ACTIONS</Table.ColumnHeader>
                         </Table.Row>
                     </Table.Header>
                     <Table.Body>
@@ -253,18 +257,20 @@ const DepartmentManager: React.FC = () => {
                                 <Table.Row key={dept.id} _hover={{ bg: "rgba(255,255,255,0.02)" }} transition="0.2s">
                                     <Table.Cell py={6}>
                                         <HStack gap={4}>
-                                            <Box p={3} borderRadius="15px" bg="rgba(167, 139, 250, 0.1)">
-                                                <Icon as={Building2} boxSize={5} color="purple.400" />
+                                            <Box p={3} borderRadius="15px" bg="whiteAlpha.100">
+                                                <Icon as={Building2} boxSize={5} color="var(--terminal-accent)" />
                                             </Box>
                                             <VStack align="start" gap={0}>
-                                                <Text fontWeight="bold" fontSize="md">{dept.name}</Text>
-                                                <Text fontSize="xs" color="gray.500">{dept.code}</Text>
+                                                <Text fontWeight="bold" fontSize="md" color="#F8FAFC">{dept.name}</Text>
+                                                <Text fontSize="xs" color="var(--terminal-accent)">{dept.code}</Text>
                                             </VStack>
                                         </HStack>
                                     </Table.Cell>
                                     <Table.Cell>
                                         <VStack align="start" gap={1}>
-                                            <Badge colorPalette="gray" variant="subtle">{dept.student_count} Students</Badge>
+                                            <Badge colorPalette="gray" variant="subtle">
+                                                {dept.student_count} / {dept.total_institutional_students ?? '?'} Students
+                                            </Badge>
                                             <Badge colorPalette="teal" variant="subtle">{dept.placed_count} Placed</Badge>
                                         </VStack>
                                     </Table.Cell>
@@ -272,16 +278,16 @@ const DepartmentManager: React.FC = () => {
                                         {dept.user_id ? (
                                             <VStack align="start" gap={1}>
                                                 <HStack gap={2}>
-                                                    <Icon as={Mail} boxSize={3} color="purple.400" />
-                                                    <Text fontSize="xs" fontWeight="bold">{dept.admin_email}</Text>
+                                                    <Icon as={Mail} boxSize={3} color="var(--terminal-accent)" />
+                                                    <Text fontSize="xs" fontWeight="bold" color="whiteAlpha.900">{dept.admin_email}</Text>
                                                 </HStack>
                                                 <HStack gap={2}>
                                                     <Icon as={ShieldCheck} boxSize={3} color="teal.400" />
-                                                    <Text fontSize="10px" color="gray.500">Verified System Admin</Text>
+                                                    <Text fontSize="10px" color="var(--terminal-accent)">Verified System Admin</Text>
                                                 </HStack>
                                             </VStack>
                                         ) : (
-                                            <Text fontSize="xs" color="gray.500" fontStyle="italic">No Admin Assigned</Text>
+                                            <Text fontSize="xs" color="whiteAlpha.500" fontStyle="italic">No Admin Assigned</Text>
                                         )}
                                     </Table.Cell>
                                     <Table.Cell>
@@ -308,9 +314,9 @@ const DepartmentManager: React.FC = () => {
                                             <Button
                                                 size="sm"
                                                 variant="outline"
-                                                borderColor="whiteAlpha.200"
-                                                color="white"
-                                                _hover={{ bg: "purple.500", borderColor: "purple.500" }}
+                                                borderColor="var(--terminal-border)"
+                                                color="#F8FAFC"
+                                                _hover={{ bg: "var(--terminal-accent)", borderColor: "var(--terminal-accent)", color: "black" }}
                                                 borderRadius="lg"
                                                 onClick={() => openAssignmentModal(dept)}
                                             >
@@ -324,37 +330,51 @@ const DepartmentManager: React.FC = () => {
                 </Table.Root>
             </Box>
 
-            {/* Assignment Modal */}
+            {/* Assignment Modal - Fixed centered floating popup */}
             {isModalOpen && (
-                <Box className="modal-overlay" backdropFilter="blur(20px)" zIndex={100}>
+                <Box
+                    position="fixed"
+                    inset={0}
+                    zIndex={1000}
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    bg="blackAlpha.700"
+                    backdropFilter="blur(8px)"
+                    onClick={(e) => { if (e.target === e.currentTarget) setIsModalOpen(false); }}
+                >
                     <Box
-                        className="modal-content glass-card"
+                        bg="var(--terminal-bg)"
                         maxW="500px"
+                        w="90%"
                         p={10}
                         borderRadius="40px"
-                        border="1px solid rgba(167, 139, 250, 0.2)"
+                        border="1px solid"
+                        borderColor="var(--terminal-border)"
+                        boxShadow="0 25px 80px rgba(0,0,0,0.8)"
+                        onClick={(e) => e.stopPropagation()}
                     >
                         <VStack gap={6} align="stretch">
                             <Box>
-                                <Heading size="lg" mb={2}>Authorize Administrator</Heading>
-                                <Text color="gray.500" fontSize="sm">Linking a new administrator to <b>{selectedDept?.name || 'a department'}</b>.</Text>
+                                <Heading size="lg" mb={2} color="#F8FAFC">Authorize Administrator</Heading>
+                                <Text color="var(--terminal-accent)" fontSize="sm">Linking a new administrator to <b>{selectedDept?.name || 'a department'}</b>.</Text>
                             </Box>
 
                             <Separator opacity={0.1} />
 
                             {isGlobalModal && (
                                 <Box>
-                                    <Text fontSize="xs" color="gray.400" mb={2} fontWeight="bold" letterSpacing="widest">SELECT DEPARTMENT</Text>
+                                    <Text fontSize="xs" color="slate.600" mb={2} fontWeight="bold" letterSpacing="widest">SELECT DEPARTMENT</Text>
                                     <Box position="relative">
                                         <select
                                             style={{
                                                 width: '100%',
                                                 height: '56px',
-                                                backgroundColor: 'rgba(255,255,255,0.05)',
-                                                border: '1px solid rgba(255,255,255,0.1)',
+                                                backgroundColor: 'var(--terminal-card)',
+                                                border: '1px solid var(--terminal-border)',
                                                 borderRadius: '16px',
-                                                color: 'white',
-                                                padding: '0 48px 0 16px', // Updated padding
+                                                color: '#F8FAFC',
+                                                padding: '0 48px 0 16px',
                                                 outline: 'none',
                                                 appearance: 'none',
                                                 cursor: 'pointer'
@@ -381,18 +401,20 @@ const DepartmentManager: React.FC = () => {
                                                 </option>
                                             ))}
                                         </select>
-                                        <Icon as={Building2} position="absolute" right={4} top="50%" transform="translateY(-50%)" color="gray.500" pointerEvents="none" />
+                                        <Icon as={Building2} position="absolute" right={4} top="50%" transform="translateY(-50%)" color="whiteAlpha.400" pointerEvents="none" />
                                     </Box>
                                 </Box>
                             )}
 
                             <Box>
-                                <Text fontSize="xs" color="gray.400" mb={2} fontWeight="bold" letterSpacing="widest">ADMINISTRATOR EMAIL</Text>
+                                <Text fontSize="xs" color="slate.600" mb={2} fontWeight="bold" letterSpacing="widest">ADMINISTRATOR EMAIL</Text>
                                 <Flex position="relative">
                                     <Input
                                         placeholder="admin@aisha.com"
-                                        bg="rgba(255,255,255,0.02)"
-                                        border="1px solid rgba(255,255,255,0.05)"
+                                        bg="var(--terminal-card)"
+                                        border="1px solid"
+                                        borderColor="var(--terminal-border)"
+                                        color="#F8FAFC"
                                         h={14}
                                         pl={12}
                                         borderRadius="2xl"
@@ -400,27 +422,29 @@ const DepartmentManager: React.FC = () => {
                                         value={formData.email}
                                         readOnly
                                     />
-                                    <Icon as={Mail} position="absolute" left={4} top="50%" transform="translateY(-50%)" color="gray.600" />
+                                    <Icon as={Mail} position="absolute" left={4} top="50%" transform="translateY(-50%)" color="whiteAlpha.400" />
                                 </Flex>
-                                <Text fontSize="10px" mt={2} color="gray.500">System generated based on department code for security.</Text>
+                                <Text fontSize="10px" mt={2} color="whiteAlpha.500">System generated based on department code for security.</Text>
                             </Box>
 
                             <Box>
-                                <Text fontSize="xs" color="gray.400" mb={2} fontWeight="bold" letterSpacing="widest">DEFAULT ACCESS KEY</Text>
+                                <Text fontSize="xs" color="slate.600" mb={2} fontWeight="bold" letterSpacing="widest">DEFAULT ACCESS KEY</Text>
                                 <Flex position="relative">
                                     <Input
                                         type={showPassword ? "text" : "password"}
-                                        bg="rgba(255,255,255,0.05)"
-                                        border="1px solid rgba(255,255,255,0.1)"
+                                        bg="var(--terminal-card)"
+                                        border="1px solid"
+                                        borderColor="var(--terminal-border)"
+                                        color="#F8FAFC"
                                         h={14}
                                         pl={12}
                                         pr={12}
                                         borderRadius="2xl"
-                                        _focus={{ borderColor: "purple.400" }}
+                                        _focus={{ borderColor: "var(--terminal-accent)" }}
                                         value={formData.password}
                                         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                     />
-                                    <Icon as={Lock} position="absolute" left={4} top="50%" transform="translateY(-50%)" color="gray.500" />
+                                    <Icon as={Lock} position="absolute" left={4} top="50%" transform="translateY(-50%)" color="whiteAlpha.400" />
                                     <IconButton
                                         aria-label={showPassword ? "Hide password" : "Show password"}
                                         variant="ghost"
@@ -430,8 +454,8 @@ const DepartmentManager: React.FC = () => {
                                         top="50%"
                                         transform="translateY(-50%)"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        color="gray.500"
-                                        _hover={{ color: "purple.400" }}
+                                        color="whiteAlpha.400"
+                                        _hover={{ color: "var(--terminal-accent)" }}
                                     >
                                         <Icon as={showPassword ? EyeOff : Eye} />
                                     </IconButton>
@@ -444,16 +468,19 @@ const DepartmentManager: React.FC = () => {
                                     variant="ghost"
                                     h={12}
                                     borderRadius="xl"
+                                    color="whiteAlpha.600"
+                                    _hover={{ bg: "whiteAlpha.100" }}
                                     onClick={() => setIsModalOpen(false)}
                                 >
                                     Cancel
                                 </Button>
                                 <Button
                                     flex={1}
-                                    bg="linear-gradient(135deg, #a78bfa 0%, #2dd4bf 100%)"
-                                    color="white"
+                                    bg="var(--terminal-accent)"
+                                    color="black"
                                     h={12}
                                     borderRadius="xl"
+                                    _hover={{ opacity: 0.9 }}
                                     onClick={handleAssignAdmin}
                                     loading={isAssigning}
                                 >

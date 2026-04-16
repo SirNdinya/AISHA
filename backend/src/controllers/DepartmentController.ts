@@ -59,6 +59,10 @@ export class DepartmentController extends BaseController {
         try {
             const institutionId = req.params.institutionId || (req as any).user?.institution_id;
 
+            // Get schema name for institutional records
+            const instRes = await pool.query('SELECT schema_name FROM institutions WHERE id = $1', [institutionId]);
+            const schemaName = instRes.rows[0]?.schema_name;
+
             const result = await pool.query(`
                 SELECT d.*, u.email as admin_email, u.is_active,
                        (SELECT COUNT(*) FROM students s WHERE s.department_id = d.id) as student_count,
@@ -70,10 +74,23 @@ export class DepartmentController extends BaseController {
                 WHERE d.institution_id = $1
             `, [institutionId]);
 
+            // For each department, count total institutional students by reg number prefix
+            const depts = result.rows;
+            if (schemaName) {
+                for (const dept of depts) {
+                    const prefix = dept.code + '/';
+                    const countRes = await pool.query(
+                        `SELECT COUNT(*) as total FROM ${schemaName}.student_records WHERE reg_number ILIKE $1`,
+                        [`${prefix}%`]
+                    );
+                    dept.total_institutional_students = parseInt(countRes.rows[0]?.total || '0', 10);
+                }
+            }
+
             res.status(200).json({
                 status: 'success',
-                results: result.rows.length,
-                data: result.rows
+                results: depts.length,
+                data: depts
             });
         } catch (error) {
             next(error);

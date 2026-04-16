@@ -648,15 +648,42 @@ export class PlacementController extends BaseController {
             const placementId = req.params.id;
             const { first_assessment_date, second_assessment_date } = req.body;
 
-            // Get student userId for push notification
+            // Get student userId and placement dates for validation and push notification
             const studentRes = await pool.query(
-                `SELECT s.id as student_id, s.user_id 
+                `SELECT s.id as student_id, s.user_id, p.start_date, p.first_assessment_date, p.second_assessment_date
                  FROM placements p
                  JOIN students s ON p.student_id = s.id
                  WHERE p.id = $1`, [placementId]
             );
 
             if (studentRes.rows.length === 0) return res.status(404).json({ message: 'Placement not found' });
+
+            const { start_date, first_assessment_date: currentFirst, second_assessment_date: currentSecond } = studentRes.rows[0];
+            
+            // Validation
+            const startDateObj = start_date ? new Date(start_date) : null;
+            if (startDateObj) startDateObj.setHours(0,0,0,0);
+            
+            const effFirstDate = first_assessment_date || currentFirst;
+            const effFirstObj = effFirstDate ? new Date(effFirstDate) : null;
+            if (effFirstObj) effFirstObj.setHours(0,0,0,0);
+            
+            const effSecondDate = second_assessment_date || currentSecond;
+            const effSecondObj = effSecondDate ? new Date(effSecondDate) : null;
+            if (effSecondObj) effSecondObj.setHours(0,0,0,0);
+
+            if (startDateObj) {
+                if (first_assessment_date && effFirstObj && effFirstObj < startDateObj) {
+                    return res.status(400).json({ message: 'First assessment cannot be scheduled before the placement start date.' });
+                }
+                if (second_assessment_date && effSecondObj && effSecondObj < startDateObj) {
+                    return res.status(400).json({ message: 'Second assessment cannot be scheduled before the placement start date.' });
+                }
+            }
+
+            if (effFirstObj && effSecondObj && effSecondObj <= effFirstObj) {
+                 return res.status(400).json({ message: 'Second assessment must be scheduled after the first assessment.' });
+            }
 
             await pool.query(
                 `UPDATE placements 
@@ -667,23 +694,22 @@ export class PlacementController extends BaseController {
             );
 
             const NotificationService = require('../services/NotificationService').NotificationService;
-            const notificationService = new NotificationService();
             const studentUserId = studentRes.rows[0].user_id;
 
             if (first_assessment_date) {
-                await notificationService.createNotification(
+                await NotificationService.createNotification(
                     studentUserId,
-                    'ASSESSMENT_SCHEDULED',
                     'First Assessment Scheduled',
-                    `Your University Supervisor has scheduled your first assessment for ${new Date(first_assessment_date).toLocaleDateString()}. Please prepare your logbook properly.`
+                    `Your University Supervisor has scheduled your first assessment for ${new Date(first_assessment_date).toLocaleDateString()}. Please prepare your logbook properly.`,
+                    'INFO'
                 );
             }
             if (second_assessment_date) {
-                await notificationService.createNotification(
+                await NotificationService.createNotification(
                     studentUserId,
-                    'ASSESSMENT_SCHEDULED',
                     'Second Assessment Scheduled',
-                    `Your University Supervisor has scheduled your second assessment for ${new Date(second_assessment_date).toLocaleDateString()}. Make sure your logbook tasks are finalized.`
+                    `Your University Supervisor has scheduled your second assessment for ${new Date(second_assessment_date).toLocaleDateString()}. Make sure your logbook tasks are finalized.`,
+                    'INFO'
                 );
             }
 

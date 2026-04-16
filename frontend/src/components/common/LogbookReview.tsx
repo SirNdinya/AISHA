@@ -48,7 +48,7 @@ const LogbookReview: React.FC<LogbookReviewProps> = ({ role }) => {
 
     // Comments State
     const [currentComment, setCurrentComment] = useState('');
-    const commentSaveTimeout = useRef<NodeJS.Timeout | null>(null);
+    const commentSaveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         if (!studentIdParam) {
@@ -228,7 +228,7 @@ const LogbookReview: React.FC<LogbookReviewProps> = ({ role }) => {
         return isToday ? `${dateStr} (Today)` : dateStr;
     };
 
-    if (isLoading) return <Flex h="60vh" align="center" justify="center"><Spinner color="blue.400" /></Flex>;
+    if (isLoading) return <Flex h="60vh" align="center" justify="center"><Spinner color="indigo.400" /></Flex>;
 
     return (
         <Box bg="gray.50" minH="100vh" pb={12}>
@@ -246,9 +246,9 @@ const LogbookReview: React.FC<LogbookReviewProps> = ({ role }) => {
                                 <LuArrowLeft /> Back
                             </Button>
                             <VStack align="start" gap={0}>
-                                <Heading size="md" color="gray.800">Supervisory Dashboard</Heading>
+                                <Heading size="md" color="slate.900">Supervisory Dashboard</Heading>
                                 <HStack>
-                                    <Text fontSize="xs" color="gray.500">Logbook Manager (Read-Only)</Text>
+                                    <Text fontSize="xs" color="slate.500">Logbook Manager (Read-Only)</Text>
                                     <Badge colorPalette={entry.status === 'ARCHIVED' ? 'green' : entry.status === 'DRAFT' ? 'gray' : 'orange'} size="xs" variant="solid" px={2} borderRadius="full">
                                         {entry.status === 'ARCHIVED' ? 'VERIFIED ARCHIVE' : entry.status}
                                     </Badge>
@@ -260,8 +260,8 @@ const LogbookReview: React.FC<LogbookReviewProps> = ({ role }) => {
                                 <Button 
                                     size="xs" 
                                     variant="subtle" 
-                                    colorPalette="blue" 
-                                    color="blue.700"
+                                    colorPalette="indigo" 
+                                    color="indigo.700"
                                     onClick={() => handleDownloadPDF('current')}
                                     disabled={isExporting || entry.status === 'DRAFT'}
                                 >
@@ -327,7 +327,7 @@ const LogbookReview: React.FC<LogbookReviewProps> = ({ role }) => {
                                     ARCHIVED
                                 </Box>
                             )}
-                            <Box bg={entry.status === 'ARCHIVED' ? "green.600" : "blue.600"} color="white" p={4}>
+                            <Box bg={entry.status === 'ARCHIVED' ? "green.600" : "indigo.600"} color="white" p={4}>
                                 <Flex justify="space-between" align="center">
                                     <HStack gap={3}>
                                         <AvatarRoot size="md">
@@ -351,17 +351,17 @@ const LogbookReview: React.FC<LogbookReviewProps> = ({ role }) => {
                             <Box p={6}>
                                 <Flex justify="space-between" mb={6}>
                                     <HStack>
-                                        <Text fontWeight="bold" color="gray.600">DATE: From:</Text>
-                                        <Input type="date" size="sm" w="150px" value={entry.start_date.split('T')[0]} readOnly disabled />
-                                        <Text fontWeight="bold" color="gray.600">To:</Text>
-                                        <Input type="date" size="sm" w="150px" value={entry.end_date.split('T')[0]} readOnly disabled />
+                                        <Text fontWeight="bold" color="slate.600">DATE: From:</Text>
+                                        <Input type="date" size="sm" w="150px" color="#0F172A" bg="white" value={entry.start_date.split('T')[0]} readOnly disabled />
+                                        <Text fontWeight="bold" color="slate.600">To:</Text>
+                                        <Input type="date" size="sm" w="150px" color="#0F172A" bg="white" value={entry.end_date.split('T')[0]} readOnly disabled />
                                     </HStack>
-                                    <Heading size="sm" color="blue.600">WEEK {entry.week_number}</Heading>
+                                    <Heading size="sm" color="indigo.600">WEEK {entry.week_number}</Heading>
                                 </Flex>
 
-                                <Box border="1px solid" borderColor="gray.300" borderRadius="md" overflow="hidden">
+                                <Box bg="white" border="1px solid" borderColor="gray.300" borderRadius="md" overflow="hidden" boxShadow="sm">
                                     {/* Table Header */}
-                                    <Grid templateColumns="120px 1fr 150px" bg="gray.100" borderBottom="1px solid" borderColor="gray.300" fontWeight="bold" color="gray.700" p={3}>
+                                    <Grid templateColumns="120px 1fr 150px" bg="gray.100" borderBottom="2px solid" borderColor="gray.300" fontWeight="bold" color="black" p={3}>
                                         <Text>DAY & DATE</Text>
                                         <Text>DESCRIPTION OF WORK DONE</Text>
                                         <Text fontSize="xs" textAlign="center">Industry Supervisor Signature</Text>
@@ -380,26 +380,26 @@ const LogbookReview: React.FC<LogbookReviewProps> = ({ role }) => {
                                                 <Text fontWeight="black" fontSize="sm" color="black">{row.day}</Text>
                                                 <Text fontSize="xs" color="gray.600">{getFormattedDateForDay(row.offset)}</Text>
                                             </VStack>
-                                            <Box p={2} borderRight="1px solid" borderColor="gray.200">
+                                            <Box p={2} borderRight="1px solid" borderColor="gray.300">
                                                 <Textarea 
                                                     value={entry[row.key] || ''} 
                                                     readOnly 
                                                     resize="none"
                                                     minH="80px"
                                                     size="md"
-                                                    color="black !important"
-                                                    css={{ WebkitTextFillColor: 'black', fontWeight: 'bold', fontSize: '15px' }}
+                                                    color="black"
+                                                    bg="white"
                                                     _readOnly={{ bg: "transparent", cursor: "default", borderColor: "transparent" }}
                                                 />
                                             </Box>
-                                            <Flex align="center" justify="center" p={3} opacity={entry.industry_supervisor_signature_date ? 1 : 0.3} bg={entry.industry_supervisor_signature_date ? "green.50" : "gray.50"}>
+                                            <Flex align="center" justify="center" p={3} opacity={entry.industry_supervisor_signature_date ? 1 : 0.3} bg={entry.industry_supervisor_signature_date ? "green.50" : "white"}>
                                                 {entry.industry_supervisor_signature_date ? (
                                                     <VStack gap={0} textAlign="center">
-                                                        <Icon as={LuCheck} color="green.500" boxSize={5} />
+                                                        <Icon as={LuCheck} color="green.600" boxSize={5} />
                                                         <Text fontSize="xs" color="green.700" fontWeight="bold">Signed</Text>
                                                     </VStack>
                                                 ) : (
-                                                    <Text fontSize="xs" fontStyle="italic" color="gray.500">Unsigned</Text>
+                                                    <Text fontSize="xs" fontStyle="italic" color="gray.400">Unsigned</Text>
                                                 )}
                                             </Flex>
                                         </Grid>
@@ -410,14 +410,14 @@ const LogbookReview: React.FC<LogbookReviewProps> = ({ role }) => {
 
                         {/* Trainee's Weekly Report */}
                         <Box bg="white" borderRadius="xl" boxShadow="md" border="1px solid" borderColor="gray.200" overflow="hidden">
-                            <Box bg="blue.600" color="white" p={4} textAlign="center">
+                            <Box bg="indigo.600" color="white" p={4} textAlign="center">
                                 <Heading size="md">TRAINEE'S WEEKLY REPORT</Heading>
                                 <Text fontSize="xs" opacity={0.8}>(A summary of the whole week, sketches/diagrams may be attached where necessary)</Text>
                             </Box>
                             
                             <Box p={6}>
                                 <Box>
-                                    <Text fontWeight="bold" mb={2} color="gray.700">Weekly Summary:</Text>
+                                    <Text fontWeight="bold" mb={2} color="slate.800">Weekly Summary:</Text>
                                     <Textarea 
                                         value={entry.weekly_summary || ''} 
                                         readOnly 
@@ -440,7 +440,7 @@ const LogbookReview: React.FC<LogbookReviewProps> = ({ role }) => {
                             <Box p={6}>
                                 <VStack gap={6} align="stretch">
                                     <Box p={4} bg="gray.50" borderRadius="md" border="1px solid" borderColor="gray.200">
-                                        <Text fontWeight="bold" color="blue.800" mb={2}>Comments by Industry-based Supervisor:</Text>
+                                        <Text fontWeight="bold" color="indigo.800" mb={2}>Comments by Industry-based Supervisor:</Text>
                                         
                                         {role === 'COMPANY' ? (
                                             <VStack align="stretch" gap={3}>
@@ -453,10 +453,10 @@ const LogbookReview: React.FC<LogbookReviewProps> = ({ role }) => {
                                                     size="md"
                                                     color="black !important"
                                                     css={{ WebkitTextFillColor: 'black', fontWeight: 'bold', fontSize: '15px' }}
-                                                    _focus={{ bg: "white", borderColor: "blue.500" }}
+                                                    _focus={{ bg: "white", borderColor: "indigo.500" }}
                                                 />
                                                 <Flex justify="flex-end">
-                                                    <Button colorPalette="blue" onClick={handleSignLogbook} loading={isSaving}>
+                                                    <Button colorPalette="indigo" onClick={handleSignLogbook} loading={isSaving}>
                                                         <LuPen /> Digitally Sign & Approve
                                                     </Button>
                                                 </Flex>
@@ -540,14 +540,14 @@ const LogbookReview: React.FC<LogbookReviewProps> = ({ role }) => {
                                     <Button
                                         key={w}
                                         variant={isActive ? "solid" : "ghost"}
-                                        colorPalette={isActive ? "blue" : weekData?.status === 'COMPLETED' ? "green" : "gray"}
+                                        colorPalette={isActive ? "orange" : weekData?.status === 'COMPLETED' ? "green" : "gray"}
                                         onClick={() => loadWeekData(allWeeks, w)}
                                         size="xs"
                                         borderRadius="full"
                                         px={4}
                                         fontWeight="black"
                                         shadow={isActive ? "md" : "none"}
-                                        _hover={{ bg: isActive ? "blue.500" : "blackAlpha.100" }}
+                                        _hover={{ bg: isActive ? "indigo.500" : "blackAlpha.100" }}
                                     >
                                         WEEK {w}
                                     </Button>

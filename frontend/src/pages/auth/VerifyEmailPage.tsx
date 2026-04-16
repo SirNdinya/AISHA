@@ -51,20 +51,20 @@ const VerifyEmailPage: React.FC = () => {
                     {status === 'loading' && (
                         <>
                             <Spinner size="xl" color="brand.500" borderWidth="4px" />
-                            <Heading size="xl" color="gray.800">Verifying...</Heading>
-                            <Text color="gray.500">Please wait while we confirm your email address.</Text>
+                            <Heading size="xl" color="gray.900">Verifying...</Heading>
+                            <Text color="gray.800" fontWeight="bold">Please wait while we confirm your email address.</Text>
                         </>
                     )}
 
                     {status === 'success' && (
                         <>
                             <Icon as={FaCheckCircle} fontSize="6xl" color="green.500" />
-                            <Heading size="xl" color="gray.800">Verified!</Heading>
+                            <Heading size="xl" color="gray.900">Verified!</Heading>
                             <Alert.Root status="success" variant="subtle" borderRadius="xl">
                                 <Alert.Indicator />
                                 <Alert.Description fontWeight="medium">{message}</Alert.Description>
                             </Alert.Root>
-                            <Text color="gray.500">You will be redirected to the login page in a few seconds.</Text>
+                            <Text color="gray.800" fontWeight="bold">You will be redirected to the login page in a few seconds.</Text>
                             <Button asChild colorPalette="brand" w="full" h={14} borderRadius="2xl" mt={4}>
                                 <RouterLink to="/login">
                                     Go to Login <Icon as={FaArrowRight} ml={2} />
@@ -76,7 +76,7 @@ const VerifyEmailPage: React.FC = () => {
                     {status === 'error' && (
                         <>
                             <Icon as={FaExclamationCircle} fontSize="6xl" color="red.500" />
-                            <Heading size="xl" color="gray.800">Verification Failed</Heading>
+                            <Heading size="xl" color="gray.900">Verification Failed</Heading>
                             <Alert.Root status="error" variant="subtle" borderRadius="xl">
                                 <Alert.Indicator />
                                 <Alert.Description fontWeight="medium">{message}</Alert.Description>

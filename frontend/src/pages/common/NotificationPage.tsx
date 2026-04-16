@@ -45,7 +45,7 @@ const NotificationPage: React.FC = () => {
     };
 
     return (
-        <Box minH="100vh" bg="#0F172A" pt={20}>
+        <Box minH="100vh" bg="transparent" pt={20}>
             <Container maxW="container.lg" py={8}>
                 <Box
                     bg="rgba(13, 17, 23, 0.4)"
@@ -76,7 +76,7 @@ const NotificationPage: React.FC = () => {
                     ) : notifications.length === 0 ? (
                         <VStack py={20} gap={4}>
                             <LuBell size={64} opacity={0.1} color="white" />
-                            <Text color="gray.500" fontSize="lg">No notifications yet.</Text>
+                            <Text color="slate.500" fontSize="lg">No notifications yet.</Text>
                             <Button variant="ghost" colorPalette="gray" onClick={() => dispatch(fetchNotifications())}>
                                 Refresh
                             </Button>
@@ -110,7 +110,7 @@ const NotificationPage: React.FC = () => {
                                                 {n.message}
                                             </Text>
                                             <HStack mt={4} gap={4}>
-                                                <HStack gap={1} color="gray.500" fontSize="xs">
+                                                <HStack gap={1} color="slate.500" fontSize="xs">
                                                     <LuClock size={12} />
                                                     <Text>{formatDate(n.created_at)}</Text>
                                                 </HStack>

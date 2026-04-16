@@ -14,7 +14,7 @@ import CompanyService from '../../services/companyService';
 import ConfirmModal from '../../components/common/ConfirmModal';
 import {
     LuPlus, LuX, LuBriefcase, LuClock, LuCoins, LuMapPin, LuZap, LuShield, LuPen, LuTrash,
-    LuSearch, LuFilter, LuRotateCcw
+    LuSearch, LuFilter, LuRotateCcw, LuChevronDown, LuChevronUp, LuChevronLeft, LuChevronRight
 } from 'react-icons/lu';
 
 const OpportunityManager: React.FC = () => {
@@ -26,7 +26,10 @@ const OpportunityManager: React.FC = () => {
     const [editingId, setEditingId] = useState<string | null>(null);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [opportunityToDelete, setOpportunityToDelete] = useState<string | null>(null);
-
+    const [expandedRow, setExpandedRow] = useState<string | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+    
     // Filter State
     const [searchQuery, setSearchQuery] = useState('');
     const [filterDepartment, setFilterDepartment] = useState('');
@@ -45,6 +48,7 @@ const OpportunityManager: React.FC = () => {
         setFilterStudentFee('');
         setFilterLocation('');
         setFilterStatus('');
+        setCurrentPage(1);
     };
 
     // Derived filtered list
@@ -76,6 +80,20 @@ const OpportunityManager: React.FC = () => {
             return true;
         });
     }, [opportunities, searchQuery, filterDepartment, filterStipend, filterStudentFee, filterLocation, filterStatus]);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [filteredOpportunities]);
+
+    const totalPages = Math.ceil(filteredOpportunities.length / itemsPerPage);
+    const paginatedOpportunities = filteredOpportunities.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
+
+    const toggleRow = (id: string) => {
+        setExpandedRow(prev => prev === id ? null : id);
+    };
 
     // Form State
     const [departments, setDepartments] = useState<any[]>([]);
@@ -190,15 +208,15 @@ const OpportunityManager: React.FC = () => {
         <Box animation="slideUp 0.5s ease-out">
             <Flex justify="space-between" align="center" mb={10}>
                 <Box>
-                    <Heading size="3xl" fontWeight="extrabold" letterSpacing="tight" className="glow-text-cyan" color="white">
+                    <Heading size="3xl" fontWeight="extrabold" letterSpacing="tight" className="glow-text-cyan" color="#F8FAFC">
                         Opportunities Nexus
                     </Heading>
-                    <Text color="gray.400" fontSize="lg" mt={2}>
+                    <Text color="var(--terminal-accent)" fontSize="lg" mt={2}>
                         Synthesize and manage your organization's attachment requirements.
                     </Text>
                 </Box>
                 <Button
-                    colorPalette="cyan"
+                    colorPalette="indigo"
                     size="lg"
                     rounded="xl"
                     onClick={() => {
@@ -222,23 +240,23 @@ const OpportunityManager: React.FC = () => {
                         </Box>
                         <Input
                             placeholder="Search by title, description, requirements, department..."
-                            bg="whiteAlpha.50" borderColor="whiteAlpha.200" color="white"
+                            bg="var(--terminal-card)" borderColor="var(--terminal-border)" color="#F8FAFC"
                             pl={10} rounded="xl"
                             value={searchQuery}
                             onChange={e => setSearchQuery(e.target.value)}
-                            _placeholder={{ color: 'gray.500' }}
+                            _placeholder={{ color: 'whiteAlpha.400' }}
                         />
                     </Box>
                     <Button
                         variant={showFilters ? 'solid' : 'outline'}
-                        colorPalette="cyan"
+                        colorPalette="indigo"
                         rounded="xl"
                         onClick={() => setShowFilters(!showFilters)}
                         minW="120px"
                     >
                         <LuFilter style={{ marginRight: '6px' }} /> Filters
                         {hasActiveFilters && (
-                            <Badge ml={2} colorPalette="orange" variant="solid" borderRadius="full" fontSize="10px">
+                            <Badge ml={2} colorPalette="indigo" variant="solid" borderRadius="full" fontSize="10px">
                                 !
                             </Badge>
                         )}
@@ -246,7 +264,7 @@ const OpportunityManager: React.FC = () => {
                     {hasActiveFilters && (
                         <Button
                             variant="ghost"
-                            color="gray.400"
+                            color="whiteAlpha.600"
                             rounded="xl"
                             onClick={clearAllFilters}
                             _hover={{ color: 'white', bg: 'whiteAlpha.100' }}
@@ -262,14 +280,14 @@ const OpportunityManager: React.FC = () => {
                         columns={{ base: 2, md: 3, lg: 5 }}
                         gap={3}
                         p={4}
-                        bg="whiteAlpha.50"
+                        bg="var(--terminal-card)"
                         border="1px solid"
-                        borderColor="whiteAlpha.100"
+                        borderColor="var(--terminal-border)"
                         rounded="xl"
                         animation="slideDown 0.2s ease-out"
                     >
                         <Box>
-                            <Text color="gray.500" fontSize="10px" mb={1} textTransform="uppercase" letterSpacing="wider">Department</Text>
+                            <Text color="whiteAlpha.500" fontSize="10px" mb={1} textTransform="uppercase" letterSpacing="wider">Department</Text>
                             <select
                                 style={{ width: '100%', padding: '8px', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'white', outline: 'none', fontSize: '13px' }}
                                 value={filterDepartment}
@@ -284,7 +302,7 @@ const OpportunityManager: React.FC = () => {
                             </select>
                         </Box>
                         <Box>
-                            <Text color="gray.500" fontSize="10px" mb={1} textTransform="uppercase" letterSpacing="wider">Stipend</Text>
+                            <Text color="slate.600" fontSize="10px" mb={1} textTransform="uppercase" letterSpacing="wider">Stipend</Text>
                             <select
                                 style={{ width: '100%', padding: '8px', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'white', outline: 'none', fontSize: '13px' }}
                                 value={filterStipend}
@@ -296,7 +314,7 @@ const OpportunityManager: React.FC = () => {
                             </select>
                         </Box>
                         <Box>
-                            <Text color="gray.500" fontSize="10px" mb={1} textTransform="uppercase" letterSpacing="wider">Student Fee</Text>
+                            <Text color="slate.600" fontSize="10px" mb={1} textTransform="uppercase" letterSpacing="wider">Student Fee</Text>
                             <select
                                 style={{ width: '100%', padding: '8px', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'white', outline: 'none', fontSize: '13px' }}
                                 value={filterStudentFee}
@@ -308,7 +326,7 @@ const OpportunityManager: React.FC = () => {
                             </select>
                         </Box>
                         <Box>
-                            <Text color="gray.500" fontSize="10px" mb={1} textTransform="uppercase" letterSpacing="wider">Location</Text>
+                            <Text color="slate.600" fontSize="10px" mb={1} textTransform="uppercase" letterSpacing="wider">Location</Text>
                             <select
                                 style={{ width: '100%', padding: '8px', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'white', outline: 'none', fontSize: '13px' }}
                                 value={filterLocation}
@@ -321,7 +339,7 @@ const OpportunityManager: React.FC = () => {
                             </select>
                         </Box>
                         <Box>
-                            <Text color="gray.500" fontSize="10px" mb={1} textTransform="uppercase" letterSpacing="wider">Status</Text>
+                            <Text color="slate.600" fontSize="10px" mb={1} textTransform="uppercase" letterSpacing="wider">Status</Text>
                             <select
                                 style={{ width: '100%', padding: '8px', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'white', outline: 'none', fontSize: '13px' }}
                                 value={filterStatus}
@@ -339,8 +357,8 @@ const OpportunityManager: React.FC = () => {
                 {/* Results count */}
                 {opportunities.length > 0 && (
                     <Flex justify="space-between" align="center" mt={3}>
-                        <Text color="gray.500" fontSize="xs">
-                            Showing <Text as="span" color="cyan.400" fontWeight="bold">{filteredOpportunities.length}</Text> of {opportunities.length} postings
+                        <Text color="whiteAlpha.600" fontSize="xs">
+                            Showing <Text as="span" color="var(--terminal-accent)" fontWeight="bold">{filteredOpportunities.length}</Text> of {opportunities.length} postings
                             {hasActiveFilters && ' (filtered)'}
                         </Text>
                     </Flex>
@@ -349,102 +367,109 @@ const OpportunityManager: React.FC = () => {
 
             {/* List of Opportunities */}
             {isLoading && opportunities.length === 0 ? (
-                <Flex h="40vh" align="center" justify="center"><Spinner color="cyan.500" /></Flex>
+                <Flex h="40vh" align="center" justify="center"><Spinner color="indigo.500" /></Flex>
             ) : opportunities.length === 0 ? (
                 <VStack py={20} gap={4}>
-                    <Icon as={LuBriefcase} boxSize={16} opacity={0.1} color="white" />
-                    <Text color="gray.500" fontSize="xl">No active talent requirements detected.</Text>
+                    <Icon as={LuBriefcase} boxSize={16} opacity={0.1} color="slate.900" />
+                    <Text color="slate.600" fontSize="xl">No active talent requirements detected.</Text>
                 </VStack>
             ) : filteredOpportunities.length === 0 ? (
                 <VStack py={16} gap={4}>
-                    <Icon as={LuSearch} boxSize={12} opacity={0.15} color="white" />
-                    <Text color="gray.500" fontSize="lg">No postings match your current filters.</Text>
-                    <Button size="sm" variant="outline" colorPalette="cyan" onClick={clearAllFilters}>
+                    <Icon as={LuSearch} boxSize={12} opacity={0.15} color="slate.900" />
+                    <Text color="slate.600" fontSize="lg">No postings match your current filters.</Text>
+                    <Button size="sm" variant="outline" colorPalette="indigo" onClick={clearAllFilters}>
                         Clear All Filters
                     </Button>
                 </VStack>
             ) : (
-                <Box overflowX="auto" bg="whiteAlpha.50" rounded="xl" border="1px solid" borderColor="whiteAlpha.100" p={2}>
+                <Box overflowX="auto" bg="var(--terminal-card)" rounded="xl" border="1px solid" borderColor="var(--terminal-border)" p={2}>
                     <Table.Root variant="line" size="md">
                         <Table.Header borderBottom="1px solid rgba(255,255,255,0.05)">
                             <Table.Row>
-                                <Table.ColumnHeader color="gray.400" fontSize="11px">DESIGNATION</Table.ColumnHeader>
-                                <Table.ColumnHeader color="gray.400" fontSize="11px">DEPARTMENT</Table.ColumnHeader>
-                                <Table.ColumnHeader color="gray.400" fontSize="11px">LOCATION</Table.ColumnHeader>
-                                <Table.ColumnHeader color="gray.400" fontSize="11px">STIPEND</Table.ColumnHeader>
-                                <Table.ColumnHeader color="gray.400" fontSize="11px">FEE</Table.ColumnHeader>
-                                <Table.ColumnHeader color="gray.400" fontSize="11px">START DATE</Table.ColumnHeader>
-                                <Table.ColumnHeader color="gray.400" fontSize="11px">STATUS</Table.ColumnHeader>
-                                <Table.ColumnHeader color="gray.400" fontSize="11px" textAlign="center">TOTAL SLOTS</Table.ColumnHeader>
-                                <Table.ColumnHeader color="gray.400" fontSize="11px" textAlign="center">REMAINING</Table.ColumnHeader>
-                                <Table.ColumnHeader color="gray.400" fontSize="11px" textAlign="right">ACTIONS</Table.ColumnHeader>
+                                <Table.ColumnHeader color="var(--terminal-accent)" fontSize="11px">DESIGNATION</Table.ColumnHeader>
+                                <Table.ColumnHeader color="var(--terminal-accent)" fontSize="11px">DETAILS</Table.ColumnHeader>
+                                <Table.ColumnHeader color="var(--terminal-accent)" fontSize="11px">FINANCIALS</Table.ColumnHeader>
+                                <Table.ColumnHeader color="var(--terminal-accent)" fontSize="11px" textAlign="center">CAPACITY</Table.ColumnHeader>
+                                <Table.ColumnHeader color="var(--terminal-accent)" fontSize="11px" textAlign="right">ACTIONS</Table.ColumnHeader>
                             </Table.Row>
                         </Table.Header>
                         <Table.Body>
-                            {filteredOpportunities.map(opp => {
+                            {paginatedOpportunities.map(opp => {
                                 const remaining = (opp.vacancies || 0) - (opp.applicant_count || 0);
+                                const isExpanded = expandedRow === opp.id;
                                 return (
-                                <Table.Row key={opp.id} _hover={{ bg: "rgba(255,255,255,0.02)" }}>
+                                <React.Fragment key={opp.id}>
+                                <Table.Row _hover={{ bg: "rgba(255,255,255,0.02)" }} cursor="pointer" onClick={() => toggleRow(opp.id)}>
                                     <Table.Cell py={4}>
                                         <VStack align="start" gap={1}>
-                                            <Text color="white" fontWeight="bold">{opp.title}</Text>
-                                            <Badge colorPalette="cyan" variant="subtle" size="sm">{opp.type}</Badge>
+                                            <HStack>
+                                                <Text color="#F8FAFC" fontWeight="bold">{opp.title}</Text>
+                                                <Badge colorPalette={opp.status === 'OPEN' ? 'green' : 'gray'} size="sm">{opp.status}</Badge>
+                                            </HStack>
+                                            <HStack mt={1}>
+                                                <Badge colorPalette="indigo" variant="subtle" size="sm" bg="whiteAlpha.100" color="indigo.300">{opp.type}</Badge>
+                                                <Text fontSize="xs" color="whiteAlpha.600">{opp.department_name || 'N/A'}</Text>
+                                            </HStack>
                                         </VStack>
                                     </Table.Cell>
-                                    <Table.Cell color="gray.300">
-                                        <Text fontWeight="medium">{opp.department_name || 'N/A'}</Text>
+                                    <Table.Cell color="whiteAlpha.700">
+                                        <VStack align="start" gap={1}>
+                                            <HStack>
+                                                <Icon as={LuMapPin} color="var(--terminal-accent)" />
+                                                <Text fontSize="sm">{opp.location || 'Unspecified'}</Text>
+                                            </HStack>
+                                            <HStack>
+                                                <Icon as={LuClock} color="whiteAlpha.600" />
+                                                <Text fontSize="xs" color="whiteAlpha.600">{opp.start_date || 'N/A'}</Text>
+                                            </HStack>
+                                        </VStack>
                                     </Table.Cell>
-                                    <Table.Cell color="gray.300">
-                                        <HStack>
-                                            <Icon as={LuMapPin} color="cyan.400" />
-                                            <Text>{opp.location || 'Unspecified'}</Text>
-                                        </HStack>
+                                    <Table.Cell color="whiteAlpha.700">
+                                        <VStack align="start" gap={1}>
+                                            <HStack>
+                                                <Icon as={LuCoins} color="yellow.400" />
+                                                <Text fontSize="sm" fontWeight="bold" color="#F8FAFC">
+                                                    {opp.stipend_amount && opp.stipend_amount > 0 
+                                                        ? `KES ${opp.stipend_amount.toLocaleString()}` 
+                                                        : 'Unpaid'}
+                                                </Text>
+                                            </HStack>
+                                            {opp.student_payment_required ? (
+                                                <Badge colorPalette="indigo" variant="outline" size="xs">
+                                                    Fee: KES {opp.student_payment_amount?.toLocaleString() || 0}
+                                                </Badge>
+                                            ) : (
+                                                <Text color="whiteAlpha.600" fontSize="xs">No Fee</Text>
+                                            )}
+                                        </VStack>
                                     </Table.Cell>
-                                    <Table.Cell color="gray.300">
-                                        <HStack>
-                                            <Icon as={LuCoins} color="yellow.400" />
-                                            <Text fontWeight="bold" color="white">
-                                                {opp.stipend_amount && opp.stipend_amount > 0 
-                                                    ? `KES ${opp.stipend_amount.toLocaleString()}` 
-                                                    : 'Unpaid'}
-                                            </Text>
-                                        </HStack>
-                                    </Table.Cell>
-                                    <Table.Cell>
-                                        {opp.student_payment_required ? (
-                                            <Badge colorPalette="orange" variant="outline">
-                                                KES {opp.student_payment_amount?.toLocaleString() || 0}
+                                    <Table.Cell textAlign="center">
+                                        <VStack gap={1} align="center">
+                                            <Badge colorPalette={remaining > 0 ? "orange" : "gray"} size="md">
+                                                {remaining > 0 ? remaining : 0} left
                                             </Badge>
-                                        ) : (
-                                            <Text color="gray.600" fontSize="xs">None</Text>
-                                        )}
-                                    </Table.Cell>
-                                    <Table.Cell color="gray.300" fontWeight="mono" fontSize="sm">
-                                        {opp.start_date || <Text color="gray.600">N/A</Text>}
-                                    </Table.Cell>
-                                    <Table.Cell>
-                                        <Badge colorPalette={opp.status === 'OPEN' ? 'green' : 'gray'}>{opp.status}</Badge>
-                                    </Table.Cell>
-                                    <Table.Cell textAlign="center">
-                                        <Badge colorPalette="blue" size="md">{opp.vacancies || '∞'}</Badge>
-                                    </Table.Cell>
-                                    <Table.Cell textAlign="center">
-                                        <Badge colorPalette={remaining > 0 ? "orange" : "gray"} size="md">
-                                            {remaining > 0 ? remaining : 0}
-                                        </Badge>
+                                            <Text fontSize="xs" color="whiteAlpha.600">of {opp.vacancies || '∞'} total</Text>
+                                        </VStack>
                                     </Table.Cell>
                                     <Table.Cell textAlign="right">
                                         <HStack justify="flex-end" gap={2}>
                                             <IconButton
-                                                size="sm" variant="ghost" colorPalette="blue"
-                                                onClick={() => handleEditClick(opp)}
+                                                size="sm" variant="ghost" color="whiteAlpha.700"
+                                                onClick={(e) => { e.stopPropagation(); toggleRow(opp.id); }}
+                                                aria-label="Toggle Details"
+                                            >
+                                                {isExpanded ? <LuChevronUp /> : <LuChevronDown />}
+                                            </IconButton>
+                                            <IconButton
+                                                size="sm" variant="ghost" colorPalette="indigo"
+                                                onClick={(e) => { e.stopPropagation(); handleEditClick(opp); }}
                                                 aria-label="Edit Opportunity"
                                             >
                                                 <LuPen />
                                             </IconButton>
                                             <IconButton
                                                 size="sm" variant="ghost" colorPalette="red"
-                                                onClick={() => handleDeleteClick(opp.id)}
+                                                onClick={(e) => { e.stopPropagation(); handleDeleteClick(opp.id); }}
                                                 aria-label="Delete Opportunity"
                                             >
                                                 <LuTrash />
@@ -452,18 +477,60 @@ const OpportunityManager: React.FC = () => {
                                             <Button
                                                 size="sm"
                                                 variant="subtle"
-                                                colorPalette="cyan"
+                                                colorPalette="indigo"
                                                 rounded="lg"
-                                                onClick={() => navigate(`/company/opportunities/${opp.id}/applicants`)}
+                                                onClick={(e) => { e.stopPropagation(); navigate(`/company/opportunities/${opp.id}/applicants`); }}
                                             >
                                                 Manage Pipeline
                                             </Button>
                                         </HStack>
                                     </Table.Cell>
                                 </Table.Row>
+                                {isExpanded && (
+                                    <Table.Row bg="whiteAlpha.50">
+                                        <Table.Cell colSpan={5} p={4} borderBottom="1px solid" borderColor="whiteAlpha.100">
+                                            <VStack align="stretch" gap={4}>
+                                                <Box>
+                                                    <Text color="var(--terminal-accent)" fontSize="xs" fontWeight="bold">DESCRIPTION</Text>
+                                                    <Text color="whiteAlpha.900" fontSize="sm" mt={1} whiteSpace="pre-wrap">{opp.description || 'No description provided.'}</Text>
+                                                </Box>
+                                                <Box>
+                                                    <Text color="var(--terminal-accent)" fontSize="xs" fontWeight="bold">REQUIREMENTS</Text>
+                                                    <Text color="whiteAlpha.900" fontSize="sm" mt={1} whiteSpace="pre-wrap">{opp.requirements || 'No requirements specified.'}</Text>
+                                                </Box>
+                                            </VStack>
+                                        </Table.Cell>
+                                    </Table.Row>
+                                )}
+                                </React.Fragment>
                             )})}
                         </Table.Body>
                     </Table.Root>
+                    {totalPages > 1 && (
+                        <Flex justify="space-between" align="center" mt={4} p={2}>
+                            <Text color="whiteAlpha.500" fontSize="sm">
+                                Page <Text as="span" color="var(--terminal-accent)">{currentPage}</Text> of {totalPages}
+                            </Text>
+                            <HStack>
+                                <IconButton
+                                    size="sm" variant="outline" colorPalette="indigo"
+                                    disabled={currentPage === 1}
+                                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                    aria-label="Previous Page"
+                                >
+                                    <LuChevronLeft />
+                                </IconButton>
+                                <IconButton
+                                    size="sm" variant="outline" colorPalette="indigo"
+                                    disabled={currentPage === totalPages}
+                                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                    aria-label="Next Page"
+                                >
+                                    <LuChevronRight />
+                                </IconButton>
+                            </HStack>
+                        </Flex>
+                    )}
                 </Box>
             )}
 
@@ -476,17 +543,17 @@ const OpportunityManager: React.FC = () => {
                     p={4}
                 >
                     <Box
-                        className="glass-panel" bg="gray.900" p={8} borderRadius="3xl"
+                        bg="var(--terminal-card)" p={8} borderRadius="3xl"
                         w={{ base: "full", md: "800px" }} shadow="2xl" maxH="95vh"
-                        overflowY="auto" border="1px solid" borderColor="whiteAlpha.200"
+                        overflowY="auto" border="1px solid" borderColor="var(--terminal-border)"
                     >
                         <Flex justify="space-between" align="center" mb={10}>
                             <Box>
                                 <HStack>
-                                    <Icon as={LuZap} color="cyan.400" />
-                                    <Heading size="xl" color="white">{isEditMode ? 'Update Requirement' : 'Post New Requirement'}</Heading>
+                                    <Icon as={LuZap} color="var(--terminal-accent)" />
+                                    <Heading size="xl" color="#F8FAFC">{isEditMode ? 'Update Requirement' : 'Post New Requirement'}</Heading>
                                 </HStack>
-                                <Text color="gray.400" mt={1}>Define the specific parameters for your next student attachment.</Text>
+                                <Text color="whiteAlpha.600" mt={1}>Define the specific parameters for your next student attachment.</Text>
                             </Box>
                             <IconButton
                                 aria-label="Close"
@@ -502,19 +569,19 @@ const OpportunityManager: React.FC = () => {
 
                         <VStack gap={8} align="stretch">
                             <Box>
-                                <Text color="cyan.400" fontSize="xs" fontWeight="bold" mb={3} letterSpacing="widest">CORE CONFIGURATION</Text>
+                                <Text color="indigo.400" fontSize="xs" fontWeight="bold" mb={3} letterSpacing="widest">CORE CONFIGURATION</Text>
                                 <SimpleGrid columns={{ base: 1, md: 2 }} gap={6}>
                                     <Box>
-                                        <Text color="gray.500" fontSize="xs" mb={2}>DESIGNATION</Text>
+                                        <Text color="whiteAlpha.600" fontSize="xs" mb={2}>DESIGNATION</Text>
                                         <Input
                                             placeholder="e.g. Frontend Engineering Intern"
-                                            bg="whiteAlpha.50" borderColor="whiteAlpha.200" color="white"
+                                            bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="#F8FAFC"
                                             value={formData.title}
                                             onChange={e => setFormData({ ...formData, title: e.target.value })}
                                         />
                                     </Box>
                                     <Box>
-                                        <Text color="gray.500" fontSize="xs" mb={2}>DEPARTMENT</Text>
+                                        <Text color="whiteAlpha.600" fontSize="xs" mb={2}>DEPARTMENT</Text>
                                         <select
                                             style={{ width: '100%', padding: '10px', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'white', outline: 'none' }}
                                             value={formData.department_id}
@@ -532,34 +599,35 @@ const OpportunityManager: React.FC = () => {
                             </Box>
 
                             <Box>
-                                <Text color="cyan.400" fontSize="xs" fontWeight="bold" mb={3} letterSpacing="widest">SPECIFICATIONS</Text>
+                                <Text color="indigo.400" fontSize="xs" fontWeight="bold" mb={3} letterSpacing="widest">SPECIFICATIONS</Text>
                                 <VStack gap={4} align="stretch">
                                     <Box>
-                                        <Text color="gray.500" fontSize="xs" mb={2}>ROLE DESCRIPTION</Text>
+                                        <Text color="whiteAlpha.600" fontSize="xs" mb={2}>ROLE DESCRIPTION</Text>
                                         <Textarea
                                             placeholder="Define responsibilities..."
-                                            rows={4} bg="whiteAlpha.50" borderColor="whiteAlpha.200" color="white"
+                                            rows={4} bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="#F8FAFC"
                                             value={formData.description}
                                             onChange={e => setFormData({ ...formData, description: e.target.value })}
                                         />
                                     </Box>
                                     <Box>
-                                        <Text color="gray.500" fontSize="xs" mb={2}>CORE REQUIREMENTS</Text>
+                                        <Text color="whiteAlpha.600" fontSize="xs" mb={2}>CORE REQUIREMENTS</Text>
                                         <Textarea
                                             placeholder="Defined skills/competencies..."
-                                            rows={2} bg="whiteAlpha.50" borderColor="whiteAlpha.200" color="white"
+                                            rows={2} bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="white"
                                             value={formData.requirements}
                                             onChange={e => setFormData({ ...formData, requirements: e.target.value })}
+                                            _placeholder={{ color: "whiteAlpha.400" }}
                                         />
                                     </Box>
                                 </VStack>
                             </Box>
 
                             <Box>
-                                <Text color="cyan.400" fontSize="xs" fontWeight="bold" mb={3} letterSpacing="widest">PARAMETERS</Text>
+                                <Text color="indigo.400" fontSize="xs" fontWeight="bold" mb={3} letterSpacing="widest">PARAMETERS</Text>
                                 <SimpleGrid columns={{ base: 1, md: 2 }} gap={6}>
                                     <Box>
-                                        <Text color="gray.500" fontSize="xs" mb={2}>LOCATION</Text>
+                                        <Text color="whiteAlpha.600" fontSize="xs" mb={2}>LOCATION</Text>
                                         <select
                                             style={{ width: '100%', padding: '10px', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'white', outline: 'none' }}
                                             value={formData.location}
@@ -572,34 +640,34 @@ const OpportunityManager: React.FC = () => {
                                         </select>
                                     </Box>
                                     <Box>
-                                        <Text color="gray.500" fontSize="xs" mb={2}>POSSIBLE START DATE</Text>
+                                        <Text color="whiteAlpha.600" fontSize="xs" mb={2}>POSSIBLE START DATE</Text>
                                         <Input
-                                            type="date" bg="whiteAlpha.50" borderColor="whiteAlpha.200" color="white"
+                                            type="date" bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="white"
                                             value={formData.start_date || ''}
                                             onChange={e => setFormData({ ...formData, start_date: e.target.value })}
                                         />
                                     </Box>
                                     <Box>
-                                        <Text color="gray.500" fontSize="xs" mb={2}>DURATION</Text>
+                                        <Text color="whiteAlpha.600" fontSize="xs" mb={2}>DURATION</Text>
                                         <Input
-                                            type="text" bg="whiteAlpha.50" borderColor="whiteAlpha.200" color="gray.400"
+                                            type="text" bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="white"
                                             value="3 Months"
                                             readOnly
                                             cursor="not-allowed"
                                         />
                                     </Box>
                                     <Box>
-                                        <Text color="gray.500" fontSize="xs" mb={2}>SLOTS AVAILABLE</Text>
+                                        <Text color="whiteAlpha.600" fontSize="xs" mb={2}>SLOTS AVAILABLE</Text>
                                         <Input
-                                            type="number" bg="whiteAlpha.50" borderColor="whiteAlpha.200" color="white"
+                                            type="number" bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="white"
                                             value={formData.vacancies || ''}
                                             onChange={e => setFormData({ ...formData, vacancies: parseInt(e.target.value) || 0 })}
                                         />
                                     </Box>
                                     <Box>
-                                        <Text color="gray.500" fontSize="xs" mb={2}>APPLICATION SCAN DEADLINE</Text>
+                                        <Text color="whiteAlpha.600" fontSize="xs" mb={2}>APPLICATION SCAN DEADLINE</Text>
                                         <Input
-                                            type="date" bg="whiteAlpha.50" borderColor="whiteAlpha.200" color="white"
+                                            type="date" bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="white"
                                             value={formData.application_deadline}
                                             onChange={e => setFormData({ ...formData, application_deadline: e.target.value })}
                                         />
@@ -608,26 +676,26 @@ const OpportunityManager: React.FC = () => {
                             </Box>
 
                              <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-                                <Box bg="whiteAlpha.50" p={6} borderRadius="2xl" border="1px solid" borderColor="whiteAlpha.100">
+                                <Box bg="whiteAlpha.50" p={6} borderRadius="2xl" border="1px solid" borderColor="var(--terminal-border)">
                                     <Flex justify="space-between" align="center">
                                         <Box>
                                             <HStack>
                                                 <Icon as={LuCoins} color="yellow.400" />
-                                                <Text fontWeight="bold" color="white">Financial Stipend</Text>
+                                                <Text fontWeight="bold" color="#F8FAFC">Financial Stipend</Text>
                                             </HStack>
-                                            <Text fontSize="xs" color="gray.500" mt={1}>Provide a monthly allowance to the student.</Text>
+                                            <Text fontSize="xs" color="whiteAlpha.600" mt={1}>Provide a monthly allowance to the student.</Text>
                                         </Box>
                                         <Switch
-                                            colorPalette="cyan"
+                                            colorPalette="indigo"
                                             checked={isPaid}
                                             onCheckedChange={(details: { checked: boolean }) => setIsPaid(details.checked)}
                                         />
                                     </Flex>
                                     {isPaid && (
                                         <Box mt={4}>
-                                            <Text color="gray.500" fontSize="xs" mb={2}>STIPEND AMOUNT (KES / Month)</Text>
+                                            <Text color="whiteAlpha.600" fontSize="xs" mb={2}>STIPEND AMOUNT (KES / Month)</Text>
                                             <Input
-                                                type="number" bg="whiteAlpha.50" borderColor="whiteAlpha.200" color="white"
+                                                type="number" bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="white"
                                                 value={formData.stipend_amount || ''}
                                                 onChange={e => setFormData({ ...formData, stipend_amount: parseFloat(e.target.value) || 0 })}
                                             />
@@ -635,26 +703,26 @@ const OpportunityManager: React.FC = () => {
                                     )}
                                 </Box>
 
-                                <Box bg="whiteAlpha.50" p={6} borderRadius="2xl" border="1px solid" borderColor="whiteAlpha.100">
+                                <Box bg="whiteAlpha.50" p={6} borderRadius="2xl" border="1px solid" borderColor="var(--terminal-border)">
                                     <Flex justify="space-between" align="center">
                                         <Box>
                                             <HStack>
-                                                <Icon as={LuShield} color="orange.400" />
-                                                <Text fontWeight="bold" color="white">Student Fee</Text>
+                                                <Icon as={LuShield} color="var(--terminal-accent)" />
+                                                <Text fontWeight="bold" color="#F8FAFC">Student Fee</Text>
                                             </HStack>
-                                            <Text fontSize="xs" color="gray.500" mt={1}>Mandatory stipend/insurance fee for the student.</Text>
+                                            <Text fontSize="xs" color="whiteAlpha.600" mt={1}>Mandatory stipend/insurance fee for the student.</Text>
                                         </Box>
                                         <Switch
-                                            colorPalette="orange"
+                                            colorPalette="indigo"
                                             checked={formData.student_payment_required}
                                             onCheckedChange={(details: { checked: boolean }) => setFormData({ ...formData, student_payment_required: details.checked })}
                                         />
                                     </Flex>
                                     {formData.student_payment_required && (
                                         <Box mt={4}>
-                                            <Text color="gray.500" fontSize="xs" mb={2}>PAYMENT AMOUNT (KES)</Text>
+                                            <Text color="whiteAlpha.600" fontSize="xs" mb={2}>PAYMENT AMOUNT (KES)</Text>
                                             <Input
-                                                type="number" bg="whiteAlpha.50" borderColor="whiteAlpha.200" color="white"
+                                                type="number" bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="#F8FAFC"
                                                 value={formData.student_payment_amount || ''}
                                                 onChange={e => setFormData({ ...formData, student_payment_amount: parseFloat(e.target.value) || 0 })}
                                             />
@@ -670,9 +738,9 @@ const OpportunityManager: React.FC = () => {
                             )}
 
                             <Flex gap={4} pt={6}>
-                                <Button flex={1} variant="ghost" color="white" onClick={() => setIsOpen(false)}>Abort</Button>
+                                <Button flex={1} variant="ghost" color="#F8FAFC" _hover={{ bg: "whiteAlpha.100" }} onClick={() => setIsOpen(false)}>Abort</Button>
                                 <Button
-                                    flex={2} colorPalette="cyan" rounded="xl" h={12}
+                                    flex={2} colorPalette="indigo" rounded="xl" h={12}
                                     onClick={handleCreateOrUpdate}
                                     disabled={!formData.title || !formData.description || !formData.location || !formData.department_id}
                                 >

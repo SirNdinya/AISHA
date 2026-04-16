@@ -24,6 +24,7 @@ import {
     ClipboardCheck
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { toaster } from '../../../components/ui/toaster';
 import InstitutionService from '../../../services/institutionService';
 import apiClient from '../../../services/apiClient';
 import './AdminPortal.css';
@@ -70,8 +71,10 @@ const PlacementTracker: React.FC = () => {
                 [type === 'first' ? 'first_assessment_date' : 'second_assessment_date']: dateValue
             });
             setPlacements(prev => prev.map(p => p.placement_id === placementId ? { ...p, [type === 'first' ? 'first_assessment_date' : 'second_assessment_date']: dateValue } : p));
-        } catch (error) {
+            toaster.create({ title: 'Assessment Date Updated', type: 'success' });
+        } catch (error: any) {
             console.error("Failed setting assessment date:", error);
+            toaster.create({ title: 'Update Failed', description: error.response?.data?.message || 'Failed to update date', type: 'error' });
         }
     };
 
@@ -92,8 +95,8 @@ const PlacementTracker: React.FC = () => {
         <Box animation="fadeIn 0.5s ease-out">
             <Flex justify="space-between" align="center" mb={8}>
                 <Box>
-                    <Heading size="lg" fontWeight="bold">Placement Tracker</Heading>
-                    <Text color="gray.500">Monitor your department's active student industrial attachments</Text>
+                    <Heading size="lg" fontWeight="bold" color="#F8FAFC">Placement Tracker</Heading>
+                    <Text color="var(--terminal-accent)">Monitor your department's active student industrial attachments</Text>
                 </Box>
             </Flex>
 
@@ -104,29 +107,31 @@ const PlacementTracker: React.FC = () => {
                     { label: 'Completed Attachments', count: placements.filter(p => getDynamicStatus(p).label === 'Completed').length, icon: CheckCircle2, color: 'purple.400' },
                     { label: 'System Monitored Students', count: placements.length, icon: Calendar, color: 'amber.400' },
                 ].map((stat, i) => (
-                    <Box key={i} className="glass-card" p={5} borderRadius="16px" display="flex" alignItems="center" gap={4}>
-                        <Box p={3} borderRadius="12px" bg="rgba(167, 139, 250, 0.1)">
-                            <Icon as={stat.icon || Briefcase} boxSize={6} color={stat.color} />
+                    <Box key={i} className="glass-card" bg="var(--terminal-card)" p={5} borderRadius="16px" display="flex" alignItems="center" gap={4} border="1px solid" borderColor="var(--terminal-border)">
+                        <Box p={3} borderRadius="12px" bg="rgba(56, 189, 248, 0.1)">
+                            <Icon as={stat.icon || Briefcase} boxSize={6} color="var(--terminal-accent)" />
                         </Box>
                         <Box>
-                            <Text color="gray.500" fontSize="xs" fontWeight="medium">{stat.label}</Text>
-                            <Text fontSize="2xl" fontWeight="bold">{stat.count}</Text>
+                            <Text color="var(--terminal-accent)" fontSize="xs" fontWeight="medium">{stat.label}</Text>
+                            <Text fontSize="2xl" fontWeight="bold" color="#F8FAFC">{stat.count}</Text>
                         </Box>
                     </Box>
                 ))}
             </SimpleGrid>
 
             {/* Main Tracker Table */}
-            <Box className="glass-card" p={6} borderRadius="20px">
+            <Box className="glass-card" bg="var(--terminal-card)" p={6} borderRadius="20px" border="1px solid" borderColor="var(--terminal-border)">
                 <Flex justify="space-between" mb={6}>
                     <Box maxW="400px" position="relative" display="flex" alignItems="center">
                         <Search color="gray" size={18} style={{ position: 'absolute', left: 12 }} />
                         <Input
                             pl={10}
                             placeholder="Filter by company or student..."
-                            bg="rgba(255,255,255,0.05)"
-                            border="none"
+                            bg="whiteAlpha.50"
+                            border="1px solid"
+                            borderColor="var(--terminal-border)"
                             borderRadius="12px"
+                            color="#F8FAFC"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -139,13 +144,13 @@ const PlacementTracker: React.FC = () => {
                     <Table.Root>
                         <Table.Header borderBottom="1px solid rgba(255,255,255,0.05)">
                             <Table.Row>
-                                <Table.ColumnHeader color="gray.500">STUDENT</Table.ColumnHeader>
-                                <Table.ColumnHeader color="gray.500">HOST COMPANY</Table.ColumnHeader>
-                                <Table.ColumnHeader color="gray.500">PERIOD</Table.ColumnHeader>
-                                <Table.ColumnHeader color="gray.500" w="150px" textTransform="uppercase">1st Assessment</Table.ColumnHeader>
-                                <Table.ColumnHeader color="gray.500" w="150px" textTransform="uppercase">2nd Assessment</Table.ColumnHeader>
-                                <Table.ColumnHeader color="gray.500">STATUS</Table.ColumnHeader>
-                                <Table.ColumnHeader color="gray.500" textAlign="right">ACTION</Table.ColumnHeader>
+                                <Table.ColumnHeader color="var(--terminal-accent)">STUDENT</Table.ColumnHeader>
+                                <Table.ColumnHeader color="var(--terminal-accent)">HOST COMPANY</Table.ColumnHeader>
+                                <Table.ColumnHeader color="var(--terminal-accent)">PERIOD</Table.ColumnHeader>
+                                <Table.ColumnHeader color="var(--terminal-accent)" w="150px" textTransform="uppercase">1st Assessment</Table.ColumnHeader>
+                                <Table.ColumnHeader color="var(--terminal-accent)" w="150px" textTransform="uppercase">2nd Assessment</Table.ColumnHeader>
+                                <Table.ColumnHeader color="var(--terminal-accent)">STATUS</Table.ColumnHeader>
+                                <Table.ColumnHeader color="var(--terminal-accent)" textAlign="right">ACTION</Table.ColumnHeader>
                             </Table.Row>
                         </Table.Header>
                         <Table.Body>
@@ -158,39 +163,45 @@ const PlacementTracker: React.FC = () => {
                                                 <AvatarRoot size="xs">
                                                     <AvatarFallback name={`${item.first_name} ${item.last_name}`} />
                                                 </AvatarRoot>
-                                                <Text fontWeight="medium">{item.first_name} {item.last_name}</Text>
+                                                <Text fontWeight="bold" color="#F8FAFC">{item.first_name} {item.last_name}</Text>
                                             </HStack>
                                         </Table.Cell>
                                         <Table.Cell color="gray.300">
                                             <VStack align="start" gap={0}>
-                                                <Text>{item.company_name}</Text>
-                                                <Text fontSize="xs" color="gray.500">{item.role}</Text>
+                                                <Text color="#F8FAFC">{item.company_name}</Text>
+                                                <Text fontSize="xs" color="var(--terminal-accent)">{item.role}</Text>
                                             </VStack>
                                         </Table.Cell>
-                                        <Table.Cell color="gray.400" fontSize="sm">
-                                            <HStack gap={2} color="gray.400" fontSize="sm">
+                                        <Table.Cell color="whiteAlpha.800" fontSize="sm">
+                                            <HStack gap={2} color="whiteAlpha.800" fontSize="sm">
                                                 <Icon as={Calendar} size={14} />
                                                 <Text>{item.start_date ? new Date(item.start_date).toLocaleDateString() : 'N/A'} - {item.end_date ? new Date(item.end_date).toLocaleDateString() : 'N/A'}</Text>
                                             </HStack>
                                         </Table.Cell>
-                                        <Table.Cell color="gray.400" fontSize="sm">
+                                        <Table.Cell color="slate.600" fontSize="sm">
                                             <Input 
                                                 type="date" 
                                                 size="xs" 
                                                 bg="rgba(255,255,255,0.05)" 
                                                 border="none" 
                                                 borderRadius="md" 
+                                                min={item.start_date ? new Date(item.start_date).toISOString().split('T')[0] : undefined}
                                                 value={item.first_assessment_date ? new Date(item.first_assessment_date).toISOString().split('T')[0] : ''}
                                                 onChange={(e) => handleSetDate(item.placement_id, 'first', e.target.value || null)}
                                             />
                                         </Table.Cell>
-                                        <Table.Cell color="gray.400" fontSize="sm">
+                                        <Table.Cell color="slate.600" fontSize="sm">
                                             <Input 
                                                 type="date" 
                                                 size="xs" 
                                                 bg="rgba(255,255,255,0.05)" 
                                                 border="none" 
                                                 borderRadius="md" 
+                                                min={
+                                                    item.first_assessment_date 
+                                                        ? new Date(item.first_assessment_date).toISOString().split('T')[0] 
+                                                        : (item.start_date ? new Date(item.start_date).toISOString().split('T')[0] : undefined)
+                                                }
                                                 value={item.second_assessment_date ? new Date(item.second_assessment_date).toISOString().split('T')[0] : ''}
                                                 onChange={(e) => handleSetDate(item.placement_id, 'second', e.target.value || null)}
                                             />
@@ -209,7 +220,7 @@ const PlacementTracker: React.FC = () => {
                                             <Button
                                                 size="sm"
                                                 variant="ghost"
-                                                color="blue.400"
+                                                color="var(--terminal-accent)"
                                                 onClick={() => navigate(`/department/logbooks?student_id=${item.student_id}`)}
                                             >
                                                 <Icon as={ClipboardCheck} mr={1} /> Assess

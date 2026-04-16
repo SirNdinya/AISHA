@@ -1,96 +1,53 @@
-/* Admin Portal Premium Styles */
+/* Admin Portal Standard Styles Reverted to Dark Terminal Blue */
 
 .glass-panel {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(12px) saturate(180%);
-    -webkit-backdrop-filter: blur(12px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
+    background: var(--terminal-card);
+    border: 1px solid var(--terminal-border);
+    border-radius: 12px;
 }
 
 .glass-card {
-    background: rgba(26, 32, 44, 0.6);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--terminal-card);
+    border: 1px solid var(--terminal-border);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
 }
 
 .glass-card:hover {
-    background: rgba(26, 32, 44, 0.8);
-    border-color: rgba(128, 90, 213, 0.4);
-    transform: translateY(-4px);
-    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    border-color: var(--terminal-accent);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
 }
 
 .sidebar-glass {
-    background: rgba(13, 17, 23, 0.7);
-    backdrop-filter: blur(20px);
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--terminal-bg);
+    border-right: 1px solid var(--terminal-border);
 }
 
 .gradient-text {
-    background: linear-gradient(135deg, #a78bfa 0%, #2dd4bf 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--terminal-accent);
+    font-weight: bold;
 }
 
 .vibrant-border {
-    position: relative;
-    border-radius: 16px;
+    border: 1px solid var(--terminal-border);
+    border-radius: 12px;
 }
 
 .vibrant-border::after {
-    content: '';
-    position: absolute;
-    inset: -1px;
-    background: linear-gradient(135deg, rgba(167, 139, 250, 0.5) 0%, rgba(45, 212, 191, 0.5) 100%);
-    border-radius: inherit;
-    z-index: -1;
-    opacity: 0.3;
+    display: none;
 }
 
 .stats-card-bg {
-    background: radial-gradient(circle at top right, rgba(128, 90, 213, 0.15), transparent);
-}
-
-.animate-pulse-subtle {
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes pulse {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.5;
-    }
-}
-
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(5px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
+    background: var(--terminal-card);
 }
 
 .modal-content {
-    background: #0d1117;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 24px;
+    background: var(--terminal-bg);
+    border: 1px solid var(--terminal-border);
+    border-top: 4px solid var(--terminal-accent);
+    border-radius: 16px;
     width: 100%;
     max-width: 500px;
     padding: 32px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    animation: slideUp 0.3s ease-out;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
 }

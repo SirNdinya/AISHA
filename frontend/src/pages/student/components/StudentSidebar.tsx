@@ -60,7 +60,7 @@ const StudentSidebar: React.FC<StudentSidebarProps> = ({ isCollapsed, onToggle, 
                     </Box>
                     {!isCollapsed && (
                         <VStack align="flex-start" gap={0}>
-                            <Text fontWeight="extrabold" fontSize="2xl" letterSpacing="tight" color="white">
+                            <Text fontWeight="extrabold" fontSize="2xl" letterSpacing="tight" color="whiteAlpha.900">
                                 AISHA
                             </Text>
                             <Text fontSize="10px" fontWeight="bold" color="cyan.400" mt="-1">
@@ -77,7 +77,7 @@ const StudentSidebar: React.FC<StudentSidebarProps> = ({ isCollapsed, onToggle, 
                     <IconButton
                         aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
                         variant="ghost"
-                        color="whiteAlpha.500"
+                        color="white"
                         _hover={{ color: 'white', bg: 'whiteAlpha.100' }}
                         size="sm"
                         rounded="lg"
@@ -105,9 +105,9 @@ const StudentSidebar: React.FC<StudentSidebarProps> = ({ isCollapsed, onToggle, 
                                 px={isCollapsed ? 0 : 4}
                                 py={3}
                                 gap={3}
-                                color="white"
+                                color="whiteAlpha.800"
                                 opacity={0.8}
-                                _hover={{ opacity: 1, bg: 'whiteAlpha.100' }}
+                                _hover={{ opacity: 1, bg: 'whiteAlpha.100', color: 'white' }}
                                 borderRadius="12px"
                                 justify={isCollapsed ? 'center' : 'flex-start'}
                             >

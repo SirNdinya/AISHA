@@ -49,9 +49,9 @@ const BroadcastBanner: React.FC<BroadcastBannerProps> = ({ system }) => {
     const getStyles = () => {
         switch (current.type) {
             case 'MAINTENANCE':
-                return { bg: 'orange.600', icon: LuTriangleAlert, label: 'SYSTEM MAINTENANCE' };
+                return { bg: 'indigo.600', icon: LuTriangleAlert, label: 'SYSTEM MAINTENANCE' };
             case 'UPDATE':
-                return { bg: 'blue.600', icon: LuZap, label: 'VERSION UPDATE' };
+                return { bg: 'indigo.600', icon: LuZap, label: 'VERSION UPDATE' };
             default:
                 return { bg: 'purple.600', icon: LuInfo, label: 'ANNOUNCEMENT' };
         }

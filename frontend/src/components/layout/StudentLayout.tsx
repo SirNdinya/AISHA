@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box } from '@chakra-ui/react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -9,6 +9,7 @@ import StudentSidebar from '../../pages/student/components/StudentSidebar';
 import AishaAssistant from '../common/AishaAssistant';
 import type { RootState, AppDispatch } from '../../store';
 import { logout } from '../../store/authSlice';
+import { fetchStudentProfile } from '../../store/studentSlice';
 import '../../pages/student/DashboardTheme.css';
 
 const StudentLayout: React.FC = () => {
@@ -17,6 +18,12 @@ const StudentLayout: React.FC = () => {
     const navigate = useNavigate();
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
+    useEffect(() => {
+        if (isAuthenticated && user) {
+            dispatch(fetchStudentProfile());
+        }
+    }, [dispatch, isAuthenticated, user]);
+
     const handleLogout = () => {
         dispatch(logout());
         navigate('/login');
@@ -24,7 +31,7 @@ const StudentLayout: React.FC = () => {
 
     if (!isAuthenticated || !user) {
         return (
-            <Box className="dashboard-container" minH="100vh" bg="#0F172A">
+            <Box className="dashboard-container" minH="100vh" bg="transparent">
                 <Box w="full" h="full">
                     <Outlet />
                 </Box>
@@ -36,16 +43,16 @@ const StudentLayout: React.FC = () => {
 
     return (
         <WebSocketProvider userId={user.id}>
-            <Box className="dashboard-container" h="100vh" bg="#0F172A" overflow="hidden" display="flex" flexDirection="column">
-                
-                <StudentSidebar 
-                    isCollapsed={isSidebarCollapsed} 
+            <Box className="dashboard-container" h="100vh" bg="transparent" overflow="hidden" display="flex" flexDirection="column">
+
+                <StudentSidebar
+                    isCollapsed={isSidebarCollapsed}
                     onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
                     onLogout={handleLogout}
                 />
 
-                <Box 
-                    flex="1" 
+                <Box
+                    flex="1"
                     transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
                     ml={{ base: 0, lg: sidebarWidth }}
                     display="flex"

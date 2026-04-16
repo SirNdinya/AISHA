@@ -120,14 +120,14 @@ const CompanyStructure: React.FC = () => {
                                 <LuBuilding2 size={24} color="#3182CE" />
                                 <Heading size="md" color="white">Departments</Heading>
                             </HStack>
-                            <Button size="sm" colorPalette="blue" onClick={() => setIsDeptOpen(true)}>
+                            <Button size="sm" colorPalette="indigo" onClick={() => setIsDeptOpen(true)}>
                                 <LuPlus /> Add Dept
                             </Button>
                         </Flex>
 
                         <VStack align="stretch" gap={4}>
                             {departments.length === 0 ? (
-                                <Text color="gray.500">No departments added yet.</Text>
+                                <Text color="slate.500">No departments added yet.</Text>
                             ) : departments.map(dept => (
                                 <Box key={dept.id} p={4} bg="whiteAlpha.100" borderRadius="md">
                                     <Flex justify="space-between" align="center">
@@ -160,14 +160,14 @@ const CompanyStructure: React.FC = () => {
 
                         <VStack align="stretch" gap={4}>
                             {supervisors.length === 0 ? (
-                                <Text color="gray.500">No supervisors assigned yet.</Text>
+                                <Text color="slate.500">No supervisors assigned yet.</Text>
                             ) : supervisors.map(sup => (
                                 <Box key={sup.id} p={4} bg="whiteAlpha.100" borderRadius="md">
                                     <Flex justify="space-between" align="center">
                                         <Box>
                                             <Text fontWeight="bold" color="white">{sup.name}</Text>
                                             <Text fontSize="sm" color="gray.400">{sup.email} • {sup.phone}</Text>
-                                            {sup.department_name && <Badge mt={2} colorPalette="blue">{sup.department_name}</Badge>}
+                                            {sup.department_name && <Badge mt={2} colorPalette="indigo">{sup.department_name}</Badge>}
                                         </Box>
                                         <IconButton aria-label="Delete" color="red.400" onClick={() => handleDeleteSup(sup.id)}>
                                             <LuTrash2 />
@@ -197,7 +197,7 @@ const CompanyStructure: React.FC = () => {
                                 <Text mb={2} color="gray.300">Description</Text>
                                 <Textarea placeholder="Brief description..." color="white" value={newDept.description} onChange={(e: any) => setNewDept({ ...newDept, description: e.target.value })} />
                             </Box>
-                            <Button w="100%" colorPalette="blue" onClick={handleCreateDept} mt={4}>Save Department</Button>
+                            <Button w="100%" colorPalette="indigo" onClick={handleCreateDept} mt={4}>Save Department</Button>
                         </VStack>
                     </Box>
                 </Box>

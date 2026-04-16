@@ -23,7 +23,9 @@ const CompanyService = {
     uploadProfilePicture: async (file: File): Promise<{ profile_picture_url: string }> => {
         const formData = new FormData();
         formData.append('profile_picture', file);
-        const response = await apiClient.post<ApiResponse<{ profile_picture_url: string }>>('/companies/profile/upload', formData);
+        const response = await apiClient.post<ApiResponse<{ profile_picture_url: string }>>('/companies/profile/upload', formData, {
+            headers: { 'Content-Type': undefined }
+        });
         return response.data.data;
     },
 

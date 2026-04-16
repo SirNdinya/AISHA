@@ -79,7 +79,7 @@ const MobileViewToggle: React.FC = () => {
             <IconButton
                 aria-label={isMobileView ? 'Desktop View' : 'Mobile View'}
                 onClick={toggleMobileView}
-                colorPalette={isMobileView ? 'blue' : 'gray'}
+                colorPalette={isMobileView ? 'orange' : 'gray'}
                 variant={isMobileView ? 'solid' : 'ghost'}
                 size="md"
             >

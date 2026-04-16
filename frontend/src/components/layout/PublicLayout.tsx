@@ -5,7 +5,7 @@ import { Link, Outlet } from 'react-router-dom';
 // Public Landing Page Component
 export const LandingPage: React.FC = () => {
     return (
-        <Flex direction="column" minH="100vh" bg="brand.900" color="white" justify="center" align="center" px={4}>
+        <Flex direction="column" minH="100vh" bg="brand.900" color="slate.900" justify="center" align="center" px={4}>
             <VStack gap={8} textAlign="center" maxW="800px">
                 <Box>
                     <Heading size="4xl" mb={4} letterSpacing="tight">AISHA</Heading>
@@ -19,7 +19,7 @@ export const LandingPage: React.FC = () => {
 
                 <Flex gap={6} mt={8}>
                     <Link to="/login">
-                        <Button colorPalette="blue" size="xl" variant="solid" px={12} h="60px" fontSize="lg">
+                        <Button colorPalette="indigo" size="xl" variant="solid" px={12} h="60px" fontSize="lg">
                             Get Started
                         </Button>
                     </Link>

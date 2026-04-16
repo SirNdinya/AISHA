@@ -129,8 +129,8 @@ const SettingsPage: React.FC = () => {
         <Box animation="fadeIn 0.5s ease-out" maxW="1200px" mx="auto">
             <Flex justify="space-between" align="center" mb={10}>
                 <Box>
-                    <Heading size="xl" fontWeight="black" letterSpacing="tight">Account Settings</Heading>
-                    <Text color="gray.500" fontSize="md">Manage your profile, security, and preferences</Text>
+                    <Heading size="xl" fontWeight="black" letterSpacing="tight" color="#F8FAFC">Account Settings</Heading>
+                    <Text color="var(--terminal-accent)" fontSize="md">Manage your profile, security, and preferences</Text>
                 </Box>
             </Flex>
 
@@ -139,16 +139,16 @@ const SettingsPage: React.FC = () => {
                 <GridItem>
                     <Box className="glass-card" p={8} borderRadius="30px" h="100%">
                         <HStack mb={6}>
-                            <Box p={3} borderRadius="15px" bg="rgba(167, 139, 250, 0.1)">
-                                <Icon as={User} boxSize={5} color="#a78bfa" />
+                            <Box p={3} borderRadius="15px" bg="whiteAlpha.100">
+                                <Icon as={User} boxSize={5} color="var(--terminal-accent)" />
                             </Box>
-                            <Heading size="md">Profile Information</Heading>
+                            <Heading size="md" color="#F8FAFC">Profile Information</Heading>
                         </HStack>
 
                         <VStack gap={5} align="stretch">
                             {user?.role === 'INSTITUTION' ? (
                                 <Box position="relative">
-                                    <Text fontSize="xs" color="gray.400" mb={2} fontWeight="bold" letterSpacing="widest">INSTITUTION NAME</Text>
+                                    <Text fontSize="xs" color="whiteAlpha.600" mb={2} fontWeight="bold" letterSpacing="widest">INSTITUTION NAME</Text>
                                     <HStack position="relative">
                                         <Input
                                             value={profileData.institutionName}
@@ -157,15 +157,19 @@ const SettingsPage: React.FC = () => {
                                                 searchUniversities(e.target.value);
                                             }}
                                             onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                                            bg="rgba(255,255,255,0.03)"
-                                            border="1px solid rgba(255,255,255,0.1)"
+                                            bg="whiteAlpha.50"
+                                            border="1px solid"
+                                            borderColor="var(--terminal-border)"
                                             borderRadius="xl"
                                             h={12}
+                                            color="#F8FAFC"
                                             placeholder="Type to search..."
+                                            _placeholder={{ color: "whiteAlpha.400" }}
+                                            _focus={{ bg: "whiteAlpha.100", ring: 1, ringColor: "var(--terminal-accent)" }}
                                         />
                                         {isSearching && (
                                             <Box position="absolute" right={4}>
-                                                <Spinner size="xs" color="purple.500" />
+                                            <Spinner size="xs" color="brand.500" />
                                             </Box>
                                         )}
                                     </HStack>
@@ -198,8 +202,8 @@ const SettingsPage: React.FC = () => {
                                                             w="full"
                                                             textAlign="left"
                                                             p={3}
-                                                            color="gray.700"
-                                                            _hover={{ bg: "purple.50", color: "purple.700" }}
+                                                            color="slate.800"
+                                                            _hover={{ bg: "brand.50", color: "brand.700" }}
                                                             onClick={() => {
                                                                 setProfileData({ ...profileData, institutionName: uni.name });
                                                                 setUniversities([]);
@@ -222,54 +226,61 @@ const SettingsPage: React.FC = () => {
                             ) : (
                                 <>
                                     <Box>
-                                        <Text fontSize="xs" color="gray.400" mb={2} fontWeight="bold" letterSpacing="widest">FIRST NAME</Text>
+                                        <Text fontSize="xs" color="whiteAlpha.600" mb={2} fontWeight="bold" letterSpacing="widest">FIRST NAME</Text>
                                         <Input
                                             value={profileData.firstName}
-                                            onChange={(e) => setProfileData({ ...profileData, firstName: e.target.value })}
-                                            bg="rgba(255,255,255,0.03)"
-                                            border="1px solid rgba(255,255,255,0.1)"
+                                            onChange={(e) => setProfileData({ ...profileData as any, firstName: e.target.value })}
+                                            bg="whiteAlpha.50"
+                                            border="1px solid"
+                                            borderColor="var(--terminal-border)"
                                             borderRadius="xl"
                                             h={12}
+                                            color="#F8FAFC"
+                                            _focus={{ bg: "whiteAlpha.100", ring: 1, ringColor: "var(--terminal-accent)" }}
                                         />
                                     </Box>
 
                                     <Box>
-                                        <Text fontSize="xs" color="gray.400" mb={2} fontWeight="bold" letterSpacing="widest">LAST NAME</Text>
+                                        <Text fontSize="xs" color="whiteAlpha.600" mb={2} fontWeight="bold" letterSpacing="widest">LAST NAME</Text>
                                         <Input
                                             value={profileData.lastName}
-                                            onChange={(e) => setProfileData({ ...profileData, lastName: e.target.value })}
-                                            bg="rgba(255,255,255,0.03)"
-                                            border="1px solid rgba(255,255,255,0.1)"
+                                            onChange={(e) => setProfileData({ ...profileData as any, lastName: e.target.value })}
+                                            bg="whiteAlpha.50"
+                                            border="1px solid"
+                                            borderColor="var(--terminal-border)"
                                             borderRadius="xl"
                                             h={12}
+                                            color="#F8FAFC"
+                                            _focus={{ bg: "whiteAlpha.100", ring: 1, ringColor: "var(--terminal-accent)" }}
                                         />
                                     </Box>
                                 </>
                             )}
 
                             <Box>
-                                <Text fontSize="xs" color="gray.400" mb={2} fontWeight="bold" letterSpacing="widest">EMAIL ADDRESS (READ-ONLY)</Text>
+                                <Text fontSize="xs" color="whiteAlpha.600" mb={2} fontWeight="bold" letterSpacing="widest">EMAIL ADDRESS (READ-ONLY)</Text>
                                 <Flex position="relative">
                                     <Input
                                         value={profileData.email}
                                         readOnly
-                                        bg="rgba(255,255,255,0.01)" // Darker bg for read-only
-                                        border="1px solid rgba(255,255,255,0.05)"
+                                        bg="whiteAlpha.100"
+                                        border="1px solid"
+                                        borderColor="var(--terminal-border)"
                                         borderRadius="xl"
                                         pl={10}
                                         h={12}
-                                        color="gray.500"
+                                        color="whiteAlpha.500"
                                         _disabled={{ opacity: 0.7 }}
                                     />
-                                    <Icon as={Mail} position="absolute" left={3} top="50%" transform="translateY(-50%)" color="gray.600" />
+                                    <Icon as={Mail} position="absolute" left={3} top="50%" transform="translateY(-50%)" color="whiteAlpha.400" />
                                 </Flex>
-                                <Text fontSize="xs" color="gray.500" mt={1}>Contact standard support to change your email</Text>
+                                <Text fontSize="xs" color="whiteAlpha.500" mt={1}>Contact standard support to change your email</Text>
                             </Box>
 
                             <Button
                                 mt={4}
-                                bg="linear-gradient(135deg, #a78bfa 0%, #2dd4bf 100%)"
-                                color="white"
+                                bg="var(--terminal-accent)"
+                                color="black"
                                 h={12}
                                 borderRadius="xl"
                                 onClick={handleProfileUpdate}
@@ -287,56 +298,62 @@ const SettingsPage: React.FC = () => {
                 <GridItem>
                     <Box className="glass-card" p={8} borderRadius="30px" h="100%">
                         <HStack mb={6}>
-                            <Box p={3} borderRadius="15px" bg="rgba(45, 212, 191, 0.1)">
-                                <Icon as={Lock} boxSize={5} color="#2dd4bf" />
+                            <Box p={3} borderRadius="15px" bg="whiteAlpha.100">
+                                <Icon as={Lock} boxSize={5} color="var(--terminal-accent)" />
                             </Box>
-                            <Heading size="md">Security & Password</Heading>
+                            <Heading size="md" color="#F8FAFC">Security & Password</Heading>
                         </HStack>
 
                         <VStack gap={5} align="stretch">
                             <Box>
-                                <Text fontSize="xs" color="gray.400" mb={2} fontWeight="bold" letterSpacing="widest">CURRENT PASSWORD</Text>
+                                <Text fontSize="xs" color="whiteAlpha.600" mb={2} fontWeight="bold" letterSpacing="widest">CURRENT PASSWORD</Text>
                                 <Flex position="relative">
                                     <Input
                                         type={showCurrentPassword ? "text" : "password"}
                                         value={passwordData.currentPassword}
                                         onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                                        bg="rgba(255,255,255,0.03)"
-                                        border="1px solid rgba(255,255,255,0.1)"
+                                        bg="whiteAlpha.50"
+                                        border="1px solid"
+                                        borderColor="var(--terminal-border)"
                                         borderRadius="xl"
                                         h={12}
                                         pr={10}
+                                        color="#F8FAFC"
+                                        _focus={{ bg: "whiteAlpha.100", ring: 1, ringColor: "var(--terminal-accent)" }}
                                     />
                                     <IconButton
-                                        aria-label={showCurrentPassword ? "Hide password" : "Show password"}
-                                        variant="ghost"
-                                        size="sm"
-                                        position="absolute"
-                                        right={2}
-                                        top="50%"
-                                        transform="translateY(-50%)"
-                                        onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                                        color="gray.500"
-                                    >
-                                        <Icon as={showCurrentPassword ? EyeOff : Eye} />
-                                    </IconButton>
+                                    aria-label={showCurrentPassword ? "Hide password" : "Show password"}
+                                    variant="ghost"
+                                    size="sm"
+                                    position="absolute"
+                                    right={2}
+                                    top="50%"
+                                    transform="translateY(-50%)"
+                                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                                    color="whiteAlpha.400"
+                                >
+                                    <Icon as={showCurrentPassword ? EyeOff : Eye} color="var(--terminal-accent)" />
+                                </IconButton>
                                 </Flex>
                             </Box>
 
                             <Separator opacity={0.1} my={2} />
 
                             <Box>
-                                <Text fontSize="xs" color="gray.400" mb={2} fontWeight="bold" letterSpacing="widest">NEW PASSWORD</Text>
+                                <Text fontSize="xs" color="whiteAlpha.600" mb={2} fontWeight="bold" letterSpacing="widest">NEW PASSWORD</Text>
                                 <Flex position="relative">
                                     <Input
                                         type={showNewPassword ? "text" : "password"}
                                         value={passwordData.newPassword}
                                         onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                                        bg="rgba(255,255,255,0.03)"
-                                        border="1px solid rgba(255,255,255,0.1)"
+                                        bg="whiteAlpha.50"
+                                        border="1px solid"
+                                        borderColor="var(--terminal-border)"
                                         borderRadius="xl"
                                         h={12}
                                         pr={10}
+                                        color="#F8FAFC"
+                                        _focus={{ bg: "whiteAlpha.100", ring: 1, ringColor: "var(--terminal-accent)" }}
                                     />
                                     <IconButton
                                         aria-label={showNewPassword ? "Hide password" : "Show password"}
@@ -347,7 +364,8 @@ const SettingsPage: React.FC = () => {
                                         top="50%"
                                         transform="translateY(-50%)"
                                         onClick={() => setShowNewPassword(!showNewPassword)}
-                                        color="gray.500"
+                                        color="whiteAlpha.400"
+                                        _hover={{ color: "var(--terminal-accent)" }}
                                     >
                                         <Icon as={showNewPassword ? EyeOff : Eye} />
                                     </IconButton>
@@ -355,17 +373,20 @@ const SettingsPage: React.FC = () => {
                             </Box>
 
                             <Box>
-                                <Text fontSize="xs" color="gray.400" mb={2} fontWeight="bold" letterSpacing="widest">CONFIRM NEW PASSWORD</Text>
+                                <Text fontSize="xs" color="whiteAlpha.600" mb={2} fontWeight="bold" letterSpacing="widest">CONFIRM NEW PASSWORD</Text>
                                 <Flex position="relative">
                                     <Input
                                         type={showConfirmPassword ? "text" : "password"}
                                         value={passwordData.confirmPassword}
                                         onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                                        bg="rgba(255,255,255,0.03)"
-                                        border="1px solid rgba(255,255,255,0.1)"
+                                        bg="whiteAlpha.50"
+                                        border="1px solid"
+                                        borderColor="var(--terminal-border)"
                                         borderRadius="xl"
                                         h={12}
                                         pr={10}
+                                        color="#F8FAFC"
+                                        _focus={{ bg: "whiteAlpha.100", ring: 1, ringColor: "var(--terminal-accent)" }}
                                     />
                                     <IconButton
                                         aria-label={showConfirmPassword ? "Hide password" : "Show password"}
@@ -376,7 +397,8 @@ const SettingsPage: React.FC = () => {
                                         top="50%"
                                         transform="translateY(-50%)"
                                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                        color="gray.500"
+                                        color="whiteAlpha.400"
+                                        _hover={{ color: "var(--terminal-accent)" }}
                                     >
                                         <Icon as={showConfirmPassword ? EyeOff : Eye} />
                                     </IconButton>
@@ -384,15 +406,13 @@ const SettingsPage: React.FC = () => {
                             </Box>
 
                             <Button
-                                mt={4}
-                                variant="outline"
-                                border="1px solid rgba(45, 212, 191, 0.5)"
-                                color="white"
+                                variant="solid"
+                                colorPalette="teal"
                                 h={12}
                                 borderRadius="xl"
                                 onClick={handlePasswordUpdate}
                                 loading={isLoading}
-                                _hover={{ bg: "rgba(45, 212, 191, 0.1)", transform: "translateY(-2px)" }}
+                                _hover={{ transform: "translateY(-2px)" }}
                                 transition="all 0.2s"
                             >
                                 Update Password

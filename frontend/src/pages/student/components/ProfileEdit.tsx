@@ -123,12 +123,12 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({ student, onCancel }) => {
         color: "white",
         fontSize: "sm",
         fontWeight: "mono",
-        _focus: { borderColor: "cyan.400", bg: "whiteAlpha.100" }
+        _focus: { borderColor: "indigo.400", bg: "whiteAlpha.100" }
     };
 
     const labelStyles = {
         fontSize: "10px",
-        color: "cyan.400",
+        color: "indigo.400",
         textTransform: "uppercase",
         fontWeight: "bold",
         mb: 1
@@ -141,7 +141,7 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({ student, onCancel }) => {
                     <Heading size="md" color="white" letterSpacing="widest" textTransform="uppercase">Parameter Configuration</Heading>
                     <ChakraText color="whiteAlpha.600" fontSize="xs" fontWeight="mono">Modifying core identity nodes and expertise clusters.</ChakraText>
                 </VStack>
-                <Icon as={LuTerminal} size="xl" color="cyan.400" />
+                <Icon as={LuTerminal} size="xl" color="indigo.400" />
             </HStack>
 
             <VStack gap={6} align="stretch">
@@ -201,30 +201,30 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({ student, onCancel }) => {
                             <Avatar
                                 size="lg"
                                 border="2px solid"
-                                borderColor="cyan.400"
+                                borderColor="indigo.400"
                                 src={getMediaUrl(student.profile_picture_url)}
                                 name={`${student.first_name} ${student.last_name}`}
                             />
                             <VStack align="start" gap={0}>
                                 <Text fontSize="10px" color="whiteAlpha.600" fontWeight="bold">CURRENT MATRIX</Text>
-                                <Text fontSize="9px" color="cyan.400" fontWeight="mono">ACTIVE AVATAR LAYER</Text>
+                                <Text fontSize="9px" color="indigo.400" fontWeight="mono">ACTIVE AVATAR LAYER</Text>
                             </VStack>
                         </HStack>
                         <Flex
                             border="1px dashed"
-                            borderColor="cyan.900"
-                            bg="cyan.900/10"
+                            borderColor="indigo.900"
+                            bg="indigo.900/10"
                             p={4}
                             borderRadius="lg"
                             direction="column"
                             align="center"
                             gap={2}
                             cursor="pointer"
-                            _hover={{ bg: "cyan.900/20", borderColor: "cyan.400" }}
+                            _hover={{ bg: "indigo.900/20", borderColor: "indigo.400" }}
                             onClick={() => document.getElementById('profile-upload')?.click()}
                         >
-                            <Icon as={LuUpload} color="cyan.400" />
-                            <ChakraText fontSize="10px" color="cyan.200" fontWeight="bold">UPLOAD AVATAR LAYER</ChakraText>
+                            <Icon as={LuUpload} color="indigo.400" />
+                            <ChakraText fontSize="10px" color="indigo.200" fontWeight="bold">UPLOAD AVATAR LAYER</ChakraText>
                             <Input id="profile-upload" type="file" accept="image/*" display="none" onChange={(e) => {
                                 const file = e.target.files?.[0];
                                 if (file) {
@@ -256,14 +256,14 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({ student, onCancel }) => {
                                     </Box>
                                     <VStack maxW="md" w="full" gap={4}>
                                         <HStack w="full" gap={4}>
-                                            <Icon as={LuSearch} color="cyan.400" />
+                                            <Icon as={LuSearch} color="indigo.400" />
                                             <Slider.Root
                                                 min={1}
                                                 max={3}
                                                 step={0.1}
                                                 value={[zoom]}
                                                 onValueChange={(e) => setZoom(e.value[0])}
-                                                colorPalette="cyan"
+                                                colorPalette="indigo"
                                             >
                                                 <Slider.Track bg="whiteAlpha.200">
                                                     <Slider.Range />
@@ -273,7 +273,7 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({ student, onCancel }) => {
                                         </HStack>
                                         <HStack gap={4}>
                                             <Button variant="ghost" color="white" onClick={() => setIsCropping(false)}>CANCEL</Button>
-                                            <Button colorPalette="cyan" loading={isUploading} onClick={handleUploadCrop}>INITIALIZE SYNC</Button>
+                                            <Button colorPalette="indigo" loading={isUploading} onClick={handleUploadCrop}>INITIALIZE SYNC</Button>
                                         </HStack>
                                     </VStack>
                                 </VStack>
@@ -288,7 +288,7 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({ student, onCancel }) => {
                         ABORT CHANGES
                     </Button>
                     <Button
-                        colorPalette="cyan"
+                        colorPalette="indigo"
                         variant="solid"
                         loading={isLoading}
                         onClick={() => setIsConfirmOpen(true)}
@@ -304,7 +304,7 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({ student, onCancel }) => {
             <DialogRoot open={isConfirmOpen} onOpenChange={(details) => setIsConfirmOpen(details.open)} placement="center">
                 <DialogBackdrop />
                 <DialogPositioner>
-                    <DialogContent bg="gray.900" border="1px solid" borderColor="cyan.800" color="white" boxShadow="0 0 30px rgba(0, 200, 255, 0.15)">
+                    <DialogContent bg="gray.900" border="1px solid" borderColor="indigo.800" color="white" boxShadow="0 0 30px rgba(0, 200, 255, 0.15)">
                         <DialogHeader>
                             <DialogTitle color="white" textTransform="uppercase" letterSpacing="widest" fontSize="lg">CONFIRM PARAMETER UPDATE</DialogTitle>
                         </DialogHeader>
@@ -317,7 +317,7 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({ student, onCancel }) => {
                             <DialogActionTrigger asChild>
                                 <Button variant="ghost" color="whiteAlpha.700" onClick={() => setIsConfirmOpen(false)} _hover={{color: "white"}}>REVIEW</Button>
                             </DialogActionTrigger>
-                            <Button colorPalette="cyan" loading={isLoading} onClick={() => { setIsConfirmOpen(false); handleSubmit(); }}>CONTINUE</Button>
+                            <Button colorPalette="indigo" loading={isLoading} onClick={() => { setIsConfirmOpen(false); handleSubmit(); }}>CONTINUE</Button>
                         </DialogFooter>
                     </DialogContent>
                 </DialogPositioner>

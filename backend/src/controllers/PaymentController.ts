@@ -17,6 +17,14 @@ export class PaymentController extends BaseController {
             const userId = (req as any).user?.id;
             const { phoneNumber, amount, opportunityId, type } = req.body;
 
+            const phoneRegex = /^0[71]\d{8}$/;
+            if (!phoneNumber || !phoneRegex.test(phoneNumber)) {
+                return res.status(400).json({
+                    status: 'error',
+                    message: 'Invalid phone number. Must start with 07 or 01 and be 10 digits.'
+                });
+            }
+
             const transactionType = type || 'INSURANCE';
 
             // Get Student ID
@@ -121,6 +129,41 @@ export class PaymentController extends BaseController {
             );
 
             res.status(200).json({ status: 'success', data: result.rows });
+        } catch (error) {
+            next(error);
+        }
+    };
+
+    getCompanyTransactions = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const userId = (req as any).user?.id;
+
+            // Get Company ID
+            const companyRes = await pool.query('SELECT id FROM companies WHERE user_id = $1', [userId]);
+            if (companyRes.rows.length === 0) return res.status(404).json({ message: 'Company not found' });
+            const companyId = companyRes.rows[0].id;
+
+            // Fetch payments for opportunities belonging to this company
+            const query = `
+                SELECT 
+                    p.*, 
+                    s.first_name, 
+                    s.last_name, 
+                    o.title as opportunity_title
+                FROM payments p
+                JOIN students s ON p.student_id = s.id
+                JOIN opportunities o ON p.opportunity_id = o.id
+                WHERE o.company_id = $1
+                ORDER BY p.transaction_date DESC
+            `;
+
+            const result = await pool.query(query, [companyId]);
+
+            res.status(200).json({
+                status: 'success',
+                data: result.rows
+            });
+
         } catch (error) {
             next(error);
         }

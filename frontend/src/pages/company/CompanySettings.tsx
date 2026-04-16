@@ -12,7 +12,7 @@ import { Toaster, toaster } from '../../components/ui/toaster';
 import CompanyService from '../../services/companyService';
 
 // Helper: resolve relative backend media URLs (e.g. /uploads/...) to absolute
-const BACKEND_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api')
+const BACKEND_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api')
     .replace(/\/api(.*)?$/, '');
 const getMediaUrl = (url?: string | null): string => {
     if (!url) return '';
@@ -31,7 +31,9 @@ const CompanySettings: React.FC = () => {
         website: '',
         profile_picture_url: '',
         acceptance_letter_requirements: '',
-        description: ''
+        description: '',
+        receiving_phone_number: '',
+        representative_phone: ''
     });
 
     const [isUploading, setIsUploading] = useState(false);
@@ -49,7 +51,9 @@ const CompanySettings: React.FC = () => {
                 website: profile.website || '',
                 profile_picture_url: profile.profile_picture_url || '',
                 acceptance_letter_requirements: profile.acceptance_letter_requirements || '',
-                description: profile.description || ''
+                description: profile.description || '',
+                receiving_phone_number: profile.receiving_phone_number || '',
+                representative_phone: profile.representative_phone || ''
             });
         }
     }, [profile]);
@@ -108,57 +112,87 @@ const CompanySettings: React.FC = () => {
     const displayImageUrl = localPreviewUrl || getMediaUrl(formData.profile_picture_url) || `https://logo.clearbit.com/${formData.name?.toLowerCase().replace(/\s+/g, '')}.com`;
 
     return (
-        <Box animation="fadeIn 0.5s ease-out">
-            <Heading mb={1} color="white">Company Settings</Heading>
-            <Text color="gray.400" mb={8}>Manage your company profile and information students see during placement.</Text>
+        <Box bg="var(--terminal-bg)" minH="100vh" p={8} animation="fadeIn 0.5s ease-out">
+            <Heading mb={1} color="#F8FAFC">Company Settings</Heading>
+            <Text color="var(--terminal-accent)" mb={8}>Manage your company profile and information students see during placement.</Text>
 
             <Grid templateColumns={{ base: "1fr", lg: "1.5fr 1fr" }} gap={8}>
                 <VStack align="stretch" gap={6}>
-                    <Card.Root bg="whiteAlpha.50" borderColor="whiteAlpha.100" borderRadius="2xl">
+                    <Card.Root bg="var(--terminal-card)" borderColor="var(--terminal-border)" borderRadius="2xl">
                         <Card.Body p={8}>
                             <VStack align="stretch" gap={6}>
-                                <HStack borderBottom="1px solid" borderColor="whiteAlpha.100" pb={4} justify="space-between">
+                                <HStack borderBottom="1px solid" borderColor="var(--terminal-border)" pb={4} justify="space-between">
                                     <HStack>
-                                        <Icon as={LuBuilding2} color="blue.400" />
-                                        <Heading size="md" color="white">General Information</Heading>
+                                        <Icon as={LuBuilding2} color="var(--terminal-accent)" />
+                                        <Heading size="md" color="#F8FAFC">General Information</Heading>
                                     </HStack>
                                 </HStack>
 
                                 <Grid templateColumns="1fr 1fr" gap={6}>
                                     <Box gridColumn="span 2">
-                                        <Text mb={2} fontSize="sm" color="gray.400">Company Name</Text>
+                                        <Text mb={2} fontSize="sm" color="whiteAlpha.600">Company Name</Text>
                                         <Input 
                                             value={formData.name} 
-                                            color="white" 
+                                            bg="whiteAlpha.50"
+                                            color="whiteAlpha.900" 
+                                            borderColor="var(--terminal-border)"
                                             onChange={(e) => setFormData({...formData, name: e.target.value})} 
                                             placeholder="Enter company name"
                                         />
                                     </Box>
                                     <Box>
-                                        <Text mb={2} fontSize="sm" color="gray.400">Industry</Text>
+                                        <Text mb={2} fontSize="sm" color="whiteAlpha.600">Industry</Text>
                                         <Input 
                                             value={formData.industry} 
-                                            color="white" 
+                                            bg="whiteAlpha.50"
+                                            color="whiteAlpha.900" 
+                                            borderColor="var(--terminal-border)"
                                             onChange={(e) => setFormData({...formData, industry: e.target.value})} 
                                             placeholder="e.g. Technology, Finance"
                                         />
                                     </Box>
                                     <Box>
-                                        <Text mb={2} fontSize="sm" color="gray.400">Website</Text>
+                                        <Text mb={2} fontSize="sm" color="whiteAlpha.600">Website</Text>
                                         <Input 
                                             value={formData.website} 
-                                            color="white" 
+                                            bg="whiteAlpha.50"
+                                            color="whiteAlpha.900" 
+                                            borderColor="var(--terminal-border)"
                                             onChange={(e) => setFormData({...formData, website: e.target.value})} 
                                             placeholder="https://www.example.com" 
+                                        />
+                                    </Box>
+                                    <Box>
+                                        <Text mb={2} fontSize="sm" color="whiteAlpha.600">Receiving Phone (M-Pesa)</Text>
+                                        <Input 
+                                            value={formData.receiving_phone_number} 
+                                            bg="whiteAlpha.50"
+                                            color="whiteAlpha.900" 
+                                            borderColor="var(--terminal-border)"
+                                            onChange={(e) => setFormData({...formData, receiving_phone_number: e.target.value})} 
+                                            placeholder="0712345678" 
+                                        />
+                                    </Box>
+                                    <Box>
+                                        <Text mb={2} fontSize="sm" color="whiteAlpha.600">Representative Phone</Text>
+                                        <Input 
+                                            value={formData.representative_phone} 
+                                            bg="whiteAlpha.50"
+                                            color="whiteAlpha.900" 
+                                            borderColor="var(--terminal-border)"
+                                            onChange={(e) => setFormData({...formData, representative_phone: e.target.value})} 
+                                            placeholder="0712345678" 
                                         />
                                     </Box>
                                 </Grid>
 
                                 <Box>
-                                    <Text mb={2} fontSize="sm" color="gray.400">Description</Text>
+                                    <Text mb={2} fontSize="sm" color="whiteAlpha.600">Description</Text>
                                     <Textarea 
                                         rows={4} 
-                                        color="white" 
+                                        bg="whiteAlpha.50"
+                                        color="whiteAlpha.900" 
+                                        borderColor="var(--terminal-border)"
                                         value={formData.description} 
                                         onChange={(e) => setFormData({...formData, description: e.target.value})} 
                                         placeholder="Tell students about your company..."
@@ -168,30 +202,32 @@ const CompanySettings: React.FC = () => {
                         </Card.Body>
                     </Card.Root>
 
-                    <Card.Root bg="whiteAlpha.50" borderColor="whiteAlpha.100" borderRadius="2xl">
+                    <Card.Root bg="var(--terminal-card)" borderColor="var(--terminal-border)" borderRadius="2xl">
                         <Card.Body p={8}>
                             <VStack align="stretch" gap={6}>
-                                <HStack borderBottom="1px solid" borderColor="whiteAlpha.100" pb={4} justify="space-between">
+                                <HStack borderBottom="1px solid" borderColor="var(--terminal-border)" pb={4} justify="space-between">
                                     <HStack>
-                                        <Icon as={LuFileText} color="purple.400" />
-                                        <Heading size="md" color="white">Acceptance Letter Details</Heading>
+                                        <Icon as={LuFileText} color="purple.300" />
+                                        <Heading size="md" color="#F8FAFC">Acceptance Letter Details</Heading>
                                     </HStack>
                                     <Icon as={LuSparkles} color="yellow.400" />
                                 </HStack>
 
                                 <Box>
-                                    <Text mb={2} fontSize="sm" color="gray.400">Specific Requirements & Instructions</Text>
-                                    <Box p={4} bg="whiteAlpha.50" borderRadius="xl" mb={4} border="1px solid" borderColor="whiteAlpha.100">
+                                    <Text mb={2} fontSize="sm" color="whiteAlpha.600">Specific Requirements & Instructions</Text>
+                                    <Box p={4} bg="whiteAlpha.50" borderRadius="xl" mb={4} border="1px solid" borderColor="var(--terminal-border)">
                                         <HStack align="start" gap={3}>
-                                            <Icon as={LuInfo} color="blue.300" mt={1} />
-                                            <Text fontSize="xs" color="gray.300">
+                                            <Icon as={LuInfo} color="var(--terminal-accent)" mt={1} />
+                                            <Text fontSize="xs" color="whiteAlpha.800">
                                                 Accepted students will receive a professional PDF letter. Specify any unique requirements or induction details below.
                                             </Text>
                                         </HStack>
                                     </Box>
                                     <Textarea 
                                         rows={6} 
-                                        color="white" 
+                                        bg="whiteAlpha.50"
+                                        color="whiteAlpha.900" 
+                                        borderColor="var(--terminal-border)"
                                         value={formData.acceptance_letter_requirements} 
                                         onChange={(e) => setFormData({...formData, acceptance_letter_requirements: e.target.value})} 
                                         placeholder="e.g. Carry a valid ID, report at 8 AM, etc." 
@@ -205,26 +241,28 @@ const CompanySettings: React.FC = () => {
 
                     <Button 
                         size="lg" 
-                        colorPalette="blue" 
+                        bg="var(--terminal-accent)"
+                        color="black"
                         onClick={handleSave} 
                         fontWeight="bold"
+                        _hover={{ bg: "var(--terminal-accent)", opacity: 0.9 }}
                     >
                         <LuSave /> Save Changes
                     </Button>
                 </VStack>
 
                 <VStack align="stretch" gap={6}>
-                    <Card.Root bg="whiteAlpha.50" borderColor="whiteAlpha.100" borderRadius="2xl">
+                    <Card.Root bg="var(--terminal-card)" borderColor="var(--terminal-border)" borderRadius="2xl">
                         <Card.Body p={8} textAlign="center">
                             <VStack gap={6}>
-                                <Heading size="sm" color="white" alignSelf="start">Company Logo</Heading>
+                                <Heading size="sm" color="#F8FAFC" alignSelf="start">Company Logo</Heading>
                                 <Circle 
                                     size="200px" 
                                     bg="white" 
                                     border="4px solid" 
-                                    borderColor={isUploading ? "yellow.400" : "blue.500"} 
+                                    borderColor={isUploading ? "yellow.400" : "var(--terminal-accent)"} 
                                     overflow="hidden"
-                                    boxShadow="0 0 40px rgba(49, 130, 206, 0.2)"
+                                    boxShadow="0 0 40px rgba(56, 189, 248, 0.2)"
                                     position="relative"
                                 >
                                     <Image 
@@ -243,7 +281,8 @@ const CompanySettings: React.FC = () => {
                                 
                                 <VStack w="full" gap={2}>
                                     <Button 
-                                        colorPalette="blue" 
+                                        bg="var(--terminal-accent)"
+                                        color="black"
                                         w="full" 
                                         size="md" 
                                         onClick={() => fileInputRef.current?.click()}
@@ -257,14 +296,14 @@ const CompanySettings: React.FC = () => {
                                         accept="image/*" 
                                         onChange={handleFileUpload} 
                                     />
-                                    <Text fontSize="10px" color="gray.500">Max size: 20MB. Format: PNG or JPG.</Text>
+                                    <Text fontSize="10px" color="whiteAlpha.500">Max size: 20MB. Format: PNG or JPG.</Text>
                                 </VStack>
                             </VStack>
                         </Card.Body>
                     </Card.Root>
 
-                    <Box p={6} border="1px solid" borderColor="whiteAlpha.100" bg="whiteAlpha.50" borderRadius="2xl">
-                        <Text fontSize="xs" color="gray.400" lineHeight="tall">
+                    <Box p={6} border="1px solid" borderColor="var(--terminal-border)" bg="whiteAlpha.50" borderRadius="2xl">
+                        <Text fontSize="xs" color="whiteAlpha.800" lineHeight="tall">
                             Your logo and requirements will be included in the official acceptance letter generated for students.
                         </Text>
                     </Box>

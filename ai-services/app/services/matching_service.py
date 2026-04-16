@@ -131,30 +131,28 @@ class MatchingService:
         grade_points = {"A": 1.0, "B": 0.8, "C": 0.6, "D": 0.4, "E": 0.2, "F": 0.0}
         unit_names = [f"{r.unit_name} ({r.grade})" for r in records]
         prompt = f"""
-        [AI_MATCH_ENGINE_V7]
-        Target Role: {opp.title}
-        Target Company: {opp.company.name if opp.company else 'Target Corp'}
-        Job Requirements: {opp.requirements}
+        [AI_MATCH_ENGINE_V9]
+        Role: {opp.title} at {opp.company.name if opp.company else 'Target Corp'}
+        Requirements: {opp.requirements}
         
-        STUDENT_PROFILE_NODES:
-        - Career Path: {student.career_path or 'General'}
+        YOUR_PROFILE:
+        - Path: {student.career_path or 'General'}
         - Interests: {", ".join(student.interests) if student.interests else 'None'}
-        - Current Skills: {", ".join(student.skills) if student.skills else 'None'}
-        - Preferred Locations: {", ".join(student.preferred_locations) if student.preferred_locations else 'None'}
-        - Academic Performance (Transcript): {", ".join(unit_names) if unit_names else "None"}
+        - Skills: {", ".join(student.skills) if student.skills else 'None'}
+        - Grades: {", ".join(unit_names) if unit_names else "None"}
         
-        TASK: Synthesize a Multi-Factor Alignment Score (0-1) and Match Reasoning.
+        TASK: Synthesize a personalized Match Reasoning (1 sentence).
         
-        CRITERIA WEIGHTING:
-        1. Academic/Transcript Rigor (0.35)
-        2. Skill-to-Requirement Mapping (0.25)
-        3. Career Path/Interest Convergence (0.30)
-        4. Location & Strategic Fit (0.10)
+        RULES:
+        1. Address the user as 'You' (e.g., 'You possess...', 'Your background in...').
+        2. DO NOT use generic phrases like 'The candidate demonstrates' or 'The student exhibits'.
+        3. FOCUS on the intersection between the SPECIFIC role requirements and your unique strengths.
+        4. BE UNIQUE: Avoid repeating the same summary across different roles.
         
-        **REQUIRED CONTENT:**
-        - reasoning: Exactly ONE sentence explaining the structural fit based on the above criteria.
-        - relevance_score: Float between 0 and 1.
-        - top_relevant_units: List of 2-3 most critical units for this specific role.
+        **RESPONSE_STRUCTURE:**
+        - reasoning: Distinctive sentence addressing the user directly.
+        - relevance_score: Float (0-1).
+        - top_relevant_units: List of 2 critical units from the transcript.
         
         Respond ONLY with valid JSON.
         """
@@ -369,12 +367,12 @@ class MatchingService:
             if opp_id_str in academic_results_map:
                 res = academic_results_map[opp_id_str]
                 academic_score = float(res.get("score", 0.5))
-                reasoning = res.get("reasoning", "Strong alignment detected.")
+                reasoning = res.get("reasoning", "You have a strong alignment with this role.")
                 final_score = (w["academic"] * academic_score) + cand["heuristic_score"]
             else:
                 academic_score = 0.5
                 final_score = (w["academic"] * academic_score) + cand["heuristic_score"]
-                reasoning = f"Strategic placement recommendation for {cand['opp'].title} based on skill and interest trajectory."
+                reasoning = f"Your career trajectory in {cand['opp'].title} shows significant promise based on your current skill set."
 
             matches.append({
                 "opportunity_id": opp_id_str,
@@ -402,7 +400,7 @@ class MatchingService:
                 "company_id": str(cand["opp"].company_id),
                 "company_name": cand["opp"].company.name if cand["opp"].company else "Unknown",
                 "match_score": round(final_score * 100, 2),
-                "reasoning": f"Algorithmic match identified for {cand['opp'].title} based on structural proximity.",
+                "reasoning": f"You show a high structural alignment for the {cand['opp'].title} role based on your unique profile proximity.",
                 "match_details": {"method": "autonomous_fast_heuristic"}
             })
 
@@ -413,7 +411,7 @@ class MatchingService:
         top_match = matches[0]
         if "Algorithmic match" in top_match["reasoning"] or "recommendation for" in top_match["reasoning"]:
              # Quick cleanup for top match reasoning if it somehow missed the LLM tier
-             prompt = f"Role: {top_match['job_title']} Reqs: {top_match['reasoning']} TASK: Synthesize a professional ONE sentence match justification."
+             prompt = f"Role: {top_match['job_title']} Reqs: {top_match['reasoning']} TASK: Synthesize a unique, professional ONE sentence match justification addressing the user as 'You'."
              try:
                  res = await llm_service.analyze_structured(prompt, {"reasoning": ""})
                  top_match["reasoning"] = res.get("reasoning", top_match["reasoning"])

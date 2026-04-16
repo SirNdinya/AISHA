@@ -27,7 +27,7 @@ const AdminLayout: React.FC = () => {
 
     return (
         <Flex direction="column" minH="100vh">
-            <Box as="nav" bg="gray.800" color="white" px={8} py={4} shadow="md">
+            <Box as="nav" bg="var(--terminal-card)" px={8} py={4} shadow="md" borderBottom="1px solid" borderColor="var(--terminal-border)">
                 <Flex justify="space-between" align="center">
                     <Heading size="md">SAPS Admin</Heading>
                     <HStack gap={6}>
@@ -40,7 +40,7 @@ const AdminLayout: React.FC = () => {
                     </HStack>
                 </Flex>
             </Box>
-            <Box flex="1" bg="gray.900" color="white" p={6}>
+            <Box flex="1" bg="transparent" p={6}>
                 <Outlet />
             </Box>
         </Flex>

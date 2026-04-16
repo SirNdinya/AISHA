@@ -4,6 +4,7 @@
   --terminal-card: #1E293B;
   --terminal-border: #334155;
   --terminal-accent: #38BDF8;
+  --terminal-accent-bright: #7DD3FC;
 }
 
 .dashboard-container {
@@ -20,7 +21,8 @@
 }
 
 .terminal-text-muted {
-  color: #94A3B8;
+  color: #F8FAFC;
+  font-weight: 700;
 }
 
 .terminal-accent-text {

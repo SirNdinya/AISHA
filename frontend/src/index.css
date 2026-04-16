@@ -1,11 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
-@import './styles/AIDashboardTheme.css';
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
+  --terminal-bg: #0F172A;
+  --terminal-card: #1E293B;
+  --terminal-border: #334155;
+  --terminal-accent: #38BDF8;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -18,4 +20,6 @@ body {
   min-height: 100vh;
   font-size: 16px;
   font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--terminal-bg);
+  color: #F8FAFC;
 }

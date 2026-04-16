@@ -91,7 +91,7 @@ const BroadcastManager: React.FC = () => {
                     />
                     <HStack gap={4} w="full">
                         <Box flex={1}>
-                            <Text fontSize="xs" color="gray.500" mb={1}>BROADCAST TYPE</Text>
+                            <Text fontSize="xs" color="slate.500" mb={1}>BROADCAST TYPE</Text>
                             <select
                                 style={{
                                     width: '100%',
@@ -114,7 +114,7 @@ const BroadcastManager: React.FC = () => {
                         </Box>
 
                         <Box flex={1}>
-                            <Text fontSize="xs" color="gray.500" mb={1}>TARGET SYSTEM</Text>
+                            <Text fontSize="xs" color="slate.500" mb={1}>TARGET SYSTEM</Text>
                             <select
                                 style={{
                                     width: '100%',
@@ -174,7 +174,7 @@ const BroadcastManager: React.FC = () => {
                         ) : broadcasts.map(b => (
                             <Table.Row key={b.id} _hover={{ bg: 'whiteAlpha.50' }}>
                                 <Table.Cell>
-                                    <Badge colorPalette={b.type === 'MAINTENANCE' ? 'orange' : b.type === 'UPDATE' ? 'blue' : 'gray'}>
+                                    <Badge colorPalette={b.type === 'MAINTENANCE' ? 'orange' : b.type === 'UPDATE' ? 'orange' : 'gray'}>
                                         {b.type}
                                     </Badge>
                                 </Table.Cell>

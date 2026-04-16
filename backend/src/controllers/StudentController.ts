@@ -350,6 +350,53 @@ export class StudentController extends BaseController {
                     await pool.query('UPDATE students SET ai_match_cache = $1, last_sync_at = NOW() WHERE id = $2', [JSON.stringify(aiMatches), student.id]);
                 }
             }
+            
+            // Automatically map to placement if the student is querying their matches and doesn't have an active one
+            if (aiMatches.length > 0) {
+                const bestMatch = aiMatches.reduce((prev: any, current: any) => {
+                    const prevScore = prev.score || prev.match_score || 0;
+                    const currScore = current.score || current.match_score || 0;
+                    return (prevScore > currScore) ? prev : current;
+                });
+                
+                if (bestMatch && (bestMatch.opportunity_id || bestMatch.id)) {
+                    const oppId = bestMatch.opportunity_id || bestMatch.id;
+                    const totalScore = bestMatch.score || bestMatch.match_score || 0;
+                    const reasoning = bestMatch.reasoning || "Strong neural alignment with your trajectory.";
+                    
+                    const checkRes = await pool.query('SELECT id FROM applications WHERE student_id = $1 AND opportunity_id = $2 AND status = \'ACCEPTED\'', [student.id, oppId]);
+                    if (checkRes.rows.length === 0) {
+                        try {
+                            // Atomic Purge - Delete all existing history to guarantee clean state and fresh placement
+                            await pool.query('DELETE FROM applications WHERE student_id = $1', [student.id]);
+                            
+                            const insertQuery = `
+                                INSERT INTO applications (student_id, opportunity_id, match_score, match_reason, status)
+                                VALUES ($1, $2, $3, $4, 'ACCEPTED')
+                                RETURNING id
+                            `;
+                            const appRes = await pool.query(insertQuery, [student.id, oppId, totalScore, reasoning]);
+                            const newAppId = appRes.rows[0].id;
+                            
+                            const oppQuery = await pool.query('SELECT company_id FROM opportunities WHERE id = $1', [oppId]);
+                            if (oppQuery.rows.length > 0) {
+                                const compId = oppQuery.rows[0].company_id;
+                                await pool.query(`
+                                    INSERT INTO placements (application_id, student_id, company_id, start_date, end_date, status)
+                                    VALUES ($1, $2, $3, NOW(), NOW() + INTERVAL '3 months', 'ACTIVE')
+                                `, [newAppId, student.id, compId]);
+                            }
+                            
+                            // Immediately re-fetch applications so the frontend correctly reads the status as ACCEPTED
+                            const newAppsRes = await pool.query(appsQuery, [student.id]);
+                            applications.length = 0;
+                            applications.push(...newAppsRes.rows);
+                        } catch (err) {
+                            console.error('[StudentController] Auto-Placement Fallback Error:', err);
+                        }
+                    }
+                }
+            }
 
             // 3. Merge & Prioritize (User logic: Latest match overwrites past ones)
             // Map applications for easy lookup
@@ -555,6 +602,16 @@ export class StudentController extends BaseController {
             `, [studentId]);
 
             const records = recordsRes.rows;
+            const analysis = student.academic_analysis;
+
+            let isInvalid = false;
+            if (analysis) {
+                if (analysis.status === 'RETRY_REQUIRED') isInvalid = true;
+                if (analysis.insights && analysis.insights.toLowerCase().includes('string')) isInvalid = true;
+                if (analysis.recommendation && analysis.recommendation.toLowerCase().includes('string')) isInvalid = true;
+            }
+
+            const cleanedAnalysis = isInvalid ? null : analysis;
 
             res.status(200).json({
                 status: 'success',
@@ -566,7 +623,7 @@ export class StudentController extends BaseController {
                         institution_name: student.institution_name
                     },
                     records,
-                    analysis: student.academic_analysis
+                    analysis: cleanedAnalysis
                 }
             });
         } catch (error) {
@@ -681,7 +738,7 @@ export class StudentController extends BaseController {
 
             res.status(200).json({
                 status: 'success',
-                message: 'Profile synchronized successfully with institutional records. Neural placement matching initiated.',
+                message: 'Profile updated successfully. Finding your best placement matches now.',
                 data: profileRes.rows[0]
             });
 

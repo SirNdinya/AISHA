@@ -41,7 +41,7 @@ const StudentHeader: React.FC = () => {
 
     return (
         <>
-            <Box bg="transparent" borderBottom="1px solid" borderColor="whiteAlpha.100" py={1} mb={1} pos="sticky" top={0} zIndex={1100} backdropFilter="blur(20px)">
+            <Box bg="transparent" borderBottom="1px solid" borderColor="gray.200" py={1} mb={1} pos="sticky" top={0} zIndex={1100} backdropFilter="blur(20px)">
                 <Container maxW="container.xl">
                     <Flex justify="space-between" align="flex-end">
                         <VStack align="start" gap={4}>
@@ -55,7 +55,7 @@ const StudentHeader: React.FC = () => {
                                 <Avatar
                                     size="md"
                                     border="2px solid"
-                                    borderColor={error ? "red.500" : "cyan.400"}
+                                    borderColor={error ? "red.500" : "indigo.400"}
                                     src={photoUrl}
                                     name={`${profile?.first_name || ''} ${profile?.last_name || ''}`}
                                     transition="all 0.3s"
@@ -85,7 +85,7 @@ const StudentHeader: React.FC = () => {
 
                             <VStack align="start" gap={1}>
                                 <HStack gap={3}>
-                                    <Heading size="md" color="white" fontWeight="black" letterSpacing="tight">
+                                    <Heading size="md" color="#F8FAFC" fontWeight="black" letterSpacing="tight">
                                         {greeting}, {profile?.last_name || '...'}
                                     </Heading>
                                     {error && <Badge size="sm" colorPalette="red" variant="subtle" fontWeight="bold">SYNC ERROR</Badge>}
@@ -101,18 +101,18 @@ const StudentHeader: React.FC = () => {
                                     as={LuSettings}
                                     cursor="pointer"
                                     color="whiteAlpha.600"
-                                    _hover={{ color: "cyan.400" }}
+                                    _hover={{ color: "indigo.400" }}
                                     onClick={() => navigate('/student/settings')}
                                     boxSize={5}
                                 />
                                 <Button 
                                     variant="outline" 
-                                    colorPalette="cyan" 
+                                    colorPalette="indigo" 
                                     size="sm" 
                                     onClick={handleLogout} 
                                     border="1px solid" 
-                                    borderColor="cyan.900" 
-                                    _hover={{ bg: "cyan.900", color: "white" }}
+                                    borderColor="indigo.900" 
+                                    _hover={{ bg: "indigo.900", color: "white" }}
                                     display={{ base: "flex", lg: "none" }}
                                 >
                                     SIGN OUT
@@ -151,7 +151,7 @@ const StudentHeader: React.FC = () => {
                         onClick={(e) => { e.stopPropagation(); setIsPhotoOpen(false); }}
                         zIndex={1}
                     >
-                        <LuX size={20} color="white" />
+                        <LuX size={20} color="#F8FAFC" />
                     </Box>
 
                     {/* Photo */}
@@ -163,7 +163,7 @@ const StudentHeader: React.FC = () => {
                         objectFit="contain"
                         borderRadius="xl"
                         border="2px solid"
-                        borderColor="cyan.400"
+                        borderColor="indigo.400"
                         boxShadow="0 0 60px rgba(0, 200, 255, 0.2)"
                         onClick={(e) => e.stopPropagation()}
                         style={{ cursor: 'default' }}

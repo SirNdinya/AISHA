@@ -37,6 +37,7 @@ import CompanyDashboard from './pages/company/CompanyDashboard';
 import OpportunityManager from './pages/company/OpportunityManager';
 import CompanyPlacementTracker from './pages/company/PlacementTracker';
 import CompanySettings from './pages/company/CompanySettings';
+import CompanyTransactions from './pages/company/CompanyTransactions';
 
 // Institution Pages
 import AdminPortalLayout from './pages/admin/AdminPortal/AdminPortalLayout';
@@ -102,6 +103,7 @@ const App: React.FC = () => {
               <Route path="dashboard" element={<CompanyDashboard />} />
               <Route path="opportunities" element={<OpportunityManager />} />
               <Route path="placements" element={<CompanyPlacementTracker />} />
+              <Route path="transactions" element={<CompanyTransactions />} />
               <Route path="settings" element={<CompanySettings />} />
               <Route path="notifications" element={<NotificationPage />} />
               <Route path="logbooks" element={<LogbookReview role="COMPANY" />} />
@@ -198,6 +200,7 @@ const App: React.FC = () => {
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<CompanyDashboard />} />
               <Route path="opportunities" element={<OpportunityManager />} />
+              <Route path="transactions" element={<CompanyTransactions />} />
               <Route path="settings" element={<CompanySettings />} />
             </Route>
 

@@ -190,9 +190,72 @@ export class AuthController extends BaseController {
                 const { admission_number } = req.body;
                 const studentInstitutionId = result.rows[0].institution_id;
 
+                if (!admission_number) {
+                    await pool.query('DELETE FROM users WHERE id = $1', [userId]);
+                    return res.status(400).json({ message: 'Registration number is required.' });
+                }
+
+                // 1. Get Schema Name for the selected institution
+                const schemaRes = await pool.query('SELECT schema_name FROM institutions WHERE id = $1', [studentInstitutionId]);
+                const schemaName = schemaRes.rows[0]?.schema_name;
+
+                // 2. Check if student is pre-loaded in public.students
+                const studentCheckQuery = 'SELECT id, user_id FROM students WHERE admission_number = $1 AND institution_id = $2';
+                const studentCheckRes = await pool.query(studentCheckQuery, [admission_number, studentInstitutionId]);
+
+                let existingStudentId: string | null = null;
+                let existingUserId: string | null = null;
+
+                if (studentCheckRes.rows.length > 0) {
+                    existingStudentId = studentCheckRes.rows[0].id;
+                    existingUserId = studentCheckRes.rows[0].user_id;
+                } else if (schemaName) {
+                    // 3. Not in public.students, search the tenant schema (discovery mode)
+                    const tenantCheckQuery = `SELECT id, full_name FROM ${schemaName}.student_records WHERE reg_number = $1`;
+                    const tenantCheckRes = await pool.query(tenantCheckQuery, [admission_number]);
+                    
+                    if (tenantCheckRes.rows.length > 0) {
+                        const tenantRecord = tenantCheckRes.rows[0];
+                        const nameParts = tenantRecord.full_name.split(' ');
+                        const fName = nameParts[0] || 'Student';
+                        const lName = nameParts.slice(1).join(' ') || '';
+                        
+                        // Auto-provision student stub in public schema
+                        const insertRes = await pool.query(`
+                            INSERT INTO students (institution_id, admission_number, first_name, last_name, user_id, last_sync_at)
+                            VALUES ($1, $2, $3, $4, $5, NOW())
+                            RETURNING id
+                        `, [studentInstitutionId, admission_number, fName, lName, userId]);
+                        
+                        existingStudentId = insertRes.rows[0].id;
+                    }
+                }
+
+                if (!existingStudentId) {
+                    // Registration number not found anywhere in our infrastructure
+                    await pool.query('DELETE FROM users WHERE id = $1', [userId]);
+                    return res.status(404).json({
+                        status: 'error',
+                        message: 'Registration number not found in institution records. Please verify it is correct or contact your administrator.'
+                    });
+                }
+
+                if (existingUserId && existingUserId !== userId) {
+                    // Ensure the slot isn't already claimed and active
+                    const activeCheck = await pool.query('SELECT last_login FROM users WHERE id = $1', [existingUserId]);
+                    if (activeCheck.rows.length > 0 && activeCheck.rows[0].last_login) {
+                        await pool.query('DELETE FROM users WHERE id = $1', [userId]);
+                        return res.status(403).json({
+                            status: 'error',
+                            message: 'This registration number has already been claimed by an active account.'
+                        });
+                    }
+                }
+
+                // Link the student record to the new user account
                 await pool.query(
-                    'INSERT INTO students (user_id, admission_number, institution_id) VALUES ($1, $2, $3)',
-                    [userId, admission_number || null, studentInstitutionId || null]
+                    'UPDATE students SET user_id = $1 WHERE id = $2',
+                    [userId, existingStudentId]
                 );
 
                 if (admission_number && studentInstitutionId) {

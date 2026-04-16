@@ -49,21 +49,52 @@ export class InstitutionSyncService {
             const firstName = nameParts[0];
             const lastName = nameParts.slice(1).join(' ');
 
-            // 3. Update main profile instantly (Zero-Entry Fetching)
-            // AI-driven profile generation for skills and interests removed per user request
-            // Only syncing Name and Year which are institutional
+            // 3. Autonomous Department Mapping Logic
+            const reg = academicData.reg_number || student.admission_number;
+            let mappedCourse = academicData.course;
+            let deptCode = '';
+
+            if (reg.startsWith('COM/')) {
+                mappedCourse = 'Computer Science';
+                deptCode = 'COM';
+            } else if (reg.startsWith('SIT/')) {
+                mappedCourse = 'Information Technology';
+                deptCode = 'SIT';
+            } else if (reg.startsWith('SOE/')) {
+                mappedCourse = 'Education';
+                deptCode = 'SOE';
+            }
+
+            // Find matching department_id in public schema
+            let departmentId = null;
+            if (deptCode) {
+                const deptRes = await pool.query(
+                    'SELECT id FROM departments WHERE code = $1 AND institution_id = $2',
+                    [deptCode, student.institution_id]
+                );
+                if (deptRes.rows.length > 0) {
+                    departmentId = deptRes.rows[0].id;
+                }
+            }
+
+            // 4. Update main profile instantly (Zero-Entry Fetching)
             await pool.query(`
                 UPDATE students 
                 SET first_name = $1, 
                     last_name = $2, 
                     current_year = $3,
+                    course_of_study = $4,
+                    department_id = $5,
+                    academic_analysis = NULL,
                     sync_status = 'SYNCED',
                     last_sync_at = NOW()
-                WHERE id = $4
+                WHERE id = $6
             `, [
                 firstName,
                 lastName,
                 academicData.year_of_study,
+                mappedCourse,
+                departmentId,
                 studentId
             ]);
 
@@ -73,34 +104,39 @@ export class InstitutionSyncService {
             // 5. Notify frontend that profile identity has changed (Instant)
             RealtimeService.emitToUser(student.user_id, 'PROFILE_UPDATED', { admission_number: academicData.reg_number });
 
-            // 6. Phase 1: Immediate Transcript Analysis (FAST)
-            // This pre-calculates strengths and insights for later high-speed matching.
+            // 6. Phase 1: Rapid Baseline Analysis (FAST)
+            // Provides immediate insights while deep AI analysis runs in background.
+            const recordsRes = await pool.query('SELECT unit_name, grade, mark FROM student_academic_records WHERE student_id = $1', [studentId]);
+            
+            const generateBaseline = (records: any[]) => {
+                const topGrades = records.filter(r => (r.grade || '').startsWith('A'));
+                const skillsDetected = records.slice(0, 5).map(r => r.unit_name.split(' ').slice(0, 2).join(' '));
+                return {
+                    insights: `Your academic history shows core strengths in ${topGrades.slice(0, 2).map(r => r.unit_name).join(', ') || 'multiple areas'}.`,
+                    recommendation: `Optimal alignment detected in ${skillsDetected[0] || 'your core field'}. Detailed AI analysis is being finalized.`,
+                    gpa: 0, // Placeholder
+                    status: 'PENDING_DEEP_SYNC'
+                };
+            };
+
+            const baseline = generateBaseline(recordsRes.rows);
+            await pool.query('UPDATE students SET academic_analysis = $1 WHERE id = $2', [JSON.stringify(baseline), studentId]);
+            RealtimeService.emitToUser(student.user_id, 'ANALYSIS_COMPLETE', { analysis: baseline });
+
+            // Phase 2: Deep AI Analysis (Background)
             setImmediate(async () => {
                 try {
-                    console.log(`[SYNC] Background analysis START for Student: ${studentId}`);
                     const { AIService } = require('./AIService');
-                    // Fetch the records we just synced
-                    const recordsRes = await pool.query('SELECT unit_name, grade, mark FROM student_academic_records WHERE student_id = $1', [studentId]);
-                    console.log(`[SYNC] Found ${recordsRes.rows.length} records for analysis.`);
-                    
                     if (recordsRes.rows.length > 0) {
-                        console.log(`[AI SERVICE] Initiating rapid transcript analysis for ${studentId}...`);
                         const studentName = `${student.first_name || ''} ${student.last_name || ''}`.trim() || 'the student';
-                        const analysis = await AIService.analyzeTranscript(recordsRes.rows, studentName);
-                        if (analysis) {
-                            await pool.query('UPDATE students SET academic_analysis = $1 WHERE id = $2', [JSON.stringify(analysis), studentId]);
-                            console.log(`[AI SERVICE] Transcript analysis completed and stored for student ${studentId}.`);
-                            
-                            // Notify frontend that analysis is complete
-                            RealtimeService.emitToUser(student.user_id, 'ANALYSIS_COMPLETE', { analysis });
-                        } else {
-                            console.warn(`[AI SERVICE] Transcript analysis returned null for ${studentId}.`);
+                        const deepAnalysis = await AIService.analyzeTranscript(recordsRes.rows, studentName);
+                        if (deepAnalysis) {
+                            await pool.query('UPDATE students SET academic_analysis = $1 WHERE id = $2', [JSON.stringify(deepAnalysis), studentId]);
+                            RealtimeService.emitToUser(student.user_id, 'ANALYSIS_COMPLETE', { analysis: deepAnalysis });
                         }
-                    } else {
-                        console.log(`[SYNC] No records found to analyze for ${studentId}.`);
                     }
                 } catch (err: any) {
-                    console.error("[SYNC] Transcript analysis background error:", err.message);
+                    console.error("[SYNC] Deep analysis background error:", err.message);
                 }
             });
 

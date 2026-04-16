@@ -29,7 +29,7 @@ const CompanyHeader: React.FC = () => {
             <Flex justify="space-between" align="center" w="full">
                 {/* Search Bar */}
                 <HStack
-                    bg="whiteAlpha.100"
+                    bg="gray.50"
                     px={4}
                     py={2}
                     borderRadius="xl"
@@ -39,8 +39,8 @@ const CompanyHeader: React.FC = () => {
                     w="400px"
                     display={{ base: "none", md: "flex" }}
                 >
-                    <Icon as={LuSearch} color="gray.400" />
-                    <Text color="gray.400" fontSize="sm" flex="1">Search students or postings...</Text>
+                    <Icon as={LuSearch} color="slate.600" />
+                    <Text color="slate.600" fontSize="sm" flex="1">Search students or postings...</Text>
                     <HStack gap={1}>
                         <Box bg="whiteAlpha.200" px={1.5} py={0.5} borderRadius="md">
                             <Text fontSize="10px" color="gray.300">⌘</Text>
@@ -64,7 +64,7 @@ const CompanyHeader: React.FC = () => {
                         <VStack align="flex-end" gap={0} display={{ base: "none", md: "flex" }}>
                             <Text fontWeight="bold" fontSize="sm">{user?.firstName} {user?.lastName}</Text>
                         </VStack>
-                        <Avatar.Root size="md" border="2px solid" borderColor="blue.500">
+                        <Avatar.Root size="md" border="2px solid" borderColor="indigo.500">
                             <Avatar.Fallback name={`${user?.firstName} ${user?.lastName}`} />
                         </Avatar.Root>
                     </HStack>

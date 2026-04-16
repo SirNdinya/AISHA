@@ -114,7 +114,10 @@ const RegisterPage: React.FC = () => {
             }),
             admissionNumber: Yup.string().when('role', {
                 is: 'STUDENT',
-                then: (schema) => schema.required('Registration/Admission number is required'),
+                then: (schema) => schema
+                    .required('Registration/Admission number is required')
+                    .matches(/^[A-Za-z0-9/-]+$/, 'Only letters, numbers, hyphens, and slashes are allowed')
+                    .matches(/\//, 'Must match standard institution format (e.g., SIT/B/01-12345/2022)'),
                 otherwise: (schema) => schema.notRequired(),
             }),
             name: Yup.string().when('role', {
@@ -234,26 +237,26 @@ const RegisterPage: React.FC = () => {
                             p={4}
                             bg={`${currentConfig.color}.500`}
                             borderRadius="2xl"
-                            color="white"
+                            color="gray.900"
                             boxShadow={`0 10px 20px -5px var(--chakra-colors-${currentConfig.color}-500)`}
                         >
                             <Icon as={currentConfig.icon} boxSize={8} />
                         </Box>
                         <Box>
-                            <Heading size="2xl" mb={1} color={`${currentConfig.color}.700`} fontWeight="black" letterSpacing="tight">
+                            <Heading size="2xl" mb={1} color={`${currentConfig.color}.600`} fontWeight="black" letterSpacing="tight">
                                 {currentConfig.label} Registration
                             </Heading>
-                            <Text color="gray.500" fontWeight="medium">Create your {currentConfig.label.toLowerCase()} account Node</Text>
+                            <Text color="gray.800" fontWeight="bold">Create your {currentConfig.label.toLowerCase()} account Node</Text>
                         </Box>
                     </VStack>
 
                     {success ? (
                         <VStack gap={6} py={8} textAlign="center">
-                            <Icon as={emailSent ? FaCheckCircle : FaExclamationCircle} fontSize="6xl" color={emailSent ? "green.500" : "orange.500"} />
-                            <Heading size="lg" color="gray.800">
+                            <Icon as={emailSent ? FaCheckCircle : FaExclamationCircle} fontSize="6xl" color={emailSent ? "green.500" : "indigo.500"} />
+                            <Heading size="lg" color="gray.900">
                                 {emailSent ? 'Check Your Email' : 'Account Created'}
                             </Heading>
-                            <Text color="gray.600">
+                             <Text color="gray.800" fontWeight="medium">
                                 {emailSent
                                     ? <>We've sent a verification link to <b>{formik.values.email}</b>. Please verify your account to complete registration.</>
                                     : (
@@ -265,7 +268,7 @@ const RegisterPage: React.FC = () => {
                                                     <chakra.code fontSize="8pt" display="block">{emailError}</chakra.code>
                                                 </Box>
                                             )}
-                                            <Text fontSize="sm" color="gray.500">Please check your SMTP settings or contact support.</Text>
+                                            <Text fontSize="sm" color="gray.800">Please check your SMTP settings or contact support.</Text>
                                         </VStack>
                                     )
                                 }
@@ -290,7 +293,7 @@ const RegisterPage: React.FC = () => {
                                         size="xs"
                                         onClick={() => setStep(1)}
                                         mb={4}
-                                        color="gray.400"
+                                        color="gray.600"
                                         _hover={{ color: `${currentConfig.color}.500`, bg: 'transparent' }}
                                     >
                                         <HStack gap={1}>
@@ -301,9 +304,9 @@ const RegisterPage: React.FC = () => {
                                 )}
                                 <VStack gap={5}>
                                     <Box w="full">
-                                        <Flex align="center" mb={1.5} gap={2} color="gray.500">
+                                        <Flex align="center" mb={1.5} gap={2} color="gray.800">
                                             <Icon as={FaEnvelope} fontSize="xs" />
-                                            <Text fontSize="xs" fontWeight="bold" letterSpacing="widest" textTransform="uppercase">Email Address</Text>
+                                            <Text fontSize="xs" fontWeight="black" letterSpacing="widest" textTransform="uppercase">Email Address</Text>
                                         </Flex>
                                         <Input
                                             id="email"
@@ -316,7 +319,7 @@ const RegisterPage: React.FC = () => {
                                             h={12}
                                             borderRadius="xl"
                                             bg="white"
-                                            color="gray.800"
+                                            color="gray.900"
                                             borderColor={formik.touched.email && formik.errors.email ? "red.300" : "gray.200"}
                                             _focus={{ borderColor: `${currentConfig.color}.400`, boxShadow: `0 0 0 1px var(--chakra-colors-${currentConfig.color}-400)` }}
                                             autoComplete="email"
@@ -325,9 +328,9 @@ const RegisterPage: React.FC = () => {
 
                                     {(role === 'STUDENT' || role === 'INSTITUTION') && (
                                         <Box w="full" position="relative">
-                                            <Flex align="center" mb={1.5} gap={2} color="gray.500">
+                                            <Flex align="center" mb={1.5} gap={2} color="gray.800">
                                                 <Icon as={FaUniversity} fontSize="xs" />
-                                                <Text fontSize="xs" fontWeight="bold" letterSpacing="widest" textTransform="uppercase">Institution</Text>
+                                                <Text fontSize="xs" fontWeight="black" letterSpacing="widest" textTransform="uppercase">Institution</Text>
                                             </Flex>
                                             <HStack position="relative">
                                                 <Input
@@ -344,7 +347,7 @@ const RegisterPage: React.FC = () => {
                                                     h={12}
                                                     borderRadius="xl"
                                                     bg="white"
-                                                    color="gray.800"
+                                                    color="#1e293b"
                                                     borderColor={formik.touched.institution && formik.errors.institution ? "red.300" : "gray.200"}
                                                     _focus={{ borderColor: `${currentConfig.color}.400`, boxShadow: `0 0 0 1px var(--chakra-colors-${currentConfig.color}-400)` }}
                                                 />
@@ -383,7 +386,7 @@ const RegisterPage: React.FC = () => {
                                                                     w="full"
                                                                     textAlign="left"
                                                                     p={3}
-                                                                    color="gray.700"
+                                                                    color="gray.800"
                                                                     _hover={{ bg: `${currentConfig.color}.50`, color: `${currentConfig.color}.700` }}
                                                                     onClick={() => {
                                                                         formik.setFieldValue('institution', uni.name);
@@ -411,9 +414,9 @@ const RegisterPage: React.FC = () => {
 
                                     {role === 'STUDENT' && (
                                         <Box w="full">
-                                            <Flex align="center" mb={1.5} gap={2} color="gray.500">
+                                            <Flex align="center" mb={1.5} gap={2} color="gray.800">
                                                 <Icon as={FaUser} fontSize="xs" />
-                                                <Text fontSize="xs" fontWeight="bold" letterSpacing="widest" textTransform="uppercase">Registration Number</Text>
+                                                <Text fontSize="xs" fontWeight="black" letterSpacing="widest" textTransform="uppercase">Registration Number</Text>
                                             </Flex>
                                             <Input
                                                 id="admissionNumber"
@@ -425,7 +428,7 @@ const RegisterPage: React.FC = () => {
                                                 h={12}
                                                 borderRadius="xl"
                                                 bg="white"
-                                                color="gray.800"
+                                                color="#1e293b"
                                                 borderColor={formik.touched.admissionNumber && formik.errors.admissionNumber ? "red.300" : "gray.200"}
                                                 _focus={{ borderColor: `${currentConfig.color}.400`, boxShadow: `0 0 0 1px var(--chakra-colors-${currentConfig.color}-400)` }}
                                             />
@@ -436,9 +439,9 @@ const RegisterPage: React.FC = () => {
                                     )}
 
                                     <Box w="full">
-                                        <Flex align="center" mb={1.5} gap={2} color="gray.500">
+                                        <Flex align="center" mb={1.5} gap={2} color="gray.800">
                                             <Icon as={FaLock} fontSize="xs" />
-                                            <Text fontSize="xs" fontWeight="bold" letterSpacing="widest" textTransform="uppercase">Password</Text>
+                                            <Text fontSize="xs" fontWeight="black" letterSpacing="widest" textTransform="uppercase">Password</Text>
                                         </Flex>
                                         <Box position="relative">
                                             <Input
@@ -452,7 +455,7 @@ const RegisterPage: React.FC = () => {
                                                 h={12}
                                                 borderRadius="xl"
                                                 bg="white"
-                                                color="gray.800"
+                                                color="gray.900"
                                                 borderColor={formik.touched.password && formik.errors.password ? "red.300" : "gray.200"}
                                                 _focus={{ borderColor: `${currentConfig.color}.400`, boxShadow: `0 0 0 1px var(--chakra-colors-${currentConfig.color}-400)` }}
                                                 pr={10}
@@ -474,7 +477,7 @@ const RegisterPage: React.FC = () => {
                                                     aria-label={showPassword ? "Hide password" : "Show password"}
                                                     variant="ghost"
                                                     onClick={() => setShowPassword(!showPassword)}
-                                                    color="gray.400"
+                                                    color="gray.600"
                                                     size="sm"
                                                     _hover={{ bg: "transparent", color: "gray.600" }}
                                                 >
@@ -488,17 +491,17 @@ const RegisterPage: React.FC = () => {
                                                 <ProgressBar
                                                     colorPalette={
                                                         calculateStrength(formik.values.password) < 40 ? 'red' :
-                                                            calculateStrength(formik.values.password) < 80 ? 'orange' : 'green'
+                                                            calculateStrength(formik.values.password) < 80 ? 'indigo' : 'green'
                                                     }
                                                     size="xs"
                                                     value={calculateStrength(formik.values.password)}
                                                     borderRadius="full"
                                                 />
                                                 <Flex justify="space-between" mt={1}>
-                                                    <Text fontSize="2xs" color="gray.400" fontWeight="bold">STRENGTH</Text>
+                                                    <Text fontSize="2xs" color="gray.800" fontWeight="black">STRENGTH</Text>
                                                     <Text fontSize="2xs" color={
                                                         calculateStrength(formik.values.password) < 40 ? 'red.500' :
-                                                            calculateStrength(formik.values.password) < 80 ? 'orange.500' : 'green.500'
+                                                            calculateStrength(formik.values.password) < 80 ? 'indigo.500' : 'green.500'
                                                     } fontWeight="black">
                                                         {calculateStrength(formik.values.password) < 40 ? 'WEAK' :
                                                             calculateStrength(formik.values.password) < 80 ? 'MODERATE' : 'STRONG'}
@@ -509,7 +512,7 @@ const RegisterPage: React.FC = () => {
 
                                     {role === 'COMPANY' && (
                                         <Box w="full">
-                                            <Flex align="center" mb={1.5} gap={2} color="gray.500">
+                                            <Flex align="center" mb={1.5} gap={2} color="gray.600">
                                                 <Icon as={FaBuilding} fontSize="xs" />
                                                 <Text fontSize="xs" fontWeight="bold" letterSpacing="widest" textTransform="uppercase">Company Name</Text>
                                             </Flex>
@@ -523,7 +526,7 @@ const RegisterPage: React.FC = () => {
                                                 h={12}
                                                 borderRadius="xl"
                                                 bg="white"
-                                                color="gray.800"
+                                                color="gray.900"
                                                 borderColor={formik.touched.name && formik.errors.name ? "red.300" : "gray.200"}
                                                 _focus={{ borderColor: `${currentConfig.color}.400`, boxShadow: `0 0 0 1px var(--chakra-colors-${currentConfig.color}-400)` }}
                                             />
@@ -575,7 +578,7 @@ const RegisterPage: React.FC = () => {
                                     </Box>
 
                                     <Box w="full">
-                                        <Flex align="center" mb={1.5} gap={2} color="gray.500">
+                                        <Flex align="center" mb={1.5} gap={2} color="gray.600">
                                             <Icon as={FaCheckCircle} fontSize="xs" />
                                             <Text fontSize="xs" fontWeight="bold" letterSpacing="widest" textTransform="uppercase">Confirm Password</Text>
                                         </Flex>
@@ -591,7 +594,7 @@ const RegisterPage: React.FC = () => {
                                                 h={12}
                                                 borderRadius="xl"
                                                 bg="white"
-                                                color="gray.800"
+                                                color="gray.900"
                                                 borderColor={formik.touched.confirmPassword && formik.errors.confirmPassword ? "red.300" : "gray.200"}
                                                 _focus={{ borderColor: `${currentConfig.color}.400`, boxShadow: `0 0 0 1px var(--chakra-colors-${currentConfig.color}-400)` }}
                                                 pr={10}
@@ -605,7 +608,7 @@ const RegisterPage: React.FC = () => {
                                                 top="50%"
                                                 transform="translateY(-50%)"
                                                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                                color="gray.400"
+                                                color="gray.600"
                                                 size="sm"
                                                 _hover={{ bg: "transparent", color: "gray.600" }}
                                             >
@@ -631,12 +634,12 @@ const RegisterPage: React.FC = () => {
                                 </VStack>
                             </form>
 
-                            <Flex justify="center" gap={2} align="center">
-                                <Text fontSize="sm" color="gray.500">Already have an account?</Text>
-                                <Link asChild fontSize="sm" color="brand.600" fontWeight="bold">
-                                    <RouterLink to="/login">Login Here</RouterLink>
-                                </Link>
-                            </Flex>
+                             <Flex justify="center" gap={2} align="center">
+                                 <Text fontSize="sm" color="gray.800" fontWeight="bold">Already have an account?</Text>
+                                 <Link asChild fontSize="sm" color="blue.600" fontWeight="black">
+                                     <RouterLink to="/login">Login Here</RouterLink>
+                                 </Link>
+                             </Flex>
                         </>
                     )}
                 </VStack>

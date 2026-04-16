@@ -17,7 +17,7 @@ class TranscriptService:
 
         if not records:
             return {
-                "insights": "[SYSTEM_MSG] INSUFFICIENT_ACADEMIC_DATA_POINTS. COMPLETE_FULL_SEMESTER_UNITS_TO_ACTIVATE_NEURAL_ANYSIS.",
+                "insights": "Insufficient academic data to generate insights yet. Please complete more units to see your performance profile.",
                 "detected_clusters": []
             }
 
@@ -25,16 +25,16 @@ class TranscriptService:
         units_text = ", ".join([f"{r.get('unit_name', 'Unknown')}: {r.get('grade', 'F')} (Mark: {r.get('mark', 'N/A')})" for r in records])
         
         prompt = f"""
-        [AISHA_NEURAL_ANALYTIC_NODE]
-        OPERATIONAL_CONTEXT: Deep architectural analysis of student academic trajectory.
+        [AISHA ACADEMIC ANALYSIS]
+        CONTEXT: Analyzing academic performance and career trajectory.
         STUDENT_NAME: {student_name}
         INPUT_STREAM: {units_text}
         
         **STRICT_PROHIBITIONS (CRITICAL):**
         - **DO NOT** use generic templates like "The individual has...", "The individual is familiar with...", etc.
+        - **DO NOT** use literal placeholders like "string", "Place analysis here", or "N/A".
+        - **DO NOT** return the schema values exactly. You MUST generate real content.
         - **DO NOT** use repetitive starting phrases for paragraphs.
-        - **DO NOT** use dummy or placeholder analysis.
-        - **AVOID** vague generalizations.
         
         **REQUIRED DESIGN SPECIFICATIONS:**
         - **PRECISION**: Use specific unit names and marks from the INPUT_STREAM to justify insights.
@@ -49,28 +49,42 @@ class TranscriptService:
         - **status**: One word (e.g., EXCELLENT, ADVANCING, STABLE).
         """
         
+        # Using descriptive placeholders instead of just "string" to discourage literal copying
         schema = {
-            "insights": "string",
-            "recommendation": "string",
-            "status": "string",
-            "detected_clusters": ["string"]
+            "insights": "Detailed analysis of academic strengths and technical trajectory...",
+            "recommendation": "Surgical career directive based on unit performance...",
+            "status": "Current performance tier (e.g. EXCELLENT)",
+            "detected_clusters": ["Primary technical domain"]
         }
         
         try:
             analysis = await llm_service.analyze_structured(prompt, schema)
+            
+            # Post-processing validation to catch lazy LLM outputs
             if "error" in analysis:
                 return {
-                    "status": "LLM_OFFLINE",
-                    "recommendation": "[SYSTEM] AI_ENGINE_UNAVAILABLE. RETRY_LATER.",
-                    "insights": "[SYSTEM] THE_AISHA_NEURAL_ENGINE_IS_CURRENTLY_RECALIBRATING.",
+                    "status": "OFFLINE",
+                    "recommendation": "Analysis engine is temporarily busy. Please try again in a moment.",
+                    "insights": "Updating academic insights...",
                     "detected_clusters": []
                 }
+            
+            # Check for literal schema values or "string" placeholders
+            invalid_values = {"string", "Detailed analysis...", "Surgical career directive...", "Current performance tier...", "Primary technical domain"}
+            if any(str(val).strip() in invalid_values or "string" in str(val).lower() for val in analysis.values() if isinstance(val, (str, list))):
+                 return {
+                    "status": "RETRY_REQUIRED",
+                    "recommendation": "Analysis is being refined for better accuracy. Please wait.",
+                    "insights": "Improving insight precision. Please refresh in a moment.",
+                    "detected_clusters": []
+                }
+
             return analysis
         except Exception as e:
             return {
                 "status": "ERROR",
-                "recommendation": "AISHA Neural Engine: Analyzing academic architectural nodes.",
-                "insights": f"ML Error: {e}",
+                "recommendation": "AISHA Analysis: Analyzing academic performance.",
+                "insights": f"Analysis Error: {e}",
                 "detected_clusters": ["General"]
             }
 
@@ -93,19 +107,19 @@ class TranscriptService:
             spaceAfter=20,
             textColor=colors.HexColor("#008B8B")
         )
-        elements.append(Paragraph(f"AI-Driven Skill Registry & Academic Report", title_style))
+        elements.append(Paragraph(f"Academic Performance & Skill Registry", title_style))
         elements.append(Paragraph(f"Student: {student_name}", styles['Normal']))
         elements.append(Spacer(1, 0.2*inch))
 
         # Analysis Summary Box
-        elements.append(Paragraph("AI Skill Registry Summary", styles['Heading2']))
-        elements.append(Paragraph(f"<b>Registry Status:</b> {analysis.get('status', 'N/A')}", styles['Normal']))
-        elements.append(Paragraph(f"<b>Skill Insights:</b> {analysis.get('insights', 'N/A')}", styles['Normal']))
-        elements.append(Paragraph(f"<b>AI Recommendation:</b> {analysis.get('recommendation', 'N/A')}", styles['Normal']))
+        elements.append(Paragraph("Academic Evaluation Summary", styles['Heading2']))
+        elements.append(Paragraph(f"<b>Evaluation Status:</b> {analysis.get('status', 'N/A')}", styles['Normal']))
+        elements.append(Paragraph(f"<b>Performance Insights:</b> {analysis.get('insights', 'N/A')}", styles['Normal']))
+        elements.append(Paragraph(f"<b>Career Recommendation:</b> {analysis.get('recommendation', 'N/A')}", styles['Normal']))
         elements.append(Spacer(1, 0.3*inch))
 
-        # Transcript Table
-        elements.append(Paragraph("Detailed Academic Records", styles['Heading2']))
+        # Records Table
+        elements.append(Paragraph("Detailed Academic History", styles['Heading2']))
         
         data = [["Unit Code", "Unit Name", "Year", "Sem", "Mark", "Grade"]]
         sorted_records = sorted(records, key=lambda x: (x.get('academic_year', ''), x.get('semester', '')))

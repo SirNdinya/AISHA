@@ -38,7 +38,7 @@ const AdminPortalLayout: React.FC = () => {
     };
 
     return (
-        <Flex minH="100vh" bg="#0d1117" color="white" overflow="hidden">
+        <Flex minH="100vh" bg="var(--terminal-bg)" color="#F8FAFC" overflow="hidden">
             {/* Sidebar */}
             <Box
                 as="nav"
@@ -55,7 +55,7 @@ const AdminPortalLayout: React.FC = () => {
                             w="40px"
                             h="40px"
                             borderRadius="10px"
-                            bg="linear-gradient(135deg, #a78bfa 0%, #2dd4bf 100%)"
+                            bg="linear-gradient(135deg, var(--terminal-accent) 0%, #2dd4bf 100%)"
                             display="flex"
                             alignItems="center"
                             justifyContent="center"
@@ -102,8 +102,8 @@ const AdminPortalLayout: React.FC = () => {
                                         p={3}
                                         borderRadius="12px"
                                         transition="all 0.2s"
-                                        bg={isActive ? "rgba(167, 139, 250, 0.15)" : "transparent"}
-                                        color={isActive ? "#a78bfa" : "gray.400"}
+                                        bg={isActive ? "rgba(56, 189, 248, 0.15)" : "transparent"}
+                                        color={isActive ? "var(--terminal-accent)" : "gray.400"}
                                         _hover={{ bg: "rgba(255, 255, 255, 0.05)", color: "white" }}
                                     >
                                         <Icon as={item.icon} boxSize={5} mr={isSidebarOpen ? 4 : 0} />
@@ -164,7 +164,7 @@ const AdminPortalLayout: React.FC = () => {
                                 h="40px"
                                 borderRadius="full"
                                 overflow="hidden"
-                                border="2px solid rgba(167, 139, 250, 0.3)"
+                                border="2px solid var(--terminal-accent)"
                             >
                                 <Image src={user?.avatarUrl || `https://ui-avatars.com/api/?name=${user?.email || 'Admin'}&background=805ad5&color=fff`} />
                             </Box>

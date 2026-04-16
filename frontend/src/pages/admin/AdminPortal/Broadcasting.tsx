@@ -8,14 +8,14 @@ const DepartmentDashboard: React.FC = () => {
             <Container maxW="container.xl" py={10}>
                 <VStack align="start" gap={6}>
                     <Box>
-                        <Heading size="lg" fontWeight="bold">Departmental Dashboard</Heading>
-                        <Text color="gray.500">Welcome to your department's management portal.</Text>
+                        <Heading size="lg" fontWeight="bold" color="#F8FAFC">Departmental Dashboard</Heading>
+                        <Text color="var(--terminal-accent)">Welcome to your department's management portal.</Text>
                     </Box>
 
                     <Box className="glass-card" p={8} borderRadius="20px" w="100%">
                         <VStack gap={4} align="center" justify="center" minH="400px">
-                            <Heading size="md" color="whiteAlpha.800">No active broadcasts</Heading>
-                            <Text color="gray.500">Use the Placement Hub to track and assess your students.</Text>
+                            <Heading size="md" color="#F8FAFC">No active broadcasts</Heading>
+                            <Text color="whiteAlpha.600">Use the Placement Hub to track and assess your students.</Text>
                         </VStack>
                     </Box>
                 </VStack>

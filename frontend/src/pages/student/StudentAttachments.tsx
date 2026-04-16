@@ -93,8 +93,8 @@ const RedesignedPlacement: React.FC = () => {
                 <VStack gap={4} textAlign="center" className="glass-panel" p={12} border="1px solid" borderColor="red.500/30">
                     <Icon as={LuShieldCheck} boxSize={12} color="red.400" />
                     <VStack gap={1}>
-                        <Heading size="md" color="white" fontWeight="black">SECURE SYNC OFFLINE</Heading>
-                        <Text color="whiteAlpha.600" fontSize="xs">Synchronization with institutional records failed.</Text>
+                        <Heading size="md" color="#F8FAFC" fontWeight="black">SECURE SYNC OFFLINE</Heading>
+                        <Text color="var(--terminal-accent)" fontSize="xs" fontWeight="bold">Synchronization with institutional records failed.</Text>
                     </VStack>
                     <Button mt={4} size="sm" colorPalette="red" variant="outline" onClick={() => dispatch(fetchDashboardData())}>
                         RETRY SYNC
@@ -108,7 +108,7 @@ const RedesignedPlacement: React.FC = () => {
             <Flex h="80vh" align="center" justify="center">
                 <VStack gap={4}>
                     <Box className="loader-pulse" />
-                    <Text color="cyan.400" fontWeight="black" letterSpacing="widest" fontSize="xs">INITIALIZING SECURE PROTOCOLS...</Text>
+                    <Text color="indigo.400" fontWeight="black" letterSpacing="widest" fontSize="xs">INITIALIZING SECURE PROTOCOLS...</Text>
                 </VStack>
             </Flex>
         );
@@ -116,21 +116,21 @@ const RedesignedPlacement: React.FC = () => {
     if (isMatchingActive) {
         return (
             <Container maxW="container.md" pt={20}>
-                <VStack gap={8} textAlign="center" className="glass-panel" p={12} border="1px solid" borderColor="cyan.500/30">
+                <VStack gap={8} textAlign="center" className="glass-panel" p={12} border="1px solid" borderColor="indigo.500/30">
                     <Box pos="relative" className="float-animation">
-                        <Icon as={LuSparkles} boxSize={16} color="cyan.400" />
-                        <Circle pos="absolute" top="-4" right="-4" size="8" bg="cyan.500" animation="ping 2s infinite" opacity="0.4" />
+                        <Icon as={LuSparkles} boxSize={16} color="indigo.400" />
+                        <Circle pos="absolute" top="-4" right="-4" size="8" bg="indigo.500" animation="ping 2s infinite" opacity="0.4" />
                     </Box>
                     <VStack gap={2}>
-                        <Heading size="lg" color="white" fontWeight="black" letterSpacing="tight">DEEP MATCHING IN PROGRESS</Heading>
-                        <Text color="whiteAlpha.600" fontSize="sm">
+                        <Heading size="lg" color="#F8FAFC" fontWeight="black" letterSpacing="tight">DEEP MATCHING IN PROGRESS</Heading>
+                        <Text color="#F8FAFC" fontSize="sm" fontWeight="bold">
                             AISHA is analyzing institutional records and corporate requirements to secure your optimal placement.
                         </Text>
                     </VStack>
                     <HStack gap={4}>
-                        <Box h="2px" w="100px" bgGradient="linear(to-r, transparent, cyan.500, transparent)" />
-                        <Text fontSize="10px" color="cyan.400" fontWeight="black" letterSpacing="widest">AI ANALYSIS ACTIVE</Text>
-                        <Box h="2px" w="100px" bgGradient="linear(to-r, transparent, cyan.500, transparent)" />
+                        <Box h="2px" w="100px" bgGradient="linear(to-r, transparent, indigo.500, transparent)" />
+                        <Text fontSize="10px" color="indigo.400" fontWeight="black" letterSpacing="widest">AI ANALYSIS ACTIVE</Text>
+                        <Box h="2px" w="100px" bgGradient="linear(to-r, transparent, indigo.500, transparent)" />
                     </HStack>
                 </VStack>
             </Container>
@@ -142,10 +142,10 @@ const RedesignedPlacement: React.FC = () => {
                 <VStack gap={8} textAlign="center" className="glass-panel" p={12}>
                     <Icon as={LuActivity} boxSize={16} color="whiteAlpha.200" />
                     <VStack gap={2}>
-                        <Heading size="lg" color="white" fontWeight="black">NO ATTACHMENT ASSIGNED</Heading>
-                        <Text color="whiteAlpha.600">You haven't been matched or assigned to any attachment opportunities yet.</Text>
+                        <Heading size="lg" color="#F8FAFC" fontWeight="black">NO ATTACHMENT ASSIGNED</Heading>
+                        <Text color="#F8FAFC" fontWeight="bold">You haven't been matched or assigned to any attachment opportunities yet.</Text>
                     </VStack>
-                    <Button colorPalette="cyan" variant="outline" onClick={() => navigate('/student/dashboard')}>
+                    <Button colorPalette="indigo" variant="outline" onClick={() => navigate('/student/dashboard')}>
                         Check Dashboard
                     </Button>
                 </VStack>
@@ -154,7 +154,7 @@ const RedesignedPlacement: React.FC = () => {
     }
 
     // === HELPERS ===
-    const BACKEND_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api').replace(/\/api(.*)?$/, '');
+    const BACKEND_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api').replace(/\/api(.*)?$/, '');
     const getMediaUrl = (url?: string | null): string => {
         if (!url) return '';
         if (url.startsWith('http')) return url;
@@ -217,16 +217,11 @@ const RedesignedPlacement: React.FC = () => {
 
                 {/* ── TOP BAR ── */}
                 <Flex justify="space-between" align="center">
-                    <Button variant="ghost" colorPalette="cyan" onClick={() => navigate('/student/dashboard')} fontWeight="black" fontSize="xs">
+                    <Button variant="ghost" color="var(--terminal-accent)" onClick={() => navigate('/student/dashboard')} fontWeight="black" fontSize="xs" _hover={{ bg: "whiteAlpha.100" }}>
                         <Icon as={LuChevronLeft} /> DASHBOARD
                     </Button>
                     <HStack gap={2}>
-                        <Badge colorPalette={isAccepted ? 'green' : 'blue'} variant="subtle" px={3} py={1} borderRadius="full" fontSize="10px">
-                            {targetApp.status}
-                        </Badge>
-                        <Badge variant="outline" colorPalette="gray" px={3} py={1} borderRadius="full" fontSize="10px">
-                            {targetApp.id.split('-')[0].toUpperCase()}
-                        </Badge>
+
                     </HStack>
                 </Flex>
 
@@ -239,18 +234,18 @@ const RedesignedPlacement: React.FC = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                     pos="relative"
-                    bg="rgba(10, 15, 30, 0.7)"
+                    bg="var(--terminal-card)"
                     border="1px solid"
-                    borderColor="whiteAlpha.100"
+                    borderColor="var(--terminal-border)"
                 >
-                    <Box pos="absolute" top="-60px" right="-60px" w="250px" h="250px" bg="cyan.600" borderRadius="full" filter="blur(120px)" opacity="0.08" />
+                    <Box pos="absolute" top="-60px" right="-60px" w="250px" h="250px" bg="indigo.600" borderRadius="full" filter="blur(120px)" opacity="0.08" />
 
                     <Box p={{ base: 5, md: 7 }}>
                         {/* Company Identity Row */}
                         <Flex gap={4} align="center" mb={5} direction={{ base: 'column', sm: 'row' }} flexWrap="wrap">
                             <Circle
                                 size="70px" bg="white"
-                                border="3px solid" borderColor="cyan.500"
+                                border="3px solid" borderColor="indigo.500"
                                 boxShadow="0 0 30px rgba(0, 184, 212, 0.15)"
                                 overflow="hidden" flexShrink={0}
                             >
@@ -263,18 +258,18 @@ const RedesignedPlacement: React.FC = () => {
                                 />
                             </Circle>
                             <Box flex="1" minW={0} textAlign={{ base: 'center', sm: 'left' }}>
-                                <Heading size="lg" color="white" fontWeight="black" lineHeight="1.1" mb={1} wordBreak="break-word">
+                                <Heading size="lg" color="#F8FAFC" fontWeight="black" lineHeight="1.1" mb={1} wordBreak="break-word">
                                     {targetApp.job_title}
                                 </Heading>
                                 <HStack gap={2} justify={{ base: 'center', sm: 'flex-start' }} flexWrap="wrap">
-                                    <HStack gap={1} color="cyan.400">
+                                    <HStack gap={1} color="var(--terminal-accent)">
                                         <Icon as={LuBuilding2} boxSize={3.5} />
-                                        <Text fontWeight="bold" fontSize="sm">{targetApp.company_name}</Text>
+                                        <Text fontWeight="black" fontSize="sm">{targetApp.company_name}</Text>
                                     </HStack>
                                     {targetApp.location && (
-                                        <HStack gap={1} color="whiteAlpha.500">
+                                        <HStack gap={1} color="#F8FAFC">
                                             <Icon as={LuMapPin} boxSize={3.5} />
-                                            <Text fontSize="sm">{targetApp.location}</Text>
+                                            <Text fontSize="sm" fontWeight="bold">{targetApp.location}</Text>
                                         </HStack>
                                     )}
                                 </HStack>
@@ -284,32 +279,32 @@ const RedesignedPlacement: React.FC = () => {
 
                         {/* Key Stats Row — 4 compact metrics */}
                         <Grid templateColumns="1fr 1fr" gap={2}>
-                            <HStack gap={3} p={3} bg="whiteAlpha.50" borderRadius="xl" border="1px solid" borderColor="whiteAlpha.50">
-                                <Circle bg="cyan.500/10" size={9}><Icon as={LuCpu} color="cyan.400" boxSize={4} /></Circle>
+                            <HStack gap={3} p={3} bg="whiteAlpha.50" borderRadius="xl" border="1px solid" borderColor="var(--terminal-border)">
+                                <Circle bg="indigo.500/10" size={9}><Icon as={LuCpu} color="var(--terminal-accent)" boxSize={4} /></Circle>
                                 <VStack align="start" gap={0}>
-                                    <Text fontSize="9px" color="whiteAlpha.400" fontWeight="black" letterSpacing="wider">MATCH</Text>
-                                    <Text color="white" fontWeight="bold" fontSize="sm">{targetApp.match_score}%</Text>
+                                    <Text fontSize="9px" color="var(--terminal-accent)" fontWeight="black" letterSpacing="wider">MATCH</Text>
+                                    <Text color="#F8FAFC" fontWeight="black" fontSize="sm">{targetApp.match_score}%</Text>
                                 </VStack>
                             </HStack>
-                            <HStack gap={3} p={3} bg="whiteAlpha.50" borderRadius="xl" border="1px solid" borderColor="whiteAlpha.50">
-                                <Circle bg="blue.500/10" size={9}><Icon as={LuClock} color="blue.400" boxSize={4} /></Circle>
+                            <HStack gap={3} p={3} bg="whiteAlpha.50" borderRadius="xl" border="1px solid" borderColor="whiteAlpha.300">
+                                <Circle bg="indigo.500/10" size={9}><Icon as={LuClock} color="var(--terminal-accent)" boxSize={4} /></Circle>
                                 <VStack align="start" gap={0}>
-                                    <Text fontSize="9px" color="whiteAlpha.400" fontWeight="black" letterSpacing="wider">DURATION</Text>
-                                    <Text color="white" fontWeight="bold" fontSize="sm">3 Months</Text>
+                                    <Text fontSize="9px" color="var(--terminal-accent)" fontWeight="black" letterSpacing="wider">DURATION</Text>
+                                    <Text color="#F8FAFC" fontWeight="black" fontSize="sm">3 Months</Text>
                                 </VStack>
                             </HStack>
-                            <HStack gap={3} p={3} bg="whiteAlpha.50" borderRadius="xl" border="1px solid" borderColor="whiteAlpha.50">
+                            <HStack gap={3} p={3} bg="whiteAlpha.50" borderRadius="xl" border="1px solid" borderColor="whiteAlpha.300">
                                 <Circle bg="green.500/10" size={9}><Icon as={LuCalendar} color="green.400" boxSize={4} /></Circle>
                                 <VStack align="start" gap={0}>
-                                    <Text fontSize="9px" color="whiteAlpha.400" fontWeight="black" letterSpacing="wider">STARTS</Text>
-                                    <Text color="white" fontWeight="bold" fontSize="sm">{startDateStr}</Text>
+                                    <Text fontSize="9px" color="var(--terminal-accent)" fontWeight="black" letterSpacing="wider">STARTS</Text>
+                                    <Text color="#F8FAFC" fontWeight="black" fontSize="sm">{startDateStr}</Text>
                                 </VStack>
                             </HStack>
-                            <HStack gap={3} p={3} bg="whiteAlpha.50" borderRadius="xl" border="1px solid" borderColor="whiteAlpha.50">
+                            <HStack gap={3} p={3} bg="whiteAlpha.50" borderRadius="xl" border="1px solid" borderColor="whiteAlpha.300">
                                 <Circle bg="purple.500/10" size={9}><Icon as={LuDollarSign} color="purple.400" boxSize={4} /></Circle>
                                 <VStack align="start" gap={0}>
-                                    <Text fontSize="9px" color="whiteAlpha.400" fontWeight="black" letterSpacing="wider">STIPEND</Text>
-                                    <Text color="white" fontWeight="bold" fontSize="sm">
+                                    <Text fontSize="9px" color="var(--terminal-accent)" fontWeight="black" letterSpacing="wider">STIPEND</Text>
+                                    <Text color="#F8FAFC" fontWeight="black" fontSize="sm">
                                         {targetApp.stipend_amount && targetApp.stipend_amount > 0 ? `KES ${targetApp.stipend_amount.toLocaleString()}/mo` : 'Unpaid'}
                                     </Text>
                                 </VStack>
@@ -323,7 +318,7 @@ const RedesignedPlacement: React.FC = () => {
                             <Icon as={LuSparkles} color="yellow.400" boxSize={3.5} />
                             <Text fontSize="10px" fontWeight="black" letterSpacing="2px" color="yellow.400">AI MATCH ANALYSIS</Text>
                         </HStack>
-                        <Text color="whiteAlpha.700" fontSize="sm" fontStyle="italic" lineHeight="relaxed">
+                        <Text color="#F8FAFC" fontSize="sm" fontStyle="italic" lineHeight="relaxed" fontWeight="bold">
                             "{targetApp.match_reasoning || targetApp.match_reason || `Your academic profile and skill set in ${profile?.course_of_study || 'relevant units'} align well with the requirements for this position at ${targetApp.company_name}.`}"
                         </Text>
                     </Box>
@@ -334,17 +329,17 @@ const RedesignedPlacement: React.FC = () => {
                     <MotionBox
                         initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.1 }}
                         p={4} borderRadius="xl"
-                        bg={isPreferencesLocked ? "red.900/40" : "blue.900/40"}
+                        bg={isPreferencesLocked ? "red.900/40" : "indigo.900/40"}
                         border="1px solid"
-                        borderColor={isPreferencesLocked ? "red.500/50" : "blue.400/50"}
+                        borderColor={isPreferencesLocked ? "red.500/50" : "indigo.400/50"}
                     >
                         <Flex justify="space-between" align="center" gap={4} direction={{ base: 'column', sm: 'row' }}>
                             <HStack gap={3}>
-                                <Circle size={10} bg={isPreferencesLocked ? "red.500/20" : "blue.500/20"}>
-                                    <Icon as={LuClock} color={isPreferencesLocked ? "red.400" : "blue.400"} boxSize={5} />
+                                <Circle size={10} bg={isPreferencesLocked ? "red.500/20" : "indigo.500/20"}>
+                                    <Icon as={LuClock} color={isPreferencesLocked ? "red.400" : "indigo.400"} boxSize={5} />
                                 </Circle>
                                 <VStack align="start" gap={0}>
-                                    <Text color="white" fontWeight="black" fontSize="sm">
+                                    <Text color="#F8FAFC" fontWeight="black" fontSize="sm">
                                         {isPreferencesLocked ? "PREFERENCES LOCKED" : "PREFERENCE EDIT WINDOW"}
                                     </Text>
                                     <Text color="whiteAlpha.600" fontSize="xs">
@@ -355,8 +350,8 @@ const RedesignedPlacement: React.FC = () => {
                                 </VStack>
                             </HStack>
                             {!isPreferencesLocked && (
-                                <HStack gap={2} flexShrink={0} bg="blackAlpha.30" p={2} borderRadius="xl" border="1px solid" borderColor="whiteAlpha.100">
-                                    <Text color="white" fontWeight="black" fontSize="lg" fontFamily="monospace" minW="120px" textAlign="center">
+                                <HStack gap={2} flexShrink={0} bg="blackAlpha.30" p={2} borderRadius="xl" border="1px solid" borderColor="var(--terminal-border)">
+                                    <Text color="var(--terminal-accent)" fontWeight="black" fontSize="lg" fontFamily="monospace" minW="120px" textAlign="center">
                                         {preferenceTimeLeft}
                                     </Text>
                                 </HStack>
@@ -369,13 +364,13 @@ const RedesignedPlacement: React.FC = () => {
                 {targetApp.status === 'OFFERED' && (
                     <MotionBox
                         initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.2 }}
-                        p={5} borderRadius="xl" bg="orange.900/60" border="1px solid" borderColor="orange.500/50"
+                        p={5} borderRadius="xl" bg="indigo.900/60" border="1px solid" borderColor="indigo.500/50"
                     >
                         <Flex justify="space-between" align="center" gap={4} direction={{ base: 'column', sm: 'row' }}>
                             <HStack gap={3}>
-                                <Circle size={10} bg="orange.500/20"><Icon as={LuShieldCheck} color="orange.400" boxSize={5} /></Circle>
+                                <Circle size={10} bg="indigo.500/20"><Icon as={LuShieldCheck} color="indigo.400" boxSize={5} /></Circle>
                                 <VStack align="start" gap={0}>
-                                    <Text color="white" fontWeight="black" fontSize="sm">OFFER ACTION REQUIRED</Text>
+                                    <Text color="#F8FAFC" fontWeight="black" fontSize="sm">OFFER ACTION REQUIRED</Text>
                                     <Text color="whiteAlpha.600" fontSize="xs">The company has extended a formal offer. Please confirm your decision.</Text>
                                 </VStack>
                             </HStack>
@@ -400,17 +395,17 @@ const RedesignedPlacement: React.FC = () => {
                         className="glass-panel" p={{ base: 6, md: 7 }} borderRadius="2xl"
                     >
                         <VStack align="start" gap={5}>
-                            <Text fontSize="10px" fontWeight="black" letterSpacing="widest" color="cyan.400">PLACEMENT OVERVIEW</Text>
-                            <Text color="whiteAlpha.800" lineHeight="tall" fontSize="sm">
+                            <Text fontSize="10px" fontWeight="black" letterSpacing="widest" color="var(--terminal-accent)">PLACEMENT OVERVIEW</Text>
+                            <Text color="whiteAlpha.900" lineHeight="tall" fontSize="sm">
                                 {targetApp.description || `This placement at ${targetApp.company_name} involves direct immersion into ${targetApp.job_title} workflows. You will collaborate with team leads to solve technical challenges, contribute to projects, and develop enterprise-grade skillsets.`}
                             </Text>
 
                             {/* Requirements Tags */}
                             <Box w="full">
-                                <Text fontSize="10px" fontWeight="black" letterSpacing="wider" color="whiteAlpha.400" mb={2}>REQUIREMENTS</Text>
+                                <Text fontSize="10px" fontWeight="black" letterSpacing="wider" color="var(--terminal-accent)" mb={2}>REQUIREMENTS</Text>
                                 <HStack wrap="wrap" gap={2}>
                                     {(typeof targetApp.requirements === 'string' ? targetApp.requirements.split(',') : (targetApp.requirements || ["Technical Proficiency", "Collaboration", "System Design"])).map((req: string, i: number) => (
-                                        <Badge key={i} size="sm" variant="outline" colorPalette="cyan" textTransform="none" borderRadius="lg" px={2.5} py={0.5}>
+                                        <Badge key={i} size="sm" variant="solid" colorPalette="brand" textTransform="none" borderRadius="lg" px={2.5} py={0.5} fontWeight="black">
                                             {req.trim()}
                                         </Badge>
                                     ))}
@@ -425,28 +420,28 @@ const RedesignedPlacement: React.FC = () => {
                         {/* Acceptance Letter — compact inline strip, NOT a card */}
                         <MotionBox
                             initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.25 }}
-                            p={4} borderRadius="xl" bg="whiteAlpha.50" border="1px solid" borderColor="whiteAlpha.100"
+                            p={4} borderRadius="xl" bg="whiteAlpha.50" border="1px solid" borderColor="var(--terminal-border)"
                         >
                             <Flex justify="space-between" align="center" gap={3} flexWrap="wrap">
                                 <HStack gap={3} minW={0}>
-                                    <Icon as={LuFileText} color="cyan.400" boxSize={5} flexShrink={0} />
+                                    <Icon as={LuFileText} color="var(--terminal-accent)" boxSize={5} flexShrink={0} />
                                     <VStack align="start" gap={0}>
-                                        <Text color="white" fontWeight="bold" fontSize="sm">Acceptance Letter</Text>
-                                        <Text color="whiteAlpha.400" fontSize="10px">
+                                        <Text color="#F8FAFC" fontWeight="black" fontSize="sm">Acceptance Letter</Text>
+                                        <Text color="var(--terminal-accent)" fontSize="10px" fontWeight="black">
                                             {isAccepted ? 'PDF ready for download' : 'Available after acceptance'}
                                         </Text>
                                     </VStack>
                                 </HStack>
                                 <HStack gap={2} flexShrink={0}>
                                     <Button
-                                        size="xs" variant="ghost" colorPalette="cyan"
+                                        size="xs" variant="solid" colorPalette="brand"
                                         onClick={() => handleViewLetter(targetApp.id)}
                                         borderRadius="lg" cursor="pointer"
                                     >
                                         <Icon as={LuEye} /> View
                                     </Button>
                                     <Button
-                                        size="xs" colorPalette="cyan"
+                                        size="xs" colorPalette="brand" variant="solid" fontWeight="black"
                                         onClick={() => handleDownloadLetter(targetApp.id)}
                                         borderRadius="lg" cursor="pointer"
                                     >
@@ -459,25 +454,25 @@ const RedesignedPlacement: React.FC = () => {
                         {/* Scheduled Assessments */}
                         <MotionBox
                             initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.28 }}
-                            p={4} borderRadius="xl" bg="cyan.500/5" border="1px solid" borderColor="cyan.500/30"
+                            p={4} borderRadius="xl" bg="indigo.500/5" border="1px solid" borderColor="indigo.500/30"
                         >
                             <VStack align="stretch" gap={3}>
                                 <HStack gap={3}>
-                                    <Icon as={LuCalendar} color="cyan.400" boxSize={5} />
+                                    <Icon as={LuCalendar} color="var(--terminal-accent)" boxSize={5} />
                                     <VStack align="start" gap={0}>
-                                        <Text color="white" fontWeight="bold" fontSize="sm">Scheduled Assessments</Text>
-                                        <Text color="whiteAlpha.400" fontSize="10px">University Supervisor Visits</Text>
+                                        <Text color="#F8FAFC" fontWeight="black" fontSize="sm">Scheduled Assessments</Text>
+                                        <Text color="var(--terminal-accent)" fontSize="10px" fontWeight="black">University Supervisor Visits</Text>
                                     </VStack>
                                 </HStack>
-                                <Flex justify="space-between" align="center" bg="whiteAlpha.50" p={2} borderRadius="md" mt={2}>
-                                    <Text fontSize="12px" color="whiteAlpha.700" fontWeight="bold">1st Assessment:</Text>
-                                    <Badge colorPalette={targetApp.first_assessment_date ? "cyan" : "gray"} variant="subtle" size="sm" px={2} borderRadius="md">
+                                <Flex justify="space-between" align="center" bg="whiteAlpha.100" p={2} borderRadius="md" mt={2}>
+                                    <Text fontSize="12px" color="#F8FAFC" fontWeight="black">1st Assessment:</Text>
+                                    <Badge colorPalette={targetApp.first_assessment_date ? "cyan" : "gray"} variant="solid" size="sm" px={2} borderRadius="md" fontWeight="black">
                                         {targetApp.first_assessment_date ? new Date(targetApp.first_assessment_date).toLocaleDateString() : 'Pending Schedule'}
                                     </Badge>
                                 </Flex>
-                                <Flex justify="space-between" align="center" bg="whiteAlpha.50" p={2} borderRadius="md">
-                                    <Text fontSize="12px" color="whiteAlpha.700" fontWeight="bold">2nd Assessment:</Text>
-                                    <Badge colorPalette={targetApp.second_assessment_date ? "purple" : "gray"} variant="subtle" size="sm" px={2} borderRadius="md">
+                                <Flex justify="space-between" align="center" bg="whiteAlpha.100" p={2} borderRadius="md">
+                                    <Text fontSize="12px" color="#F8FAFC" fontWeight="black">2nd Assessment:</Text>
+                                    <Badge colorPalette={targetApp.second_assessment_date ? "purple" : "gray"} variant="solid" size="sm" px={2} borderRadius="md">
                                         {targetApp.second_assessment_date ? new Date(targetApp.second_assessment_date).toLocaleDateString() : 'Pending Schedule'}
                                     </Badge>
                                 </Flex>
@@ -488,29 +483,44 @@ const RedesignedPlacement: React.FC = () => {
                         <MotionBox
                             initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.3 }}
                             p={4} borderRadius="xl"
-                            bg={targetApp.student_payment_required ? "orange.500/5" : "green.500/5"}
+                            bg={targetApp.student_payment_required && !targetApp.is_paid ? "orange.500/5" : "green.500/5"}
                             border="1px solid"
-                            borderColor={targetApp.student_payment_required ? "orange.500/30" : "green.500/30"}
+                            borderColor={targetApp.student_payment_required && !targetApp.is_paid ? "orange.500/30" : "green.500/30"}
                         >
                             {targetApp.student_payment_required ? (
-                                <VStack align="stretch" gap={3}>
-                                    <Flex justify="space-between" align="center">
+                                targetApp.is_paid ? (
+                                    <Flex align="center" justify="space-between">
                                         <HStack gap={3}>
-                                            <Icon as={LuWallet} color="orange.400" boxSize={5} />
+                                            <Circle size={8} bg="green.500/20">
+                                                <Icon as={LuShieldCheck} color="green.400" />
+                                            </Circle>
                                             <VStack align="start" gap={0}>
-                                                <Text color="white" fontWeight="bold" fontSize="sm">Placement Fee Required</Text>
-                                                <Text color="whiteAlpha.400" fontSize="10px">Institutional insurance & administration</Text>
+                                                <Text color="green.400" fontWeight="black" fontSize="sm">Placement Fee Paid</Text>
+                                                <Text color="whiteAlpha.400" fontSize="10px">Payment verified via M-Pesa</Text>
                                             </VStack>
                                         </HStack>
-                                        <Text color="white" fontWeight="black" fontSize="md">KES {targetApp.student_payment_amount?.toLocaleString()}</Text>
+                                        <Badge colorPalette="green" variant="solid" size="sm" borderRadius="md">COMPLETED</Badge>
                                     </Flex>
-                                    <Button
-                                        w="full" colorPalette="orange" size="sm"
-                                        onClick={() => setIsPaymentModalOpen(true)} fontWeight="black" borderRadius="lg"
-                                    >
-                                        <Icon as={LuZap} /> PAY VIA M-PESA
-                                    </Button>
-                                </VStack>
+                                ) : (
+                                    <VStack align="stretch" gap={3}>
+                                        <Flex justify="space-between" align="center">
+                                            <HStack gap={3}>
+                                                <Icon as={LuWallet} color="var(--terminal-accent)" boxSize={5} />
+                                                <VStack align="start" gap={0}>
+                                                    <Text color="#F8FAFC" fontWeight="black" fontSize="sm">Placement Fee Required</Text>
+                                                    <Text color="var(--terminal-accent)" fontSize="10px" fontWeight="black">Institutional insurance & administration</Text>
+                                                </VStack>
+                                            </HStack>
+                                            <Text color="#F8FAFC" fontWeight="black" fontSize="md">KES {targetApp.student_payment_amount?.toLocaleString()}</Text>
+                                        </Flex>
+                                        <Button
+                                            w="full" colorPalette="orange" size="sm"
+                                            onClick={() => setIsPaymentModalOpen(true)} fontWeight="black" borderRadius="lg"
+                                        >
+                                            <Icon as={LuZap} /> PAY VIA M-PESA
+                                        </Button>
+                                    </VStack>
+                                )
                             ) : (
                                 <Flex align="center" gap={3}>
                                     <Icon as={LuShieldCheck} color="green.400" boxSize={5} />
@@ -524,8 +534,8 @@ const RedesignedPlacement: React.FC = () => {
 
                         {/* Verified footer stamp — subtle, not a card */}
                         <Flex align="center" justify="center" gap={2} py={3} opacity={0.4}>
-                            <Icon as={LuSparkles} color="cyan.400" boxSize={3.5} />
-                            <Text fontSize="10px" color="whiteAlpha.500" fontWeight="bold" letterSpacing="wider">VERIFIED BY AISHA</Text>
+                            <Icon as={LuSparkles} color="var(--terminal-accent)" boxSize={3.5} />
+                            <Text fontSize="10px" color="var(--terminal-accent)" fontWeight="black" letterSpacing="wider">VERIFIED BY AISHA</Text>
                         </Flex>
                     </VStack>
                 </Grid>

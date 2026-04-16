@@ -9,13 +9,15 @@ import {
     LuSettings,
     LuShield,
     LuPanelLeftClose,
-    LuPanelLeftOpen
+    LuPanelLeftOpen,
+    LuCreditCard
 } from 'react-icons/lu';
 
 const navItems = [
     { name: 'Dashboard', icon: LuLayoutDashboard, path: '/company/dashboard' },
     { name: 'Job Manager', icon: LuBriefcase, path: '/company/opportunities' },
     { name: 'Active Placements', icon: LuGrip, path: '/company/placements' },
+    { name: 'Transactions', icon: LuCreditCard, path: '/company/transactions' },
     { name: 'Enterprise Settings', icon: LuSettings, path: '/company/settings' },
 ];
 
@@ -46,20 +48,20 @@ const CompanySidebar: React.FC<CompanySidebarProps> = ({ isCollapsed, onToggle }
                 {/* Logo Section */}
                 <Flex align="center" gap={3} px={isCollapsed ? 0 : 2} justify={isCollapsed ? 'center' : 'flex-start'}>
                     <Box
-                        bg="blue.600"
+                        bg="orange.600"
                         p={2}
                         borderRadius="xl"
                         boxShadow="0 0 15px rgba(49, 130, 206, 0.3)"
                         flexShrink={0}
                     >
-                        <Icon as={LuShield} color="white" boxSize={6} />
+                        <Icon as={LuShield} color="gray.800" boxSize={6} />
                     </Box>
                     {!isCollapsed && (
                         <VStack align="flex-start" gap={0}>
-                            <Text fontWeight="extrabold" fontSize="xl" letterSpacing="tight" color="white">
+                            <Text fontWeight="extrabold" fontSize="xl" letterSpacing="tight" color="whiteAlpha.900">
                                 AISHA
                             </Text>
-                            <Text fontSize="10px" fontWeight="bold" color="blue.400" mt="-1">
+                            <Text fontSize="10px" fontWeight="bold" color="orange.400" mt="-1">
                                 CORPORATE PORTAL
                             </Text>
                         </VStack>
@@ -73,7 +75,7 @@ const CompanySidebar: React.FC<CompanySidebarProps> = ({ isCollapsed, onToggle }
                     <IconButton
                         aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
                         variant="ghost"
-                        color="whiteAlpha.500"
+                        color="whiteAlpha.600"
                         _hover={{ color: 'white', bg: 'whiteAlpha.100' }}
                         size="sm"
                         rounded="lg"
@@ -101,7 +103,7 @@ const CompanySidebar: React.FC<CompanySidebarProps> = ({ isCollapsed, onToggle }
                                 px={isCollapsed ? 0 : 4}
                                 py={3}
                                 gap={3}
-                                color="white"
+                                color="whiteAlpha.900"
                                 opacity={0.8}
                                 _hover={{ opacity: 1, bg: 'whiteAlpha.100' }}
                                 borderRadius="12px"

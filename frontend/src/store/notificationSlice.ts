@@ -28,6 +28,14 @@ export const markNotificationsRead = createAsyncThunk(
     }
 );
 
+export const deleteNotifications = createAsyncThunk(
+    'notifications/delete',
+    async (idOrIds: string | string[]) => {
+        await NotificationService.deleteNotifications(idOrIds);
+        return idOrIds;
+    }
+);
+
 const notificationSlice = createSlice({
     name: 'notifications',
     initialState,
@@ -48,6 +56,20 @@ const notificationSlice = createSlice({
                     n.is_read = true;
                     state.unreadCount--;
                 }
+            }
+        });
+
+        builder.addCase(deleteNotifications.fulfilled, (state, action) => {
+            const idOrIds = action.payload;
+            if (idOrIds === 'all') {
+                state.notifications = [];
+                state.unreadCount = 0;
+            } else if (Array.isArray(idOrIds)) {
+                state.notifications = state.notifications.filter(n => !idOrIds.includes(n.id));
+                state.unreadCount = state.notifications.filter(n => !n.is_read).length;
+            } else {
+                state.notifications = state.notifications.filter(n => n.id !== idOrIds);
+                state.unreadCount = state.notifications.filter(n => !n.is_read).length;
             }
         });
     },
