@@ -1,9 +1,14 @@
 {
+  "venvPath": ".",
+  "venv": "ai-services/venv",
+  "extraPaths": [
+    "ai-services"
+  ],
   "executionEnvironments": [
     {
       "root": "ai-services",
-      "venvPath": "ai-services",
-      "venv": "venv",
+      "venvPath": ".",
+      "venv": "ai-services/venv",
       "pythonVersion": "3.13"
     }
   ]

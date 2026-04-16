@@ -6,7 +6,7 @@ dotenv.config();
 const poolConfig: any = process.env.DATABASE_URL 
     ? { 
         connectionString: process.env.DATABASE_URL,
-        ssl: { rejectUnauthorized: false }
+        ssl: process.env.DATABASE_URL.includes('localhost') ? false : { rejectUnauthorized: false }
     }
     : {
         user: process.env.DB_USER || 'saps_user',

@@ -1,5 +1,6 @@
 fastapi>=0.115.8
 uvicorn==0.31.0
+python-multipart
 sqlalchemy==2.0.35
 psycopg2-binary==2.9.10
 python-dotenv==1.0.1
