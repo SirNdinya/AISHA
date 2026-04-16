@@ -5,46 +5,63 @@ class EmailService {
     private transporter;
 
     constructor() {
-        console.log('[EmailService] Initializing with SMTP:', {
-            host: process.env.SMTP_HOST,
-            port: process.env.SMTP_PORT,
-            user: process.env.SMTP_USER,
-            hasPass: !!process.env.SMTP_PASS,
-            from: process.env.EMAIL_FROM
+        const smtpHost = process.env.SMTP_HOST;
+        const smtpPort = process.env.SMTP_PORT || '587';
+        const smtpUser = process.env.SMTP_USER;
+        const smtpPass = process.env.SMTP_PASS;
+
+        console.log('[EmailService] 🛡️ Validating SMTP Configuration...');
+        console.log('[EmailService] Parameters:', {
+            host: smtpHost || 'MISSING',
+            port: smtpPort,
+            user: smtpUser || 'MISSING',
+            hasPass: !!smtpPass,
+            from: process.env.EMAIL_FROM || 'NOT_SET (Will use fallback)'
         });
 
-        const smtpHost = process.env.SMTP_HOST;
-        if (!smtpHost && process.env.NODE_ENV === 'production') {
-            console.error('[EmailService] WARNING: SMTP_HOST is not defined in production!');
+        // CRITICAL: Prevent defaulting to localhost if SMTP_HOST is missing
+        if (!smtpHost) {
+            const errorMsg = '[EmailService] ❌ CRITICAL CONFIG ERROR: SMTP_HOST environment variable is missing. Check your Render dashboard or .env file.';
+            console.error(errorMsg);
+            if (process.env.NODE_ENV === 'production') {
+                throw new Error(errorMsg);
+            }
         }
 
-        const isGmail = smtpHost?.includes('gmail');
+        const isGmail = smtpHost?.toLowerCase().includes('gmail');
 
-        this.transporter = nodemailer.createTransport(isGmail ? {
-            service: 'gmail',
-            auth: {
-                user: process.env.SMTP_USER,
-                pass: process.env.SMTP_PASS,
-            }
-        } : {
-            host: smtpHost,
-            port: parseInt(process.env.SMTP_PORT || '587'),
-            secure: false,
-            auth: {
-                user: process.env.SMTP_USER,
-                pass: process.env.SMTP_PASS,
-            },
-            tls: {
-                rejectUnauthorized: false
-            }
-        });
+        if (isGmail) {
+            console.log('[EmailService] 📧 Using GMAIL service mode');
+            this.transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: smtpUser,
+                    pass: smtpPass,
+                }
+            });
+        } else {
+            console.log(`[EmailService] 🌐 Using custom SMTP mode: ${smtpHost}:${smtpPort}`);
+            this.transporter = nodemailer.createTransport({
+                host: smtpHost,
+                port: parseInt(smtpPort),
+                secure: false, // true for 465, false for other ports
+                auth: {
+                    user: smtpUser,
+                    pass: smtpPass,
+                },
+                tls: {
+                    // Do not fail on invalid certs
+                    rejectUnauthorized: false
+                }
+            });
+        }
 
         // Verify connection as soon as service is initialized
         this.transporter.verify((error: Error | null, success: boolean) => {
             if (error) {
-                console.error('[EmailService] Transporter Connection Error:', error);
-            } else if (process.env.NODE_ENV !== 'test') {
-                console.log('[EmailService] Server is ready to take our messages');
+                console.error('[EmailService] ❌ Transporter Connection Error:', error.message);
+            } else {
+                console.log('[EmailService] ✅ SMTP Connection Verified - Ready to send emails');
             }
         });
     }
