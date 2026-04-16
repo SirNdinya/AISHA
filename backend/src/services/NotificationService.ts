@@ -2,9 +2,11 @@ import pool from '../config/database';
 import { createClient } from 'redis';
 import { RealtimeService } from './RealtimeService';
 
-const redisClient = createClient({
-    url: `redis://${process.env.REDIS_HOST || 'redis'}:${process.env.REDIS_PORT || 6379}`
-});
+const redisConfig = process.env.REDIS_URL 
+    ? { url: process.env.REDIS_URL }
+    : { url: `redis://${process.env.REDIS_HOST || 'redis'}:${process.env.REDIS_PORT || 6379}` };
+
+const redisClient = createClient(redisConfig);
 
 if (process.env.NODE_ENV !== 'test') {
     redisClient.on('error', (err) => console.error('Redis Client Error', err));
