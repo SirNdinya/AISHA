@@ -121,7 +121,7 @@ const AuthBackground: React.FC<{ themeColor: string; portal?: string | null }> =
 
     return (
         <Box
-            position="absolute"
+            position="fixed"
             top={0}
             left={0}
             w="full"

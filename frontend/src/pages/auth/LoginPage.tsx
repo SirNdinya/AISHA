@@ -8,7 +8,7 @@ import apiClient from '../../services/apiClient';
 import AuthLayout from '../../components/layout/AuthLayout';
 import { useDispatch } from 'react-redux';
 import { setCredentials } from '../../store/authSlice';
-import { FaUserGraduate, FaBuilding, FaUniversity, FaUserShield, FaArrowRight, FaEnvelope, FaLock, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaUserGraduate, FaBuilding, FaUniversity, FaUserShield, FaArrowRight, FaEnvelope, FaLock, FaEye, FaEyeSlash, FaArrowLeft } from 'react-icons/fa';
 
 const LoginPage: React.FC = () => {
     const [loading, setLoading] = useState(false);
@@ -151,6 +151,21 @@ const LoginPage: React.FC = () => {
 
                     <form onSubmit={formik.handleSubmit}>
                         <VStack gap={5}>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="xs"
+                                onClick={() => navigate('/')}
+                                mb={4}
+                                color="gray.600"
+                                _hover={{ color: `${config.color}.500`, bg: 'transparent' }}
+                            >
+                                <HStack gap={1}>
+                                    <Icon as={FaArrowLeft} />
+                                    <Text fontWeight="bold">Back to Home Page</Text>
+                                </HStack>
+                            </Button>
+
                             <Box w="full">
                                 <Flex align="center" mb={1.5} gap={2} color="gray.800">
                                     <Icon as={FaEnvelope} fontSize="xs" />
@@ -183,9 +198,11 @@ const LoginPage: React.FC = () => {
                                         <Icon as={FaLock} fontSize="xs" />
                                         <Text fontSize="xs" fontWeight="black" letterSpacing="widest" textTransform="uppercase">Password</Text>
                                     </Flex>
-                                    <Link asChild fontSize="xs" fontWeight="bold" color={`${config.color}.600`}>
-                                        <RouterLink to="/forgot-password">Forgot Password?</RouterLink>
-                                    </Link>
+                                    {activePortal !== 'admin' && (
+                                        <Link asChild fontSize="xs" fontWeight="bold" color={`${config.color}.600`}>
+                                            <RouterLink to="/forgot-password">Forgot Password?</RouterLink>
+                                        </Link>
+                                    )}
                                 </Flex>
                                 <Box position="relative">
                                     <Input
@@ -245,12 +262,14 @@ const LoginPage: React.FC = () => {
                         </VStack>
                     </form>
 
-                    <Flex justify="center" gap={2} align="center">
-                        <Text fontSize="sm" color="gray.800" fontWeight="bold">Don't have an account?</Text>
-                        <Link asChild fontSize="sm" color={`${config.color}.600`} fontWeight="black">
-                            <RouterLink to={`/register?portal=${activePortal}`}>Register Here</RouterLink>
-                        </Link>
-                    </Flex>
+                    {activePortal !== 'admin' && (
+                        <Flex justify="center" gap={2} align="center">
+                            <Text fontSize="sm" color="gray.800" fontWeight="bold">Don't have an account?</Text>
+                            <Link asChild fontSize="sm" color={`${config.color}.600`} fontWeight="black">
+                                <RouterLink to={`/register?portal=${activePortal}`}>Register Here</RouterLink>
+                            </Link>
+                        </Flex>
+                    )}
                 </VStack>
             </Box>
         </AuthLayout>

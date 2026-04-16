@@ -59,29 +59,96 @@ const App: React.FC = () => {
   const currentPortal = import.meta.env.VITE_PORTAL;
 
   const renderPortalRoutes = () => {
+    // Shared routes for all portals
+    const authRoutes = (
+      <>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
+      </>
+    );
+
+    const studentRoutes = (
+      <Route path="/student" element={
+        <ProtectedRoute allowedRoles={['STUDENT']}>
+          <StudentLayout />
+        </ProtectedRoute>
+      }>
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard" element={<StudentDashboard />} />
+        <Route path="profile" element={<StudentProfile />} />
+        <Route path="attachments" element={<StudentAttachments />} />
+        <Route path="settings" element={<StudentSettings />} />
+        <Route path="logbook" element={<LogbookManager />} />
+        <Route path="notifications" element={<NotificationPage />} />
+      </Route>
+    );
+
+    const companyRoutes = (
+      <Route path="/company" element={
+        <ProtectedRoute allowedRoles={['COMPANY']}>
+          <CompanyLayout />
+        </ProtectedRoute>
+      }>
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard" element={<CompanyDashboard />} />
+        <Route path="opportunities" element={<OpportunityManager />} />
+        <Route path="placements" element={<CompanyPlacementTracker />} />
+        <Route path="transactions" element={<CompanyTransactions />} />
+        <Route path="settings" element={<CompanySettings />} />
+        <Route path="notifications" element={<NotificationPage />} />
+        <Route path="logbooks" element={<LogbookReview role="COMPANY" />} />
+      </Route>
+    );
+
+    const institutionRoutes = (
+      <>
+        <Route path="/institution" element={
+          <ProtectedRoute allowedRoles={['INSTITUTION']}>
+            <AdminPortalLayout />
+          </ProtectedRoute>
+        }>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<AnalyticsOverview />} />
+          <Route path="departments" element={<DepartmentManager />} />
+          <Route path="students" element={<StudentSyncManager />} />
+          <Route path="settings" element={<SettingsPage />} />
+        </Route>
+        <Route path="/department" element={
+          <ProtectedRoute allowedRoles={['DEPARTMENT_ADMIN']}>
+            <AdminPortalLayout />
+          </ProtectedRoute>
+        }>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<Broadcasting />} />
+          <Route path="students" element={<StudentSyncManager />} />
+          <Route path="logbooks" element={<LogbookReview role="INSTITUTION" />} />
+          <Route path="placements" element={<PlacementTracker />} />
+          <Route path="settings" element={<SettingsPage />} />
+        </Route>
+      </>
+    );
+
+    const adminRoutes = (
+      <Route path="/admin" element={
+        <ProtectedRoute allowedRoles={['ADMIN']}>
+          <AdminLayout />
+        </ProtectedRoute>
+      }>
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard" element={<AdminDashboard />} />
+      </Route>
+    );
+
     switch (currentPortal) {
       case 'student':
         return (
           <>
             <Route path="/" element={<Navigate to="/login" replace />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route path="/verify-email" element={<VerifyEmailPage />} />
-            <Route path="/student" element={
-              <ProtectedRoute allowedRoles={['STUDENT']}>
-                <StudentLayout />
-              </ProtectedRoute>
-            }>
-              <Route index element={<Navigate to="dashboard" replace />} />
-              <Route path="dashboard" element={<StudentDashboard />} />
-              <Route path="profile" element={<StudentProfile />} />
-              <Route path="attachments" element={<StudentAttachments />} />
-              <Route path="settings" element={<StudentSettings />} />
-              <Route path="logbook" element={<LogbookManager />} />
-              <Route path="notifications" element={<NotificationPage />} />
-            </Route>
+            {authRoutes}
+            {studentRoutes}
             <Route path="*" element={<Navigate to="/login" replace />} />
           </>
         );
@@ -90,25 +157,8 @@ const App: React.FC = () => {
         return (
           <>
             <Route path="/" element={<Navigate to="/login" replace />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route path="/verify-email" element={<VerifyEmailPage />} />
-            <Route path="/company" element={
-              <ProtectedRoute allowedRoles={['COMPANY']}>
-                <CompanyLayout />
-              </ProtectedRoute>
-            }>
-              <Route index element={<Navigate to="dashboard" replace />} />
-              <Route path="dashboard" element={<CompanyDashboard />} />
-              <Route path="opportunities" element={<OpportunityManager />} />
-              <Route path="placements" element={<CompanyPlacementTracker />} />
-              <Route path="transactions" element={<CompanyTransactions />} />
-              <Route path="settings" element={<CompanySettings />} />
-              <Route path="notifications" element={<NotificationPage />} />
-              <Route path="logbooks" element={<LogbookReview role="COMPANY" />} />
-            </Route>
+            {authRoutes}
+            {companyRoutes}
             <Route path="*" element={<Navigate to="/login" replace />} />
           </>
         );
@@ -117,34 +167,8 @@ const App: React.FC = () => {
         return (
           <>
             <Route path="/" element={<Navigate to="/login" replace />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route path="/verify-email" element={<VerifyEmailPage />} />
-            <Route path="/institution" element={
-              <ProtectedRoute allowedRoles={['INSTITUTION']}>
-                <AdminPortalLayout />
-              </ProtectedRoute>
-            }>
-              <Route index element={<Navigate to="dashboard" replace />} />
-              <Route path="dashboard" element={<AnalyticsOverview />} />
-              <Route path="departments" element={<DepartmentManager />} />
-              <Route path="students" element={<StudentSyncManager />} />
-              <Route path="settings" element={<SettingsPage />} />
-            </Route>
-            <Route path="/department" element={
-              <ProtectedRoute allowedRoles={['DEPARTMENT_ADMIN']}>
-                <AdminPortalLayout />
-              </ProtectedRoute>
-            }>
-              <Route index element={<Navigate to="dashboard" replace />} />
-              <Route path="dashboard" element={<Broadcasting />} />
-              <Route path="students" element={<StudentSyncManager />} />
-              <Route path="logbooks" element={<LogbookReview role="INSTITUTION" />} />
-              <Route path="placements" element={<PlacementTracker />} />
-              <Route path="settings" element={<SettingsPage />} />
-            </Route>
+            {authRoutes}
+            {institutionRoutes}
             <Route path="*" element={<Navigate to="/login" replace />} />
           </>
         );
@@ -153,19 +177,8 @@ const App: React.FC = () => {
         return (
           <>
             <Route path="/" element={<Navigate to="/login" replace />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<Navigate to="/login" replace />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route path="/verify-email" element={<VerifyEmailPage />} />
-            <Route path="/admin" element={
-              <ProtectedRoute allowedRoles={['ADMIN']}>
-                <AdminLayout />
-              </ProtectedRoute>
-            }>
-              <Route index element={<Navigate to="dashboard" replace />} />
-              <Route path="dashboard" element={<AdminDashboard />} />
-            </Route>
+            {authRoutes}
+            {adminRoutes}
             <Route path="*" element={<Navigate to="/login" replace />} />
           </>
         );
@@ -174,68 +187,11 @@ const App: React.FC = () => {
         return (
           <>
             <Route path="/" element={<PortalSelector />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            <Route path="/reset-password" element={<ResetPasswordPage />} />
-            <Route path="/verify-email" element={<VerifyEmailPage />} />
-
-            <Route path="/student" element={
-              <ProtectedRoute allowedRoles={['STUDENT']}>
-                <StudentLayout />
-              </ProtectedRoute>
-            }>
-              <Route index element={<Navigate to="dashboard" replace />} />
-              <Route path="dashboard" element={<StudentDashboard />} />
-              <Route path="profile" element={<StudentProfile />} />
-              <Route path="attachments" element={<StudentAttachments />} />
-            </Route>
-
-            <Route path="/company" element={
-              <ProtectedRoute allowedRoles={['COMPANY']}>
-                <CompanyLayout />
-              </ProtectedRoute>
-            }>
-              <Route index element={<Navigate to="dashboard" replace />} />
-              <Route path="dashboard" element={<CompanyDashboard />} />
-              <Route path="opportunities" element={<OpportunityManager />} />
-              <Route path="transactions" element={<CompanyTransactions />} />
-              <Route path="settings" element={<CompanySettings />} />
-            </Route>
-
-            <Route path="/institution" element={
-              <ProtectedRoute allowedRoles={['INSTITUTION']}>
-                <AdminPortalLayout />
-              </ProtectedRoute>
-            }>
-              <Route index element={<Navigate to="dashboard" replace />} />
-              <Route path="dashboard" element={<AnalyticsOverview />} />
-              <Route path="departments" element={<DepartmentManager />} />
-              <Route path="students" element={<StudentSyncManager />} />
-              <Route path="settings" element={<SettingsPage />} />
-            </Route>
-
-            <Route path="/department" element={
-              <ProtectedRoute allowedRoles={['DEPARTMENT_ADMIN']}>
-                <AdminPortalLayout />
-              </ProtectedRoute>
-            }>
-              <Route index element={<Navigate to="dashboard" replace />} />
-              <Route path="dashboard" element={<Broadcasting />} />
-              <Route path="students" element={<StudentSyncManager />} />
-              <Route path="placements" element={<PlacementTracker />} />
-              <Route path="settings" element={<SettingsPage />} />
-            </Route>
-
-            <Route path="/admin" element={
-              <ProtectedRoute allowedRoles={['ADMIN']}>
-                <AdminLayout />
-              </ProtectedRoute>
-            }>
-              <Route index element={<Navigate to="dashboard" replace />} />
-              <Route path="dashboard" element={<AdminDashboard />} />
-            </Route>
-
+            {authRoutes}
+            {studentRoutes}
+            {companyRoutes}
+            {institutionRoutes}
+            {adminRoutes}
             <Route path="*" element={<Navigate to="/" replace />} />
           </>
         );

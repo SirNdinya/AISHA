@@ -286,21 +286,20 @@ const RegisterPage: React.FC = () => {
                             )}
 
                             <form onSubmit={formik.handleSubmit}>
-                                {!import.meta.env.VITE_PORTAL && (
                                     <Button
+                                        type="button"
                                         variant="ghost"
                                         size="xs"
-                                        onClick={() => setStep(1)}
+                                        onClick={() => navigate('/')}
                                         mb={4}
                                         color="gray.600"
                                         _hover={{ color: `${currentConfig.color}.500`, bg: 'transparent' }}
                                     >
                                         <HStack gap={1}>
                                             <Icon as={FaArrowLeft} />
-                                            <Text fontWeight="bold">Switch Portal Type</Text>
+                                            <Text fontWeight="bold">Back to Home Page</Text>
                                         </HStack>
                                     </Button>
-                                )}
                                 <VStack gap={5}>
                                     <Box w="full">
                                         <Flex align="center" mb={1.5} gap={2} color="gray.800">

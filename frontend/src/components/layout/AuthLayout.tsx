@@ -118,18 +118,19 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, portal }) => {
     return (
         <Flex
             minH="100vh"
-            h="100vh"
             w="full"
             maxW="100vw"
             position="relative"
             bg="gray.900"
-            overflow="hidden"
+            overflowX="hidden"
+            overflowY="auto"
             align="center"
             justify="center"
+            py={8}
         >
             {/* Premium Background Layer */}
             <Box
-                position="absolute"
+                position="fixed"
                 top={0}
                 left={0}
                 right={0}
@@ -152,7 +153,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, portal }) => {
             <AuthBackground themeColor={themeColor} portal={portal} />
 
             {/* Neural Connections Layer */}
-            <Box position="absolute" top={0} left={0} w="full" h="full" pointerEvents="none" zIndex={1} display={{ base: 'none', lg: 'block' }}>
+            <Box position="fixed" top={0} left={0} w="full" h="full" pointerEvents="none" zIndex={1} display={{ base: 'none', lg: 'block' }}>
                 <svg width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0 }}>
                     {lineCoords.map((line, i) => {
                         const isStraight = i === 1 || i === 4;
@@ -181,7 +182,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, portal }) => {
             </Box>
 
             {/* Satellite Nodes */}
-            <Box position="absolute" top={0} left={0} w="full" h="full" pointerEvents="none" zIndex={2} display={{ base: 'none', lg: 'block' }}>
+            <Box position="fixed" top={0} left={0} w="full" h="full" pointerEvents="none" zIndex={2} display={{ base: 'none', lg: 'block' }}>
                 {currentContent.map((item, i) => (
                     <Box
                         key={i}
