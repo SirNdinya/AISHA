@@ -28,7 +28,7 @@ from app import models
 from typing import List, Dict, Any
 from app.core.ml_factory import model_factory
 from app.services.llm_service import llm_service
-from app.core.templates import get_fallback_reasoning, get_transcript_reasoning, get_academic_only_reasoning
+from app.core.templates import get_fallback_reasoning, get_transcript_reasoning, get_academic_only_reasoning, get_meta_fallback_reasoning
 
 class OpportunityCache:
     opportunities: List[models.Opportunity] = []
@@ -114,7 +114,7 @@ class MatchingService:
                 # Handle missing embeddings by using a baseline score
                 return {
                     "score": 0.5,
-                    "reasoning": "High-confidence alignment identified through your academic record and institutional performance metadata."
+                    "reasoning": get_meta_fallback_reasoning()
                 }
                 
             cos_val = cos_sim(embeddings[0], embeddings[1])
