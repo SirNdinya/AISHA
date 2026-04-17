@@ -1,15 +1,19 @@
 import React, { useMemo, useState } from 'react';
 import {
     Box, Heading, Text, VStack, Badge, Flex,
-    HStack, Icon, Button, Container, Image
+    HStack, Button, Container, Image, IconButton
 } from '@chakra-ui/react';
-import { LuSettings, LuX } from "react-icons/lu";
+import { LuSettings, LuX, LuMenu } from "react-icons/lu";
 import { Avatar } from "../../../components/ui/avatar";
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../../store/authSlice';
 import type { AppDispatch, RootState } from '../../../store';
 import NotificationCenter from '../../../components/common/NotificationCenter';
+
+interface StudentHeaderProps {
+    onMenuClick?: () => void;
+}
 
 const BACKEND_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api')
     .replace(/\/api(.*)?$/, '');
@@ -19,7 +23,7 @@ const getMediaUrl = (url?: string | null): string => {
     return `${BACKEND_URL}${url}`;
 };
 
-const StudentHeader: React.FC = () => {
+const StudentHeader: React.FC<StudentHeaderProps> = ({ onMenuClick }) => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const { profile, error } = useSelector((state: RootState) => state.student);
@@ -41,10 +45,23 @@ const StudentHeader: React.FC = () => {
 
     return (
         <>
-            <Box bg="transparent" borderBottom="1px solid" borderColor="gray.200" py={1} mb={1} pos="sticky" top={0} zIndex={1100} backdropFilter="blur(20px)">
+            <Box bg="transparent" borderBottom="1px solid" borderColor="whiteAlpha.100" py={{ base: 2, md: 1 }} mb={1} pos="sticky" top={0} zIndex={1100} backdropFilter="blur(20px)">
                 <Container maxW="container.xl">
-                    <Flex justify="space-between" align="flex-end">
-                        <VStack align="start" gap={4}>
+                    <Flex justify="space-between" align={{ base: "center", md: "flex-end" }} gap={2}>
+                        <HStack gap={{ base: 3, md: 4 }}>
+                            {/* Hamburger Menu for Mobile */}
+                            <IconButton
+                                aria-label="Open Menu"
+                                display={{ base: "flex", lg: "none" }}
+                                variant="ghost"
+                                color="white"
+                                onClick={onMenuClick}
+                                size="sm"
+                                mr={1}
+                            >
+                                <LuMenu size={24} />
+                            </IconButton>
+
                             <Box
                                 pos="relative"
                                 cursor="pointer"
@@ -53,7 +70,7 @@ const StudentHeader: React.FC = () => {
                                 display="inline-block"
                             >
                                 <Avatar
-                                    size="md"
+                                    size={{ base: "sm", md: "md" }}
                                     border="2px solid"
                                     borderColor={error ? "red.500" : "indigo.400"}
                                     src={photoUrl}
@@ -83,39 +100,40 @@ const StudentHeader: React.FC = () => {
                                 )}
                             </Box>
 
-                            <VStack align="start" gap={1}>
-                                <HStack gap={3}>
-                                    <Heading size="md" color="#F8FAFC" fontWeight="black" letterSpacing="tight">
+                            <VStack align="start" gap={0}>
+                                <HStack gap={{ base: 1, md: 3 }}>
+                                    <Heading size={{ base: "sm", md: "md" }} color="#F8FAFC" fontWeight="black" letterSpacing="tight">
                                         {greeting}, {profile?.last_name || '...'}
                                     </Heading>
-                                    {error && <Badge size="sm" colorPalette="red" variant="subtle" fontWeight="bold">SYNC ERROR</Badge>}
+                                    {error && <Badge size="xs" colorPalette="red" variant="subtle" fontWeight="bold">SYNC</Badge>}
                                 </HStack>
-                                {/* Subtext removed per user request */}
                             </VStack>
-                        </VStack>
+                        </HStack>
 
-                        <HStack gap={8} mb={1}>
-                            <HStack gap={5}>
+                        <HStack gap={{ base: 2, md: 8 }}>
+                            <HStack gap={{ base: 2, md: 5 }}>
                                 <NotificationCenter />
-                                <Icon
-                                    as={LuSettings}
-                                    cursor="pointer"
+                                <IconButton
+                                    aria-label="Settings"
+                                    variant="ghost"
                                     color="whiteAlpha.600"
                                     _hover={{ color: "indigo.400" }}
                                     onClick={() => navigate('/student/settings')}
-                                    boxSize={5}
-                                />
+                                    size="sm"
+                                >
+                                    <LuSettings size={20} />
+                                </IconButton>
                                 <Button 
                                     variant="outline" 
                                     colorPalette="indigo" 
-                                    size="sm" 
+                                    size="xs" 
                                     onClick={handleLogout} 
                                     border="1px solid" 
                                     borderColor="indigo.900" 
                                     _hover={{ bg: "indigo.900", color: "white" }}
-                                    display={{ base: "flex", lg: "none" }}
+                                    display={{ base: "none", sm: "flex", lg: "none" }}
                                 >
-                                    SIGN OUT
+                                    OUT
                                 </Button>
                             </HStack>
                         </HStack>

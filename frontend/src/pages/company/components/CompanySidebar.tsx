@@ -32,17 +32,13 @@ const CompanySidebar: React.FC<CompanySidebarProps> = ({ isCollapsed, onToggle, 
     return (
         <Box
             w={isCollapsed ? '80px' : '280px'}
-            h="100vh"
+            h="full"
             className="glass-panel"
-            position="fixed"
-            left="4"
-            top="4"
-            bottom="4"
+            position="relative"
             m="0"
-            borderRadius="24px"
+            borderRadius={{ base: "0", lg: "24px" }}
             p={isCollapsed ? 3 : 6}
             zIndex={10}
-            display={{ base: "none", lg: "block" }}
             transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
             overflow="hidden"
         >

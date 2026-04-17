@@ -1,7 +1,9 @@
-import { Box, Heading, Text, Button, VStack, HStack, Card, Icon, Container, SimpleGrid, Link, Input, Textarea, Image } from '@chakra-ui/react';
+import { Box, Heading, Text, Button, VStack, HStack, Card, Icon, Container, SimpleGrid, Link, Input, Textarea, IconButton, DrawerRoot, DrawerBackdrop, DrawerContent, DrawerBody, DrawerCloseTrigger } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 import { FaGraduationCap, FaBuilding, FaUniversity, FaUserShield, FaLinkedin, FaTwitter, FaGithub, FaEnvelope, FaMapMarkerAlt, FaPhone } from 'react-icons/fa';
+import { LuMenu, LuRocket } from 'react-icons/lu';
 
 interface PortalOption {
     title: string;
@@ -44,6 +46,7 @@ const portals: PortalOption[] = [
 
 const PortalSelector: React.FC = () => {
     const navigate = useNavigate();
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const scrollToPortals = () => {
         const element = document.getElementById('portals');
@@ -63,34 +66,82 @@ const PortalSelector: React.FC = () => {
                 bg="rgba(15, 23, 42, 0.6)"
                 borderBottom="1px solid"
                 borderColor="whiteAlpha.100"
+                px={6}
+                py={4}
             >
-                <Container maxW="container.xl" py={4}>
-                    <HStack justify="space-between">
+                <Container maxW="container.xl">
+                    <HStack justify="space-between" align="center">
                         <HStack gap={2}>
-                            <Box boxSize="40px" bgGradient="to-br" gradientFrom="indigo.500" gradientTo="blue.600" borderRadius="xl" display="flex" alignItems="center" justifyContent="center">
-                                <Text fontWeight="black" fontSize="xl">A</Text>
+                            <Box w="32px" h="32px" bg="indigo.500" borderRadius="8px" display="flex" alignItems="center" justifyContent="center">
+                                <LuRocket color="white" size={18} />
                             </Box>
-                            <Heading size="lg" fontWeight="black" letterSpacing="tighter">AISHA</Heading>
+                            <Heading size="md" fontWeight="black" letterSpacing="tight">AISHA</Heading>
                         </HStack>
-                        <HStack gap={8} display={{ base: 'none', md: 'flex' }}>
-                            <Link href="#hero" fontWeight="bold" fontSize="sm" _hover={{ color: 'indigo.400' }}>Home</Link>
-                            <Link href="#about" fontWeight="bold" fontSize="sm" _hover={{ color: 'indigo.400' }}>About</Link>
-                            <Link href="#portals" fontWeight="bold" fontSize="sm" _hover={{ color: 'indigo.400' }}>Portals</Link>
-                            <Link href="#contact" fontWeight="bold" fontSize="sm" _hover={{ color: 'indigo.400' }}>Contact</Link>
+
+                        <HStack gap={8} display={{ base: "none", lg: "flex" }}>
+                            <Link href="#hero" color="whiteAlpha.700" fontWeight="medium" _hover={{ color: "indigo.400" }}>Home</Link>
+                            <Link href="#about" color="whiteAlpha.700" fontWeight="medium" _hover={{ color: "indigo.400" }}>About</Link>
+                            <Link href="#portals" color="whiteAlpha.700" fontWeight="medium" _hover={{ color: "indigo.400" }}>Portals</Link>
+                            <Link href="#contact" color="whiteAlpha.700" fontWeight="medium" _hover={{ color: "indigo.400" }}>Contact</Link>
                         </HStack>
-                        <Button
-                            colorPalette="indigo"
-                            size="sm"
-                            borderRadius="full"
-                            px={6}
-                            fontWeight="bold"
-                            onClick={scrollToPortals}
-                        >
-                            Get Started
-                        </Button>
+
+                        <HStack gap={4}>
+                            <Button
+                                variant="subtle"
+                                colorPalette="indigo"
+                                size="sm"
+                                display={{ base: "none", md: "flex" }}
+                                onClick={() => window.open('https://aisha.saps.ke', '_blank')}
+                            >
+                                Documentation
+                            </Button>
+                            <IconButton
+                                aria-label="Open Menu"
+                                display={{ base: "flex", lg: "none" }}
+                                variant="ghost"
+                                color="white"
+                                onClick={() => setIsMobileMenuOpen(true)}
+                            >
+                                <LuMenu size={24} />
+                            </IconButton>
+                        </HStack>
                     </HStack>
                 </Container>
             </Box>
+
+            {/* Mobile Nav Drawer */}
+            <DrawerRoot
+                open={isMobileMenuOpen}
+                onOpenChange={(e) => setIsMobileMenuOpen(e.open)}
+                placement="start"
+                size="full"
+            >
+                <DrawerBackdrop />
+                <DrawerContent bg="rgba(10, 11, 20, 0.95)" backdropFilter="blur(20px)">
+                    <DrawerBody display="flex" flexDirection="column" p={8}>
+                        <VStack gap={8} align="start" mt={12}>
+                            <Link href="#hero" fontSize="2xl" fontWeight="bold" color="white" onClick={() => setIsMobileMenuOpen(false)}>Home</Link>
+                            <Link href="#about" fontSize="2xl" fontWeight="bold" color="white" onClick={() => setIsMobileMenuOpen(false)}>About</Link>
+                            <Link href="#portals" fontSize="2xl" fontWeight="bold" color="white" onClick={() => setIsMobileMenuOpen(false)}>Portals</Link>
+                            <Link href="#contact" fontSize="2xl" fontWeight="bold" color="white" onClick={() => setIsMobileMenuOpen(false)}>Contact</Link>
+                        </VStack>
+                        <Box mt="auto" pb={8}>
+                            <Button
+                                w="full"
+                                colorPalette="indigo"
+                                size="lg"
+                                onClick={() => {
+                                    window.open('https://aisha.saps.ke', '_blank');
+                                    setIsMobileMenuOpen(false);
+                                }}
+                            >
+                                Documentation
+                            </Button>
+                        </Box>
+                    </DrawerBody>
+                    <DrawerCloseTrigger color="white" top="6" right="6" />
+                </DrawerContent>
+            </DrawerRoot>
 
             {/* Hero Section */}
             <Box id="hero" pt={32} pb={20} position="relative" overflow="hidden">

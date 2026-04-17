@@ -11,7 +11,7 @@ import {
     TableRoot, TableHeader, TableRow, TableColumnHeader,
     TableBody, TableCell
 } from '@chakra-ui/react';
-import { LuBookOpen, LuDownload, LuZap, LuTrendingUp, LuCircleCheck, LuShieldCheck, LuSparkles } from "react-icons/lu";
+import { LuBookOpen, LuDownload, LuZap, LuTrendingUp, LuCircleCheck, LuShieldCheck, LuSparkles, LuBot } from "react-icons/lu";
 import StudentService from '../../../services/studentService';
 import MarkdownText from '../../../components/common/MarkdownText';
 import { motion } from 'framer-motion';

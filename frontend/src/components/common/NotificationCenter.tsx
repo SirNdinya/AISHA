@@ -150,8 +150,8 @@ const NotificationCenter: React.FC = () => {
                     ref={dropDownRef}
                     position="absolute"
                     top="120%"
-                    right={0}
-                    w="400px"
+                    right={{ base: "-32px", md: 0 }}
+                    w={{ base: "calc(100vw - 32px)", md: "400px" }}
                     maxH="600px"
                     bg="rgba(13, 17, 23, 0.95)"
                     backdropFilter="blur(20px) saturate(180%)"

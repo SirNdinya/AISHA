@@ -106,9 +106,9 @@ const AishaPlayground: React.FC<AishaPlaygroundProps> = ({ isOpen, onClose }) =>
                 exit={{ opacity: 0, y: 100, scale: 0.9, x: 50 }}
                 position="fixed"
                 bottom={{ base: "90px", md: "110px" }}
-                right={{ base: "20px", md: "30px" }}
-                w={isMaximized ? { base: "90vw", md: "600px" } : { base: "90vw", md: "400px" }}
-                h={isMaximized ? { base: "80vh", md: "700px" } : { base: "70vh", md: "500px" }}
+                right={{ base: "16px", md: "30px" }}
+                w={isMaximized ? { base: "calc(100vw - 32px)", md: "600px" } : { base: "calc(100vw - 32px)", md: "400px" }}
+                h={isMaximized ? { base: "calc(100vh - 120px)", md: "700px" } : { base: "60vh", md: "500px" }}
                 maxH="80vh"
                 borderRadius="24px"
                 className="glass-card"
