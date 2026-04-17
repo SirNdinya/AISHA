@@ -67,6 +67,14 @@ class TranscriptService:
             
             # Post-processing validation to catch lazy LLM outputs
             if "error" in analysis:
+                error_msg = str(analysis.get("error", "")).upper()
+                if "429" in error_msg or "RESOURCE_EXHAUSTED" in error_msg:
+                    return {
+                        "status": "RATE_LIMITED",
+                        "recommendation": "Academic analysis is currently paused due to high demand. Please check back in a few minutes.",
+                        "insights": "We've reached our temporary AI capacity limit. Your records are safe, and full analysis will resume shortly. 🎯",
+                        "detected_clusters": []
+                    }
                 return {
                     "status": "OFFLINE",
                     "recommendation": get_fallback_reasoning(),

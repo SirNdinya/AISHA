@@ -29,25 +29,32 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
 
     useEffect(() => {
         let interval: ReturnType<typeof setInterval>;
+        let retryCount = 0;
+        const MAX_RETRIES = 3;
 
         if (isOpen) {
             fetchData();
             
             interval = setInterval(() => {
                 setData(currentData => {
-                    const isInvalid = !currentData?.analysis || 
-                                     !currentData.analysis.insights || 
-                                     currentData.analysis.insights.toLowerCase().includes('string') ||
-                                     currentData.analysis.insights.includes('{');
+                    const status = currentData?.analysis?.status;
+                    const insights = currentData?.analysis?.insights;
                     
-                    if (isInvalid) {
+                    const isInvalid = !currentData?.analysis || 
+                                     !insights || 
+                                     insights.toLowerCase().includes('string') ||
+                                     insights.includes('{') ||
+                                     status === 'RETRY_REQUIRED';
+                    
+                    if (isInvalid && retryCount < MAX_RETRIES && status !== 'RATE_LIMITED' && status !== 'OFFLINE') {
+                        retryCount++;
                         fetchDataSilent();
                     } else {
                         clearInterval(interval);
                     }
                     return currentData;
                 });
-            }, 3000);
+            }, 20000); // 20 seconds
         }
 
         return () => {
