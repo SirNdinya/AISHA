@@ -89,13 +89,28 @@ ACADEMIC_MATCH_TEMPLATES = [
     "Given your high aptitude in **{unit}**, this field represents your most compatible academic alignment for long-term career growth. 🚀",
 ]
 
-# Expand ACADEMIC_MATCH_TEMPLATES to 155+
-basis = ["prioritized and selected based on your verified mastery of", "directly derived from your exceptional expertise in", "carefully aligned with your high-grade performance in", "selected specifically to leverage your established technical strength in"]
-advice_snippets = ["we consider this a strong indicator that you should update your preferences to reflect these interests", "this field represents a logical and high-value next step for your professional profile", "we suggest officially updating your interests in the portal to optimize future matches", "your academic records across all semesters point towards excellence in this domain"]
+# Expand ACADEMIC_MATCH_TEMPLATES to 50+
+basis_phrases = [
+    "Your verified mastery of **{unit}**",
+    "Your consistent excellence in **{unit}**",
+    "The technical proficiency shown in **{unit}**",
+    "Your high-tier academic performance in **{unit}**",
+    "The depth of knowledge demonstrated in **{unit}**"
+]
+advice_snippets = [
+    "is a strong indicator that you should update your preferences to reflect these interests",
+    "represents a logical and high-value next step for your professional profile",
+    "suggests you should officially update your interests in the portal to optimize future matches",
+    "across all semesters points towards excellence in this domain",
+    "highlights a significant competitive advantage in the current job market",
+    "aligns with the most demanding requirements of top-tier technical roles",
+    "is exactly the type of specialization that high-performance teams look for",
+    "provides you with a solid foundation for advanced research and leadership"
+]
 
-while len(ACADEMIC_MATCH_TEMPLATES) < 160:
-    e = random.choice(emo) if random.random() > 0.7 else "" # Only 30% emojis here
-    t = f"Your verified mastery of **{{unit}}** {random.choice(advice_snippets)}.{' ' + e if e else ''}"
+while len(ACADEMIC_MATCH_TEMPLATES) < 55:
+    e = random.choice(emo) if random.random() > 0.7 else ""
+    t = f"{random.choice(basis_phrases)} {random.choice(advice_snippets)}.{' ' + e if e else ''}"
     if t not in ACADEMIC_MATCH_TEMPLATES: ACADEMIC_MATCH_TEMPLATES.append(t)
 
 class TemplateEngine:
