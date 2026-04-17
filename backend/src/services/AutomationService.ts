@@ -81,8 +81,23 @@ export class AutomationService {
                     const appRes = await pool.query(insertQuery, [student.id, oppId, totalScore, reasoning]);
                     const newAppId = appRes.rows[0].id;
                     
-                    const oppQuery = await pool.query('SELECT company_id FROM opportunities WHERE id = $1', [oppId]);
-                    const compId = oppQuery.rows[0].company_id;
+                    const oppQuery = await pool.query('SELECT company_id, vacancies FROM opportunities WHERE id = $1', [oppId]);
+                    const opp = oppQuery.rows[0];
+                    const compId = opp.company_id;
+                    const vacancies = opp.vacancies || 0;
+
+                    // Check current active placements for this opportunity
+                    const countRes = await pool.query(`
+                        SELECT COUNT(*) FROM placements p
+                        JOIN applications a ON p.application_id = a.id
+                        WHERE a.opportunity_id = $1 AND p.status = 'ACTIVE'
+                    `, [oppId]);
+                    const currentPlacements = parseInt(countRes.rows[0].count);
+
+                    if (currentPlacements >= vacancies) {
+                        console.log(`[AI SERVICE] Skipping auto-placement for student ${studentId} to ${oppId}: No vacancies remaining.`);
+                        return { matches_found: 0, message: "Match found, but the opportunity has reached full capacity." };
+                    }
 
                     await pool.query(`
                         INSERT INTO placements (application_id, student_id, company_id, start_date, end_date, status)

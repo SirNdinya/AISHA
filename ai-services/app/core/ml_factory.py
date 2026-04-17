@@ -25,7 +25,7 @@ class MLModelFactory:
             if settings.GEMINI_API_KEY:
                 self.client = genai.Client(
                     api_key=settings.GEMINI_API_KEY,
-                    http_options={'api_version': 'v1'}
+                    http_options={'api_version': 'v1beta'}
                 )
                 self._ready = True
                 logger.info("[ML-FACTORY] Gemini Neural Engine Online. (New GenAI SDK)")

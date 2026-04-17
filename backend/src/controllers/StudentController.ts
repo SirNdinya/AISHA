@@ -378,13 +378,28 @@ export class StudentController extends BaseController {
                             const appRes = await pool.query(insertQuery, [student.id, oppId, totalScore, reasoning]);
                             const newAppId = appRes.rows[0].id;
                             
-                            const oppQuery = await pool.query('SELECT company_id FROM opportunities WHERE id = $1', [oppId]);
+                            const oppQuery = await pool.query('SELECT company_id, vacancies FROM opportunities WHERE id = $1', [oppId]);
                             if (oppQuery.rows.length > 0) {
-                                const compId = oppQuery.rows[0].company_id;
-                                await pool.query(`
-                                    INSERT INTO placements (application_id, student_id, company_id, start_date, end_date, status)
-                                    VALUES ($1, $2, $3, NOW(), NOW() + INTERVAL '3 months', 'ACTIVE')
-                                `, [newAppId, student.id, compId]);
+                                const opp = oppQuery.rows[0];
+                                const compId = opp.company_id;
+                                const vacancies = opp.vacancies || 0;
+
+                                // Check current active placements for this opportunity
+                                const countRes = await pool.query(`
+                                    SELECT COUNT(*) FROM placements p
+                                    JOIN applications a ON p.application_id = a.id
+                                    WHERE a.opportunity_id = $1 AND p.status = 'ACTIVE'
+                                `, [oppId]);
+                                const currentPlacements = parseInt(countRes.rows[0].count);
+
+                                if (currentPlacements < vacancies) {
+                                    await pool.query(`
+                                        INSERT INTO placements (application_id, student_id, company_id, start_date, end_date, status)
+                                        VALUES ($1, $2, $3, NOW(), NOW() + INTERVAL '3 months', 'ACTIVE')
+                                    `, [newAppId, student.id, compId]);
+                                } else {
+                                    console.log(`[StudentController] Skipping auto-placement for student ${student.id} to ${oppId}: No vacancies remaining.`);
+                                }
                             }
                             
                             // Immediately re-fetch applications so the frontend correctly reads the status as ACCEPTED
