@@ -11,7 +11,7 @@ import {
     TableRoot, TableHeader, TableRow, TableColumnHeader,
     TableBody, TableCell
 } from '@chakra-ui/react';
-import { BookOpen, Download, Zap, TrendingUp, CheckCircle, ShieldCheck, Sparkles, Bot } from "lucide-react";
+import { BookOpen, Download, Zap, TrendingUp, CheckCircle, ShieldCheck, Sparkles, Bot, Activity } from "lucide-react";
 import StudentService from '../../../services/studentService';
 import MarkdownText from '../../../components/common/MarkdownText';
 import { motion } from 'framer-motion';
@@ -108,7 +108,7 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                                     borderRadius="xl" 
                                     boxShadow="0 0 20px rgba(0, 136, 204, 0.4)"
                                 >
-                                    <Icon as={LuBookOpen} color="white" boxSize={5} />
+                                    <Icon as={BookOpen} color="white" boxSize={5} />
                                 </Flex>
                                 <VStack align="start" gap={0}>
                                     <DialogTitle fontSize="xl" fontWeight="black" letterSpacing="widest" textTransform="uppercase">
@@ -326,7 +326,7 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                                     fontWeight="black"
                                     boxShadow="0 4px 15px rgba(0, 136, 204, 0.3)"
                                 >
-                                    <LuDownload /> GENERATE PDF REPORT
+                                    <Download /> GENERATE PDF REPORT
                                 </Button>
                             </HStack>
                         </HStack>

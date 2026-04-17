@@ -55,13 +55,6 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 // Common Pages
 import NotificationPage from './pages/common/NotificationPage';
 
-// Mobile Pages
-import MobileLayout from './mobile/layouts/MobileLayout';
-import MobileDashboard from './mobile/pages/MobileDashboard';
-import MobileMatches from './mobile/pages/MobileMatches';
-import MobileAlerts from './mobile/pages/MobileAlerts';
-import MobileProfile from './mobile/pages/MobileProfile';
-
 const App: React.FC = () => {
   const currentPortal = import.meta.env.VITE_PORTAL;
 
@@ -149,16 +142,6 @@ const App: React.FC = () => {
       </Route>
     );
 
-    const mobileRoutes = (
-      <Route path="/mobile" element={<MobileLayout />}>
-        <Route index element={<Navigate to="dashboard" replace />} />
-        <Route path="dashboard" element={<MobileDashboard />} />
-        <Route path="matches" element={<MobileMatches />} />
-        <Route path="alerts" element={<MobileAlerts />} />
-        <Route path="profile" element={<MobileProfile />} />
-      </Route>
-    );
-
     switch (currentPortal) {
       case 'student':
         return (
@@ -209,7 +192,6 @@ const App: React.FC = () => {
             {companyRoutes}
             {institutionRoutes}
             {adminRoutes}
-            {mobileRoutes}
             <Route path="*" element={<Navigate to="/" replace />} />
           </>
         );

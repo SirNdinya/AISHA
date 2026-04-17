@@ -15,14 +15,7 @@ import {
     LogOut,
     Megaphone
 } from 'lucide-react';
-import {
-    DrawerRoot,
-    DrawerBackdrop,
-    DrawerContent,
-    DrawerBody,
-    DrawerCloseTrigger,
-} from '@chakra-ui/react';
-import { PanelLeftClose, PanelLeftOpen, Menu } from 'lucide-react';
+import { LuPanelLeftClose, LuPanelLeftOpen } from 'react-icons/lu';
 
 const navItems = [
     { name: 'Institutional Overview', path: '/institution/dashboard', icon: LayoutDashboard, roles: ['INSTITUTION'] },
@@ -34,7 +27,6 @@ const navItems = [
 
 const AdminPortalLayout: React.FC = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(true);
-    const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -55,7 +47,6 @@ const AdminPortalLayout: React.FC = () => {
                 transition="width 0.3s ease"
                 position="relative"
                 zIndex={20}
-                display={{ base: "none", lg: "block" }}
             >
                 <VStack h="full" py={8} px={4} gap={8} align="stretch">
                     <SidebarContent 
@@ -67,31 +58,6 @@ const AdminPortalLayout: React.FC = () => {
                     />
                 </VStack>
             </Box>
-
-            {/* Mobile Drawer */}
-            <DrawerRoot
-                open={isMobileNavOpen}
-                onOpenChange={(e) => setIsMobileNavOpen(e.open)}
-                placement="start"
-                size="xs"
-            >
-                <DrawerBackdrop />
-                <DrawerContent bg="var(--terminal-bg)" borderRight="1px solid rgba(255,255,255,0.1)">
-                    <DrawerBody p={0}>
-                        <VStack h="full" py={8} px={4} gap={8} align="stretch">
-                            <SidebarContent 
-                                isSidebarOpen={true} 
-                                setSidebarOpen={() => {}} 
-                                user={user} 
-                                location={location} 
-                                handleLogout={handleLogout}
-                                isMobile 
-                            />
-                        </VStack>
-                    </DrawerBody>
-                    <DrawerCloseTrigger color="white" top="6" right="6" />
-                </DrawerContent>
-            </DrawerRoot>
 
             {/* Main Content */}
             <Box flex="1" h="100vh" overflowY="auto" position="relative">
@@ -107,16 +73,6 @@ const AdminPortalLayout: React.FC = () => {
                     className="sidebar-glass"
                     backdropFilter="blur(10px)"
                 >
-                    <IconButton
-                        aria-label="Open Menu"
-                        display={{ base: "flex", lg: "none" }}
-                        variant="ghost"
-                        color="white"
-                        onClick={() => setIsMobileNavOpen(true)}
-                        size="sm"
-                    >
-                        <Menu size={24} />
-                    </IconButton>
                     <Box display={{ base: "none", md: "block" }}></Box>
 
                     <Flex align="center" gap={6}>

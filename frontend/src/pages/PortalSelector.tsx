@@ -1,9 +1,9 @@
-import { Box, Heading, Text, Button, VStack, HStack, Card, Icon, Container, SimpleGrid, Link, Input, Textarea, IconButton, DrawerRoot, DrawerBackdrop, DrawerContent, DrawerBody, DrawerCloseTrigger } from '@chakra-ui/react';
+import { Box, Heading, Text, Button, VStack, HStack, Card, Icon, Container, SimpleGrid, Link, Input, Textarea, IconButton } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { FaGraduationCap, FaBuilding, FaUniversity, FaUserShield, FaLinkedin, FaTwitter, FaGithub, FaEnvelope, FaMapMarkerAlt, FaPhone } from 'react-icons/fa';
-import { Menu, Rocket } from 'lucide-react';
+import { Rocket } from 'lucide-react';
 
 interface PortalOption {
     title: string;
@@ -46,7 +46,6 @@ const portals: PortalOption[] = [
 
 const PortalSelector: React.FC = () => {
     const navigate = useNavigate();
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const scrollToPortals = () => {
         const element = document.getElementById('portals');
@@ -95,53 +94,11 @@ const PortalSelector: React.FC = () => {
                             >
                                 Documentation
                             </Button>
-                            <IconButton
-                                aria-label="Open Menu"
-                                display={{ base: "flex", lg: "none" }}
-                                variant="ghost"
-                                color="white"
-                                onClick={() => setIsMobileMenuOpen(true)}
-                            >
-                                <Menu size={24} />
-                            </IconButton>
                         </HStack>
                     </HStack>
                 </Container>
             </Box>
 
-            {/* Mobile Nav Drawer */}
-            <DrawerRoot
-                open={isMobileMenuOpen}
-                onOpenChange={(e) => setIsMobileMenuOpen(e.open)}
-                placement="start"
-                size="full"
-            >
-                <DrawerBackdrop />
-                <DrawerContent bg="rgba(10, 11, 20, 0.95)" backdropFilter="blur(20px)">
-                    <DrawerBody display="flex" flexDirection="column" p={8}>
-                        <VStack gap={8} align="start" mt={12}>
-                            <Link href="#hero" fontSize="2xl" fontWeight="bold" color="white" onClick={() => setIsMobileMenuOpen(false)}>Home</Link>
-                            <Link href="#about" fontSize="2xl" fontWeight="bold" color="white" onClick={() => setIsMobileMenuOpen(false)}>About</Link>
-                            <Link href="#portals" fontSize="2xl" fontWeight="bold" color="white" onClick={() => setIsMobileMenuOpen(false)}>Portals</Link>
-                            <Link href="#contact" fontSize="2xl" fontWeight="bold" color="white" onClick={() => setIsMobileMenuOpen(false)}>Contact</Link>
-                        </VStack>
-                        <Box mt="auto" pb={8}>
-                            <Button
-                                w="full"
-                                colorPalette="indigo"
-                                size="lg"
-                                onClick={() => {
-                                    window.open('https://aisha.saps.ke', '_blank');
-                                    setIsMobileMenuOpen(false);
-                                }}
-                            >
-                                Documentation
-                            </Button>
-                        </Box>
-                    </DrawerBody>
-                    <DrawerCloseTrigger color="white" top="6" right="6" />
-                </DrawerContent>
-            </DrawerRoot>
 
             {/* Hero Section */}
             <Box id="hero" pt={32} pb={20} position="relative" overflow="hidden">

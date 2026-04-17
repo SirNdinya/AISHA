@@ -105,10 +105,10 @@ const AishaPlayground: React.FC<AishaPlaygroundProps> = ({ isOpen, onClose }) =>
                 animate={{ opacity: 1, y: 0, scale: 1, x: 0 }}
                 exit={{ opacity: 0, y: 100, scale: 0.9, x: 50 }}
                 position="fixed"
-                bottom={{ base: "90px", md: "110px" }}
-                right={{ base: "16px", md: "30px" }}
-                w={isMaximized ? { base: "calc(100vw - 32px)", md: "600px" } : { base: "calc(100vw - 32px)", md: "400px" }}
-                h={isMaximized ? { base: "calc(100vh - 120px)", md: "700px" } : { base: "60vh", md: "500px" }}
+                bottom="100px"
+                right="30px"
+                w={isMaximized ? "600px" : "400px"}
+                h={isMaximized ? "700px" : "500px"}
                 maxH="80vh"
                 borderRadius="24px"
                 className="glass-card"

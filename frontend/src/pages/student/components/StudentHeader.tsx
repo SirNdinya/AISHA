@@ -3,7 +3,7 @@ import {
     Box, Heading, Text, VStack, Badge, Flex,
     HStack, Button, Container, Image, IconButton
 } from '@chakra-ui/react';
-import { Settings, X, Menu } from "lucide-react";
+import { LuSettings, LuX } from "react-icons/lu";
 import { Avatar } from "../../../components/ui/avatar";
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,7 +12,6 @@ import type { AppDispatch, RootState } from '../../../store';
 import NotificationCenter from '../../../components/common/NotificationCenter';
 
 interface StudentHeaderProps {
-    onMenuClick?: () => void;
 }
 
 const BACKEND_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api')
@@ -23,10 +22,10 @@ const getMediaUrl = (url?: string | null): string => {
     return `${BACKEND_URL}${url}`;
 };
 
-const StudentHeader: React.FC<StudentHeaderProps> = ({ onMenuClick }) => {
+const StudentHeader: React.FC<StudentHeaderProps> = () => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
-    const { profile, error } = useSelector((state: RootState) => state.student);
+    const { profile } = useSelector((state: RootState) => state.student);
     const [isPhotoOpen, setIsPhotoOpen] = useState(false);
 
     const handleLogout = () => {
@@ -45,23 +44,10 @@ const StudentHeader: React.FC<StudentHeaderProps> = ({ onMenuClick }) => {
 
     return (
         <>
-            <Box bg="transparent" borderBottom="1px solid" borderColor="whiteAlpha.100" py={{ base: 2, md: 1 }} mb={1} pos="sticky" top={0} zIndex={1100} backdropFilter="blur(20px)">
+            <Box bg="transparent" borderBottom="1px solid" borderColor="whiteAlpha.100" py={{ base: 4, md: 2 }} mb={2} pos="sticky" top={0} zIndex={1100} backdropFilter="blur(20px)">
                 <Container maxW="container.xl">
-                    <Flex justify="space-between" align={{ base: "center", md: "flex-end" }} gap={2}>
-                        <HStack gap={{ base: 3, md: 4 }}>
-                            {/* Hamburger Menu for Mobile */}
-                            <IconButton
-                                aria-label="Open Menu"
-                                display={{ base: "flex", lg: "none" }}
-                                variant="ghost"
-                                color="white"
-                                onClick={onMenuClick}
-                                size="sm"
-                                mr={1}
-                            >
-                                <Menu size={24} />
-                            </IconButton>
-
+                    <Flex justify="space-between" align={{ base: "center", md: "flex-end" }} gap={4}>
+                        <HStack gap={4}>
                             <Box
                                 pos="relative"
                                 cursor="pointer"
@@ -70,15 +56,14 @@ const StudentHeader: React.FC<StudentHeaderProps> = ({ onMenuClick }) => {
                                 display="inline-block"
                             >
                                 <Avatar
-                                    size={{ base: "sm", md: "md" }}
+                                    size={{ base: "md", md: "lg" }}
                                     border="2px solid"
-                                    borderColor={error ? "red.500" : "indigo.400"}
+                                    borderColor="indigo.400"
                                     src={photoUrl}
                                     name={`${profile?.first_name || ''} ${profile?.last_name || ''}`}
                                     transition="all 0.3s"
                                     _groupHover={{ opacity: 0.7, transform: "scale(1.08)" }}
                                 />
-                                {/* "Click to view" overlay — only shown if there's a real photo */}
                                 {photoUrl && (
                                     <Box
                                         pos="absolute"
@@ -93,7 +78,7 @@ const StudentHeader: React.FC<StudentHeaderProps> = ({ onMenuClick }) => {
                                         _groupHover={{ opacity: 1 }}
                                         pointerEvents="none"
                                     >
-                                        <Text fontSize="7px" fontWeight="bold" color="white" textAlign="center" lineHeight="1.2" px={1}>
+                                        <Text fontSize="10px" fontWeight="bold" color="white" textAlign="center" lineHeight="1.2" px={2}>
                                             VIEW
                                         </Text>
                                     </Box>
@@ -101,17 +86,16 @@ const StudentHeader: React.FC<StudentHeaderProps> = ({ onMenuClick }) => {
                             </Box>
 
                             <VStack align="start" gap={0}>
-                                <HStack gap={{ base: 1, md: 3 }}>
-                                    <Heading size={{ base: "sm", md: "md" }} color="#F8FAFC" fontWeight="black" letterSpacing="tight">
+                                <HStack gap={3}>
+                                    <Heading size={{ base: "md", md: "lg" }} color="#F8FAFC" fontWeight="black" letterSpacing="tight">
                                         {greeting}, {profile?.last_name || '...'}
                                     </Heading>
-                                    {error && <Badge size="xs" colorPalette="red" variant="subtle" fontWeight="bold">SYNC</Badge>}
                                 </HStack>
                             </VStack>
                         </HStack>
 
-                        <HStack gap={{ base: 2, md: 8 }}>
-                            <HStack gap={{ base: 2, md: 5 }}>
+                        <HStack gap={8}>
+                            <HStack gap={5}>
                                 <NotificationCenter />
                                 <IconButton
                                     aria-label="Settings"
@@ -121,19 +105,19 @@ const StudentHeader: React.FC<StudentHeaderProps> = ({ onMenuClick }) => {
                                     onClick={() => navigate('/student/settings')}
                                     size="sm"
                                 >
-                                    <Settings size={20} color="white" />
+                                    <LuSettings size={20} />
                                 </IconButton>
                                 <Button 
                                     variant="outline" 
                                     colorPalette="indigo" 
-                                    size="xs" 
+                                    size="sm" 
                                     onClick={handleLogout} 
                                     border="1px solid" 
                                     borderColor="indigo.900" 
                                     _hover={{ bg: "indigo.900", color: "white" }}
-                                    display={{ base: "none", sm: "flex", lg: "none" }}
+                                    display={{ base: "none", md: "flex" }}
                                 >
-                                    OUT
+                                    SIGN OUT
                                 </Button>
                             </HStack>
                         </HStack>
@@ -141,7 +125,6 @@ const StudentHeader: React.FC<StudentHeaderProps> = ({ onMenuClick }) => {
                 </Container>
             </Box>
 
-            {/* Lightbox: full-screen photo preview */}
             {isPhotoOpen && (
                 <Box
                     pos="fixed"
@@ -156,7 +139,6 @@ const StudentHeader: React.FC<StudentHeaderProps> = ({ onMenuClick }) => {
                     animation="fadeIn 0.2s ease"
                     style={{ cursor: 'zoom-out' }}
                 >
-                    {/* Close button */}
                     <Box
                         pos="absolute"
                         top={4}
@@ -169,10 +151,9 @@ const StudentHeader: React.FC<StudentHeaderProps> = ({ onMenuClick }) => {
                         onClick={(e) => { e.stopPropagation(); setIsPhotoOpen(false); }}
                         zIndex={1}
                     >
-                        <X size={20} color="#F8FAFC" />
+                        <LuX size={24} color="#F8FAFC" />
                     </Box>
 
-                    {/* Photo */}
                     <Image
                         src={photoUrl}
                         alt={`${profile?.first_name} ${profile?.last_name}`}
@@ -186,13 +167,6 @@ const StudentHeader: React.FC<StudentHeaderProps> = ({ onMenuClick }) => {
                         onClick={(e) => e.stopPropagation()}
                         style={{ cursor: 'default' }}
                     />
-
-                    {/* Name caption */}
-                    <Box pos="absolute" bottom={6} textAlign="center">
-                        <Text color="whiteAlpha.700" fontSize="sm" fontWeight="medium">
-                            {profile?.first_name} {profile?.last_name}
-                        </Text>
-                    </Box>
                 </Box>
             )}
         </>

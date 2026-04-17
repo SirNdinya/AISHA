@@ -7,11 +7,7 @@ import type { RootState } from '../../../store';
 import ThemeToggle from '../../../components/common/ThemeToggle';
 import NotificationCenter from '../../../components/common/NotificationCenter';
 
-interface CompanyHeaderProps {
-    onMenuClick?: () => void;
-}
-
-const CompanyHeader: React.FC<CompanyHeaderProps> = ({ onMenuClick }) => {
+const CompanyHeader: React.FC = () => {
     const { user } = useSelector((state: RootState) => state.auth);
 
     return (
@@ -32,16 +28,6 @@ const CompanyHeader: React.FC<CompanyHeaderProps> = ({ onMenuClick }) => {
         >
             <Flex justify="space-between" align="center" w="full" gap={2}>
                 <HStack gap={2}>
-                    <IconButton
-                        aria-label="Open Menu"
-                        display={{ base: "flex", lg: "none" }}
-                        variant="ghost"
-                        color="white"
-                        onClick={onMenuClick}
-                        size="sm"
-                    >
-                        <Menu size={24} />
-                    </IconButton>
                     {/* Search Bar */}
                     <HStack
                         bg="gray.50"

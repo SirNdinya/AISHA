@@ -7,13 +7,7 @@ import { fetchCompanyProfile } from '../../store/companySlice';
 import type { RootState, AppDispatch } from '../../store';
 import CompanySidebar from '../../pages/company/components/CompanySidebar';
 import CompanyHeader from '../../pages/company/components/CompanyHeader';
-import {
-    DrawerRoot,
-    DrawerBackdrop,
-    DrawerContent,
-    DrawerBody,
-    DrawerCloseTrigger,
-} from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 import { WebSocketProvider } from '../../context/WebSocketContext';
 import { logout } from '../../store/authSlice';
 import AishaAssistant from '../common/AishaAssistant';
@@ -23,7 +17,7 @@ const CompanyLayout: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-    const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
     useEffect(() => {
         if (isAuthenticated && user) {
@@ -50,33 +44,11 @@ const CompanyLayout: React.FC = () => {
     return (
         <WebSocketProvider userId={user.id}>
             <Box minH="100vh" display="flex">
-                <Box display={{ base: "none", lg: "block" }}>
-                    <CompanySidebar
-                        isCollapsed={isSidebarCollapsed}
-                        onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-                        onLogout={handleLogout}
-                    />
-                </Box>
-
-                {/* Mobile Drawer */}
-                <DrawerRoot
-                    open={isMobileNavOpen}
-                    onOpenChange={(e) => setIsMobileNavOpen(e.open)}
-                    placement="start"
-                    size="xs"
-                >
-                    <DrawerBackdrop />
-                    <DrawerContent bg="transparent" border="none" boxShadow="none">
-                        <DrawerBody p={0} bg="transparent">
-                            <CompanySidebar
-                                isCollapsed={false}
-                                onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-                                onLogout={handleLogout}
-                            />
-                        </DrawerBody>
-                        <DrawerCloseTrigger color="white" top="6" right="6" />
-                    </DrawerContent>
-                </DrawerRoot>
+                <CompanySidebar
+                    isCollapsed={isSidebarCollapsed}
+                    onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                    onLogout={handleLogout}
+                />
 
                 <Box
                     flex="1"
@@ -85,7 +57,7 @@ const CompanyLayout: React.FC = () => {
                     display="flex"
                     flexDirection="column"
                 >
-                    <CompanyHeader onMenuClick={() => setIsMobileNavOpen(true)} />
+                    <CompanyHeader />
                     <Box
                         as="main"
                         p={{ base: 4, md: 8 }}
