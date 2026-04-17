@@ -34,7 +34,7 @@ class OpportunityCache:
     opportunities: List[models.Opportunity] = []
     embeddings: Dict[str, Dict[str, Any]] = {}  # opp.id -> precomputed vectors or strings
     last_fetched: float = 0
-    TTL: int = 3600 # 1 hour (Increased from 300s to optimize Gemini Free Tier quota)
+    TTL: int = 300 # 5 minutes
 
 class MatchingService:
     def __init__(self, db: Session):
