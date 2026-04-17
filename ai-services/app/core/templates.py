@@ -68,7 +68,7 @@ while len(GENERAL_TEMPLATES) < 505:
 fields = ["Cloud Security", "Fullstack Engineering", "Machine Learning", "System Architecture", "DevOps Pipeline", "Blockchain Integrity", "Cyber Defense", "Big Data Analytics", "Identity Management", "Embedded Systems"]
 praise = ["exceptional mastery in", "distinguished performance in", "notable technical grasp of", "consistently high performance throughout", "proven academic aptitude within"]
 advice_verbs = ["focusing your future career path on", "strategically targeting", "exploring the deeper nuances of", "prioritizing industrial exposure in", "specializing your professional interests in"]
-intentisms = ["maximize your long-term career potential", "leverage your unique academic strengths", "amplify your core technical foundations", "align your existing talent with critical industry needs"]
+intentisms = ["maximize your long-term career growth", "leverage your unique academic profile", "amplify your core technical expertise", "align your existing talent with emerging industry trends"]
 
 while len(TRANSCRIPT_TEMPLATES) < 505:
     f1 = random.choice(fields)
@@ -76,17 +76,17 @@ while len(TRANSCRIPT_TEMPLATES) < 505:
     while f2 == f1: f2 = random.choice(fields)
     e = random.choice(emo) if random.random() > 0.5 else ""
     
-    t = (f"Your {random.choice(praise)} **{{unit}}** demonstrates a high level of technical maturity and readiness. "
-         f"We strongly suggest {random.choice(advice_verbs)} the following specialized areas to {random.choice(intentisms)}:\n"
-         f"- {f1} Integration Standards\n- {f2} Professional Frameworks\n- Strategic Technical Leadership in {random.choice(fields)}\n"
-         f"By updating your preferences to explicitly include these areas, our engine will be able to surface even more high-value matches.{' ' + e if e else ''}")
+    t = (f"Your {random.choice(praise)} **{{unit}}** establishes a clear technical foundation. "
+         f"We recommend you {random.choice(advice_verbs)} the following specialized areas to {random.choice(intentisms)}:\n"
+         f"- {f1} Advanced Design Patterns\n- {f2} Professional Standards\n- Strategic Technical Leadership in {random.choice(fields)}\n"
+         f"This specialization will yield the highest ROI for your specific academic trajectory.{' ' + e if e else ''}")
     if t not in TRANSCRIPT_TEMPLATES: TRANSCRIPT_TEMPLATES.append(t)
 
 # --- RESERVOIR 3: ACADEMIC-ONLY MATCHING (150+) ---
 # Used for students without preferences. Emphasizes advice.
 ACADEMIC_MATCH_TEMPLATES = [
-    "This match is prioritized based on your exceptional performance in **{unit}**, which suggests you would thrive in roles involving similar technical challenges. We recommend setting this area as a career preference rather than relying on academic defaults for your next placement. 🎯",
-    "Given your high aptitude in **{unit}**, we've identified this placement as your most compatible academic alignment. This serves as professional advice to consider this field for your long-term career interests. 🚀",
+    "Your exceptional performance in **{unit}** suggests you will thrive in roles involving similar technical challenges. This area is a primary driver for your current matching profile. 🎯",
+    "Given your high aptitude in **{unit}**, this field represents your most compatible academic alignment for long-term career growth. 🚀",
 ]
 
 # Expand ACADEMIC_MATCH_TEMPLATES to 155+
@@ -95,7 +95,7 @@ advice_snippets = ["we consider this a strong indicator that you should update y
 
 while len(ACADEMIC_MATCH_TEMPLATES) < 160:
     e = random.choice(emo) if random.random() > 0.7 else "" # Only 30% emojis here
-    t = f"This placement is {random.choice(basis)} **{{unit}}**. {random.choice(advice_snippets)}.{' ' + e if e else ''}"
+    t = f"Your verified mastery of **{{unit}}** {random.choice(advice_snippets)}.{' ' + e if e else ''}"
     if t not in ACADEMIC_MATCH_TEMPLATES: ACADEMIC_MATCH_TEMPLATES.append(t)
 
 class TemplateEngine:
