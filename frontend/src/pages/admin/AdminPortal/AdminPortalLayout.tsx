@@ -22,7 +22,7 @@ import {
     DrawerBody,
     DrawerCloseTrigger,
 } from '@chakra-ui/react';
-import { LuPanelLeftClose, LuPanelLeftOpen, LuMenu } from 'react-icons/lu';
+import { PanelLeftClose, PanelLeftOpen, Menu } from 'lucide-react';
 
 const navItems = [
     { name: 'Institutional Overview', path: '/institution/dashboard', icon: LayoutDashboard, roles: ['INSTITUTION'] },
@@ -115,7 +115,7 @@ const AdminPortalLayout: React.FC = () => {
                         onClick={() => setIsMobileNavOpen(true)}
                         size="sm"
                     >
-                        <LuMenu size={24} />
+                        <Menu size={24} />
                     </IconButton>
                     <Box display={{ base: "none", md: "block" }}></Box>
 

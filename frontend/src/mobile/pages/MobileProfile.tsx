@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Box, VStack, Heading, Text, Flex, Icon, Avatar, Button, HStack, Separator } from '@chakra-ui/react';
-import { LuUser, LuSettings, LuShield, LuLogOut, LuChevronRight } from 'react-icons/lu';
+import { User, Settings, Shield, LogOut, ChevronRight } from 'lucide-react';
 
 const MobileProfile: React.FC = () => {
     return (
@@ -15,11 +15,11 @@ const MobileProfile: React.FC = () => {
             </Box>
 
             <VStack gap={2} align="stretch">
-                <MenuOption icon={LuUser} label="Personal Information" />
-                <MenuOption icon={LuShield} label="Security & Password" />
-                <MenuOption icon={LuSettings} label="Preferences" />
+                <MenuOption icon={User} label="Personal Information" />
+                <MenuOption icon={Shield} label="Security & Password" />
+                <MenuOption icon={Settings} label="Preferences" />
                 <Separator my={2} borderColor="whiteAlpha.100" />
-                <MenuOption icon={LuLogOut} label="Log Out" color="red.400" />
+                <MenuOption icon={LogOut} label="Log Out" color="red.400" />
             </VStack>
 
             <Box p={6} borderRadius="2xl" bg="rgba(255,255,255,0.03)" border="1px solid rgba(255,255,255,0.05)">
@@ -45,7 +45,7 @@ const MenuOption = ({ icon, label, color = "white" }: any) => (
             <Icon as={icon} color={color} boxSize={5} />
             <Text fontWeight="medium" color={color} fontSize="sm">{label}</Text>
         </HStack>
-        <Icon as={LuChevronRight} color="gray.600" />
+        <Icon as={ChevronRight} color="gray.600" />
     </Flex>
 );
 

@@ -3,7 +3,7 @@ import {
     Box, Heading, Text, VStack, Badge, Flex,
     HStack, Button, Container, Image, IconButton
 } from '@chakra-ui/react';
-import { LuSettings, LuX, LuMenu } from "react-icons/lu";
+import { Settings, X, Menu } from "lucide-react";
 import { Avatar } from "../../../components/ui/avatar";
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -59,7 +59,7 @@ const StudentHeader: React.FC<StudentHeaderProps> = ({ onMenuClick }) => {
                                 size="sm"
                                 mr={1}
                             >
-                                <LuMenu size={24} />
+                                <Menu size={24} />
                             </IconButton>
 
                             <Box
@@ -121,7 +121,7 @@ const StudentHeader: React.FC<StudentHeaderProps> = ({ onMenuClick }) => {
                                     onClick={() => navigate('/student/settings')}
                                     size="sm"
                                 >
-                                    <LuSettings size={20} />
+                                    <Settings size={20} color="white" />
                                 </IconButton>
                                 <Button 
                                     variant="outline" 
@@ -169,7 +169,7 @@ const StudentHeader: React.FC<StudentHeaderProps> = ({ onMenuClick }) => {
                         onClick={(e) => { e.stopPropagation(); setIsPhotoOpen(false); }}
                         zIndex={1}
                     >
-                        <LuX size={20} color="#F8FAFC" />
+                        <X size={20} color="#F8FAFC" />
                     </Box>
 
                     {/* Photo */}

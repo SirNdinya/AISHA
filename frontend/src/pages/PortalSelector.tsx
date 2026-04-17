@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { FaGraduationCap, FaBuilding, FaUniversity, FaUserShield, FaLinkedin, FaTwitter, FaGithub, FaEnvelope, FaMapMarkerAlt, FaPhone } from 'react-icons/fa';
-import { LuMenu, LuRocket } from 'react-icons/lu';
+import { Menu, Rocket } from 'lucide-react';
 
 interface PortalOption {
     title: string;
@@ -73,7 +73,7 @@ const PortalSelector: React.FC = () => {
                     <HStack justify="space-between" align="center">
                         <HStack gap={2}>
                             <Box w="32px" h="32px" bg="indigo.500" borderRadius="8px" display="flex" alignItems="center" justifyContent="center">
-                                <LuRocket color="white" size={18} />
+                                <Rocket color="white" size={18} />
                             </Box>
                             <Heading size="md" fontWeight="black" letterSpacing="tight">AISHA</Heading>
                         </HStack>
@@ -102,7 +102,7 @@ const PortalSelector: React.FC = () => {
                                 color="white"
                                 onClick={() => setIsMobileMenuOpen(true)}
                             >
-                                <LuMenu size={24} />
+                                <Menu size={24} />
                             </IconButton>
                         </HStack>
                     </HStack>

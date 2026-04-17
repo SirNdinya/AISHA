@@ -1,6 +1,6 @@
 
 import { Box, VStack, Heading, Text, Flex, Icon, Badge, Button, HStack } from '@chakra-ui/react';
-import { LuBuilding2, LuMapPin, LuBriefcase } from 'react-icons/lu';
+import { Building2, MapPin, Briefcase } from 'lucide-react';
 
 const MobileMatches: React.FC = () => {
     return (
@@ -40,7 +40,7 @@ const MatchCard = ({ company, role, location, match }: any) => (
             <VStack align="start" gap={1}>
                 <Heading size="sm" color="white">{role}</Heading>
                 <HStack gap={2}>
-                    <Icon as={LuBuilding2} boxSize={3} color="gray.500" />
+                    <Icon as={Building2} boxSize={3} color="gray.500" />
                     <Text fontSize="xs" color="gray.400">{company}</Text>
                 </HStack>
             </VStack>
@@ -49,11 +49,11 @@ const MatchCard = ({ company, role, location, match }: any) => (
         <VStack align="stretch" gap={3}>
             <HStack gap={4}>
                 <HStack gap={1}>
-                    <Icon as={LuMapPin} boxSize={3} color="gray.500" />
+                    <Icon as={MapPin} boxSize={3} color="gray.500" />
                     <Text fontSize="10px" color="gray.500">{location}</Text>
                 </HStack>
                 <HStack gap={1}>
-                    <Icon as={LuBriefcase} boxSize={3} color="gray.500" />
+                    <Icon as={Briefcase} boxSize={3} color="gray.500" />
                     <Text fontSize="10px" color="gray.500">Full-time</Text>
                 </HStack>
             </HStack>

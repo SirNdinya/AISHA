@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Box, Flex, HStack, Text, Avatar, Icon, Separator, VStack } from '@chakra-ui/react';
-import { LuSearch, LuMenu } from 'react-icons/lu';
+import { Search, Menu } from 'lucide-react';
 import { IconButton } from '@chakra-ui/react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store';
@@ -41,7 +40,7 @@ const CompanyHeader: React.FC<CompanyHeaderProps> = ({ onMenuClick }) => {
                         onClick={onMenuClick}
                         size="sm"
                     >
-                        <LuMenu size={24} />
+                        <Menu size={24} />
                     </IconButton>
                     {/* Search Bar */}
                     <HStack
@@ -55,7 +54,7 @@ const CompanyHeader: React.FC<CompanyHeaderProps> = ({ onMenuClick }) => {
                         w={{ base: "full", md: "400px" }}
                         display={{ base: "none", md: "flex" }}
                     >
-                        <Icon as={LuSearch} color="slate.600" />
+                        <Icon as={Search} color="slate.600" />
                         <Text color="slate.600" fontSize="sm" flex="1" truncate>Search students or postings...</Text>
                         <HStack gap={1}>
                             <Box bg="whiteAlpha.200" px={1.5} py={0.5} borderRadius="md">

@@ -11,7 +11,7 @@ import {
     DrawerCloseTrigger,
     IconButton
 } from '@chakra-ui/react';
-import { LuMenu } from 'react-icons/lu';
+import { Menu } from 'lucide-react';
 import type { RootState } from '../../store';
 import { logout } from '../../store/authSlice';
 
@@ -48,7 +48,7 @@ const AdminLayout: React.FC = () => {
                             onClick={() => setIsMobileNavOpen(true)}
                             size="sm"
                         >
-                            <LuMenu size={24} />
+                            <Menu size={24} />
                         </IconButton>
                         <Heading size="md">SAPS Admin</Heading>
                     </HStack>

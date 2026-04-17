@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Box, VStack, Heading, Text, Flex, Icon, Circle } from '@chakra-ui/react';
-import { LuBell, LuInfo, LuCheckCircle, LuAlertTriangle } from 'react-icons/lu';
+import { Bell, Info, CheckCircle, AlertTriangle } from 'lucide-react';
 
 const MobileAlerts: React.FC = () => {
     return (
@@ -13,21 +13,21 @@ const MobileAlerts: React.FC = () => {
 
             <VStack gap={4} align="stretch">
                 <AlertItem 
-                    icon={LuCheckCircle} 
+                    icon={CheckCircle} 
                     color="green.400" 
                     title="Profile Verified" 
                     desc="Your academic records have been verified by MMUST." 
                     time="1h ago"
                 />
                 <AlertItem 
-                    icon={LuInfo} 
+                    icon={Info} 
                     color="blue.400" 
                     title="New Match" 
                     desc="A new high-priority match has been found for you." 
                     time="3h ago"
                 />
                 <AlertItem 
-                    icon={LuAlertTriangle} 
+                    icon={AlertTriangle} 
                     color="yellow.400" 
                     title="Action Required" 
                     desc="Please upload your missing logbook entries for week 12." 

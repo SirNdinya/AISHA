@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Box, VStack, Heading, Text, SimpleGrid, Card, Icon, Flex, Badge } from '@chakra-ui/react';
-import { LuZap, LuClock, LuCheckCircle, LuStar } from 'react-icons/lu';
+import { Zap, Clock, CheckCircle, Star } from 'lucide-react';
 
 const MobileDashboard: React.FC = () => {
     return (
@@ -13,8 +13,8 @@ const MobileDashboard: React.FC = () => {
 
             {/* Quick Stats */}
             <SimpleGrid columns={2} gap={4}>
-                <StatCard icon={LuStar} label="AI Score" value="84%" color="purple.400" />
-                <StatCard icon={LuZap} label="Matches" value="12" color="teal.400" />
+                <StatCard icon={Star} label="AI Score" value="84%" color="purple.400" />
+                <StatCard icon={Zap} label="Matches" value="12" color="teal.400" />
             </SimpleGrid>
 
             {/* Main Action Card */}
@@ -32,8 +32,8 @@ const MobileDashboard: React.FC = () => {
             {/* Recent Activity */}
             <VStack align="stretch" gap={4}>
                 <Heading size="sm" fontWeight="bold">Recent Updates</Heading>
-                <ActivityItem icon={LuCheckCircle} title="Application Viewed" time="2h ago" desc="TechFlow Inc. viewed your profile." />
-                <ActivityItem icon={LuClock} title="Deadline Approaching" time="5h ago" desc="FinTech Hub posting expires in 4 days." />
+                <ActivityItem icon={CheckCircle} title="Application Viewed" time="2h ago" desc="TechFlow Inc. viewed your profile." />
+                <ActivityItem icon={Clock} title="Deadline Approaching" time="5h ago" desc="FinTech Hub posting expires in 4 days." />
             </VStack>
         </VStack>
     );

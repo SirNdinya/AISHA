@@ -11,7 +11,7 @@ import {
     TableRoot, TableHeader, TableRow, TableColumnHeader,
     TableBody, TableCell
 } from '@chakra-ui/react';
-import { LuBookOpen, LuDownload, LuZap, LuTrendingUp, LuCircleCheck, LuShieldCheck, LuSparkles, LuBot } from "react-icons/lu";
+import { BookOpen, Download, Zap, TrendingUp, CheckCircle, ShieldCheck, Sparkles, Bot } from "lucide-react";
 import StudentService from '../../../services/studentService';
 import MarkdownText from '../../../components/common/MarkdownText';
 import { motion } from 'framer-motion';
@@ -153,7 +153,7 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                                                 <Badge bg="green.500" color="white" borderRadius="full" px={3} py={0.5} fontSize="xs" fontWeight="black">
                                                     {data.analysis?.status || "VERIFIED"}
                                                 </Badge>
-                                                <Icon as={LuShieldCheck} color="green.400" boxSize={3} />
+                                                <Icon as={ShieldCheck} color="indigo.500" boxSize={4} />
                                             </HStack>
                                         </VStack>
                                     </MotionBox>
@@ -194,12 +194,12 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                                     boxShadow="0 0 40px rgba(0, 136, 204, 0.2)"
                                 >
                                     <Box pos="absolute" top={-10} right={-10} opacity={0.1}>
-                                        <Icon as={LuBot} boxSize={48} />
+                                        <Icon as={Bot} boxSize={8} color="indigo.500" />
                                     </Box>
                                     <HStack mb={6} justify="space-between">
                                         <HStack gap={3}>
                                             <Flex bg="brand.500" p={2} borderRadius="lg">
-                                                <Icon as={LuSparkles} color="white" />
+                                                <Icon as={Sparkles} color="white" />
                                             </Flex>
                                             <VStack align="start" gap={0}>
                                                 <Heading size="sm" color="white" fontWeight="black" letterSpacing="widest">CAREER SYNC INSIGHTS</Heading>
@@ -228,9 +228,12 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                                                 align="center"
                                                 gap={4}
                                             >
-                                                <Icon as={LuTrendingUp} color="green.400" boxSize={6} />
+                                                <Icon as={TrendingUp} color="green.400" boxSize={6} />
                                                 <VStack align="start" gap={0}>
                                                     <Text color="green.400" fontSize="9px" fontWeight="black" letterSpacing="2px">EXPERT RECOMMENDATION</Text>
+                                                    <Button variant="outline" colorPalette="indigo" size="sm" onClick={handleDownload}>
+                                                        <Download /> Download PDF
+                                                    </Button>
                                                     <Text color="white" fontSize="sm" fontWeight="black">
                                                         {data.analysis.recommendation}
                                                     </Text>
@@ -295,7 +298,7 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                             </VStack>
                         ) : (
                             <Flex py={32} align="center" justify="center" direction="column" gap={6}>
-                                <Icon as={LuActivity} color="whiteAlpha.200" boxSize={20} />
+                                <Icon as={Activity} color="whiteAlpha.200" boxSize={20} />
                                 <VStack gap={2}>
                                     <Text color="whiteAlpha.400" textAlign="center" fontWeight="black" letterSpacing="widest">NO ACADEMIC RECORDS DETECTED</Text>
                                     <Text color="whiteAlpha.200" fontSize="xs" fontWeight="bold">Sync your student portal to initialize the matrix scanning.</Text>
@@ -310,7 +313,7 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                     <DialogFooter bg="rgba(0,0,0,0.2)" borderTop="1px solid" borderColor="rgba(255, 255, 255, 0.05)" p={6}>
                         <HStack justify="space-between" w="full">
                             <Button variant="ghost" onClick={fetchData} size="sm" color="brand.400" fontWeight="black" letterSpacing="widest" _hover={{ bg: "brand.900" }}>
-                                <Icon as={LuZap} mr={2} /> RE-SYNC PORTAL
+                                <Icon as={Zap} mr={2} /> RE-SYNC PORTAL
                             </Button>
                             <HStack gap={4}>
                                 <Button 
