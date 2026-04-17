@@ -31,46 +31,71 @@ ACADEMIC_MATCH_TEMPLATES = [
 # --- DYNAMIC EXPANSION LOGIC ---
 
 # Expand GENERAL_TEMPLATES to 500+
-adj = ["exceptional", "strong", "professional", "unique", "notable", "significant", "impressive", "clear", "robust", "high-tier"]
-n = ["technical foundation", "academic record", "specialization", "profile", "trajectory", "readiness", "potential", "grasp", "aptitude", "alignment"]
-c = ["matches perfectly with", "aligns with", "is a mirror of", "provides a bridge to", "is a launchpad for", "complements", "supports", "bolsters", "synced with", "tailored for"]
-ext = ["the specific needs of this role", "this opportunity", "this high-performance team", "this technical environment", "this placement", "the company's goals", "this professional opening"]
-emo = ["🚀", "🎯", "💡", "⚡", "🌟", "🏆", "📈", "✅", "🔥", "💎", "✨", "💪", "🌈", "🧩", "⚙️", "🏅"]
+adj = [
+    "exceptionally deep", "consistent and strong", "highly developed professional", 
+    "unique and comprehensive", "notably advanced", "significant and verified", 
+    "impressive academic", "clear and focused", "robust technical", "top-tier institutional"
+]
+n = [
+    "technical foundation", "academic record", "field specialization", "professional profile", 
+    "career trajectory", "industry readiness", "leadership potential", "conceptual grasp", 
+    "technical aptitude", "strategic alignment"
+]
+c = [
+    "matches perfectly with", "aligns seamlessly with", "is a precise mirror of", 
+    "provides a robust bridge to", "is a proven launchpad for", "complements at a core level", 
+    "supports the long-term goals of", "bolsters the requirements for", "is ideally synced with", 
+    "is specifically tailored for"
+]
+ext = [
+    "the specific needs of this role within the organization", 
+    "this opportunity and its unique professional challenges", 
+    "this high-performance team environment where technical excellence is key", 
+    "this complex technical environment that demands precision", 
+    "this placement and its associated development goals", 
+    "the company's overarching strategic objectives in industry innovation", 
+    "this professional opening that requires a dedicated background"
+]
+emo = ["🚀", "🎯", "💡", "⚡", "🌟", "🏆", "📈", "✅", "🔥", "💎", "✨", "💪", "🏅"]
 
 while len(GENERAL_TEMPLATES) < 505:
-    t = f"Your {random.choice(adj)} {random.choice(n)} {random.choice(c)} {random.choice(ext)}. {random.choice(emo)}"
+    # Use emoji only 60% of the time for more professional variety
+    e = random.choice(emo) if random.random() > 0.4 else ""
+    t = f"Your {random.choice(adj)} {random.choice(n)} {random.choice(c)} {random.choice(ext)}.{' ' + e if e else ''}"
     if t not in GENERAL_TEMPLATES: GENERAL_TEMPLATES.append(t)
 
 # Expand TRANSCRIPT_TEMPLATES to 500+ (Advice focused)
-fields = ["System Design", "Automation", "Security", "Analytics", "Infrastructure", "UI/UX", "Application Dev", "Cloud Strategy", "Network Operations", "Research"]
-praise = ["excellence in", "mastery of", "strong performance in", "notable grasp of", "distinctive talent in"]
-advice_verbs = ["focusing on", "targeting", "exploring", "prioritizing", "specializing in"]
-intentisms = ["maximize your potential", "leverage your strengths", "amplify your academic foundation", "align your talent with industry needs"]
+fields = ["Cloud Security", "Fullstack Engineering", "Machine Learning", "System Architecture", "DevOps Pipeline", "Blockchain Integrity", "Cyber Defense", "Big Data Analytics", "Identity Management", "Embedded Systems"]
+praise = ["exceptional mastery in", "distinguished performance in", "notable technical grasp of", "consistently high performance throughout", "proven academic aptitude within"]
+advice_verbs = ["focusing your future career path on", "strategically targeting", "exploring the deeper nuances of", "prioritizing industrial exposure in", "specializing your professional interests in"]
+intentisms = ["maximize your long-term career potential", "leverage your unique academic strengths", "amplify your core technical foundations", "align your existing talent with critical industry needs"]
 
 while len(TRANSCRIPT_TEMPLATES) < 505:
     f1 = random.choice(fields)
     f2 = random.choice(fields)
     while f2 == f1: f2 = random.choice(fields)
+    e = random.choice(emo) if random.random() > 0.5 else ""
     
-    t = (f"Your {random.choice(praise)} **{{unit}}** demonstrates a high level of technical maturity. "
-         f"We suggest {random.choice(advice_verbs)} the following interest areas to {random.choice(intentisms)}:\n"
-         f"- {f1} Architectural Patterns\n- {f2} Governance and Strategy\n- Technical Leadership in {random.choice(fields)}\n"
-         f"Updating your preferences to include these will result in much more accurate placements. {random.choice(emo)}")
+    t = (f"Your {random.choice(praise)} **{{unit}}** demonstrates a high level of technical maturity and readiness. "
+         f"We strongly suggest {random.choice(advice_verbs)} the following specialized areas to {random.choice(intentisms)}:\n"
+         f"- {f1} Integration Standards\n- {f2} Professional Frameworks\n- Strategic Technical Leadership in {random.choice(fields)}\n"
+         f"By updating your preferences to explicitly include these areas, our engine will be able to surface even more high-value matches.{' ' + e if e else ''}")
     if t not in TRANSCRIPT_TEMPLATES: TRANSCRIPT_TEMPLATES.append(t)
 
 # --- RESERVOIR 3: ACADEMIC-ONLY MATCHING (150+) ---
 # Used for students without preferences. Emphasizes advice.
 ACADEMIC_MATCH_TEMPLATES = [
-    "This match is prioritized based on your exceptional performance in **{unit}**, which suggests you would thrive in roles involving similar technical challenges. We recommend setting this area as a carrer preference. 🎯",
-    "Given your high aptitude in **{unit}**, we've identified this placement as your most compatible academic alignment. This serves as advice to consider this field for your long-term preferences. 🚀",
+    "This match is prioritized based on your exceptional performance in **{unit}**, which suggests you would thrive in roles involving similar technical challenges. We recommend setting this area as a career preference rather than relying on academic defaults for your next placement. 🎯",
+    "Given your high aptitude in **{unit}**, we've identified this placement as your most compatible academic alignment. This serves as professional advice to consider this field for your long-term career interests. 🚀",
 ]
 
 # Expand ACADEMIC_MATCH_TEMPLATES to 155+
-basis = ["prioritized based on your mastery of", "derived from expertise in", "aligned with your performance in", "selected to leverage your strength in"]
-advice_snippets = ["consider this a strong indicator for your preferences", "this field is a logical step for your profile", "we suggest updating your interests to reflect this", "your records point towards excellence here"]
+basis = ["prioritized and selected based on your verified mastery of", "directly derived from your exceptional expertise in", "carefully aligned with your high-grade performance in", "selected specifically to leverage your established technical strength in"]
+advice_snippets = ["we consider this a strong indicator that you should update your preferences to reflect these interests", "this field represents a logical and high-value next step for your professional profile", "we suggest officially updating your interests in the portal to optimize future matches", "your academic records across all semesters point towards excellence in this domain"]
 
 while len(ACADEMIC_MATCH_TEMPLATES) < 160:
-    t = f"This placement is {random.choice(basis)} **{{unit}}**. {random.choice(advice_snippets)}. {random.choice(emo)}"
+    e = random.choice(emo) if random.random() > 0.7 else "" # Only 30% emojis here
+    t = f"This placement is {random.choice(basis)} **{{unit}}**. {random.choice(advice_snippets)}.{' ' + e if e else ''}"
     if t not in ACADEMIC_MATCH_TEMPLATES: ACADEMIC_MATCH_TEMPLATES.append(t)
 
 class TemplateEngine:

@@ -57,11 +57,8 @@ class MLModelFactory:
             except Exception as e:
                 logger.warning(f"[ML-FACTORY] Gemini Embedding failed: {e}")
 
-        # Hard Fallback
-        dim = 768 # Default for gemini-embedding-001
-        if isinstance(texts, list):
-            return [[0.0] * dim for _ in texts]
-        return [0.0] * dim
+        # Return None to trigger heuristic fallbacks in downstream services
+        return None
 
 # Simple singleton instance acts as the 'model' object
 model_factory = MLModelFactory()
