@@ -402,14 +402,23 @@ class MatchingService:
         # Add remaining tiers
         for cand in (others + low_tier):
             final_score = (w["academic"] * 0.4) + cand["heuristic_score"]
+            
+            # Dynamic reasoning for local fallback
+            if cand["skill_score"] > 0.6:
+                reasoning = f"Your skill set in {student_skills_text[:50]}... closely matches the requirements for {cand['opp'].title}."
+            elif cand["interest_score"] > 0.6:
+                reasoning = f"Your career interests align well with the {cand['opp'].title} position."
             matches.append({
                 "opportunity_id": str(cand["opp"].id),
                 "job_title": cand["opp"].title,
                 "company_id": str(cand["opp"].company_id),
                 "company_name": cand["opp"].company.name if cand["opp"].company else "Unknown",
                 "match_score": round(final_score * 100, 2),
-                "reasoning": f"You show a high structural alignment for the {cand['opp'].title} role based on your unique profile proximity.",
-                "match_details": {"method": "autonomous_fast_heuristic"}
+                "reasoning": reasoning,
+                "match_details": {
+                    "method": "autonomous_fast_heuristic",
+                    "fallback_engine": "FastEmbed-Local"
+                }
             })
 
         # Final Sort
