@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import {
     Box, Text, VStack, HStack, Heading, Icon, Badge, Button,
-    Spinner, Flex, Separator, SimpleGrid
+    Spinner, Flex, SimpleGrid
 } from '@chakra-ui/react';
 import {
     DialogRoot, DialogContent, DialogHeader, DialogTitle, DialogBody,
-    DialogFooter, DialogActionTrigger, DialogCloseTrigger,
-    DialogBackdrop, DialogPositioner
-} from '@chakra-ui/react'; // Ensure consistency
+    DialogFooter, DialogActionTrigger, DialogPositioner
+} from '@chakra-ui/react';
 import {
     TableRoot, TableHeader, TableRow, TableColumnHeader,
     TableBody, TableCell
-} from '@chakra-ui/react'; // Correct component patterns
-import { LuBookOpen, LuDownload, LuZap, LuTrendingUp, LuCircleCheck } from "react-icons/lu";
+} from '@chakra-ui/react';
+import { LuBookOpen, LuDownload, LuZap, LuTrendingUp, LuCircleCheck, LuShieldCheck, LuSparkles } from "react-icons/lu";
 import StudentService from '../../../services/studentService';
 import MarkdownText from '../../../components/common/MarkdownText';
+import { motion } from 'framer-motion';
+
+const MotionBox = motion.create(Box);
 
 interface TranscriptModalProps {
     isOpen: boolean;
@@ -31,7 +33,6 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
         if (isOpen) {
             fetchData();
             
-            // Start polling if analysis is missing or looks like a placeholder
             interval = setInterval(() => {
                 setData(currentData => {
                     const isInvalid = !currentData?.analysis || 
@@ -40,7 +41,7 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                                      currentData.analysis.insights.includes('{');
                     
                     if (isInvalid) {
-                        fetchDataSilent(); // Fetch without showing the main loading spinner
+                        fetchDataSilent();
                     } else {
                         clearInterval(interval);
                     }
@@ -78,9 +79,8 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
         }
     };
 
-    // Group records by Academic Year and Semester - Safe handling
     const groupedRecords = (data?.records || []).reduce((acc: any, record: any) => {
-        const key = `${record.academic_year || 'Unknown'} - ${record.semester || 'Unknown'}`;
+        const key = `${record.academic_year || 'Unknown'} | SEMESTER ${record.semester || '?'}`;
         if (!acc[key]) acc[key] = [];
         acc[key].push(record);
         return acc;
@@ -88,184 +88,243 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
 
     return (
         <DialogRoot open={isOpen} onOpenChange={onClose} size="xl" scrollBehavior="inside">
-            <DialogBackdrop />
             <DialogPositioner>
-                <DialogContent bg="white" color="black" border="1px solid" borderColor="gray.200" boxShadow="0 10px 30px rgba(0,0,0,0.15)">
-                    <DialogHeader borderBottom="1px solid" borderColor="gray.100">
+                <DialogContent 
+                    bg="rgba(10, 15, 25, 0.95)" 
+                    color="white" 
+                    backdropFilter="blur(20px)"
+                    border="1px solid" 
+                    borderColor="rgba(255, 255, 255, 0.1)" 
+                    boxShadow="0 0 100px rgba(0, 0, 0, 0.5)"
+                    borderRadius="3xl"
+                    overflow="hidden"
+                >
+                    <DialogHeader bg="rgba(255, 255, 255, 0.03)" borderBottom="1px solid" borderColor="rgba(255, 255, 255, 0.05)" p={6}>
                         <HStack justify="space-between" w="full">
-                            <HStack>
-                                <Icon as={LuBookOpen} color="indigo.600" />
-                                <DialogTitle color="black" fontWeight="black" letterSpacing="widest">
-                                    ACADEMIC DATA FEEDBACK
-                                </DialogTitle>
+                            <HStack gap={4}>
+                                <Flex 
+                                    bg="brand.500" 
+                                    p={2.5} 
+                                    borderRadius="xl" 
+                                    boxShadow="0 0 20px rgba(0, 136, 204, 0.4)"
+                                >
+                                    <Icon as={LuBookOpen} color="white" boxSize={5} />
+                                </Flex>
+                                <VStack align="start" gap={0}>
+                                    <DialogTitle fontSize="xl" fontWeight="black" letterSpacing="widest" textTransform="uppercase">
+                                        Academic Intelligence Hub
+                                    </DialogTitle>
+                                    <Text fontSize="10px" color="indigo.400" fontWeight="black" letterSpacing="2px">SECURE BIOMETRIC SYNC_V8.4</Text>
+                                </VStack>
                             </HStack>
-                            <DialogCloseTrigger color="black" _hover={{ color: "indigo.600" }} />
+                            <DialogActionTrigger asChild>
+                                <Button variant="ghost" color="whiteAlpha.400" _hover={{ color: "brand.400", bg: "whiteAlpha.50" }} fontSize="xs" fontWeight="black">CLOSE</Button>
+                            </DialogActionTrigger>
                         </HStack>
                     </DialogHeader>
 
-                    <DialogBody py={6}>
+                    <DialogBody py={8} px={8}>
                         {loading ? (
-                            <Flex justify="center" align="center" py={12}>
-                                <VStack gap={4}>
-                                    <Spinner size="xl" color="indigo.600" />
-                                    <Text color="indigo.600" fontSize="xs" fontWeight="bold">SYNCING ACADEMIC HISTORY...</Text>
+                            <Flex justify="center" align="center" py={24}>
+                                <VStack gap={6}>
+                                    <Box pos="relative">
+                                        <Spinner size="xl" thickness="3px" color="brand.400" />
+                                        <MotionBox
+                                            pos="absolute" inset="-15px"
+                                            border="1px solid" borderColor="brand.400" borderRadius="full" opacity={0.3}
+                                            animate={{ scale: [1, 1.2], opacity: [0.3, 0] }}
+                                            transition={{ duration: 1.5, repeat: Infinity }}
+                                        />
+                                    </Box>
+                                    <Text color="brand.400" fontSize="xs" fontWeight="black" letterSpacing="widest" textTransform="uppercase">Extracting Academic Matrix...</Text>
                                 </VStack>
                             </Flex>
                         ) : data && data.records?.length > 0 ? (
-                            <VStack align="stretch" gap={8}>
-                                {/* Student Information Section */}
-                                {data.student && (
-                                    <Box bg="gray.50" p={6} rounded="xl" border="1px solid" borderColor="gray.100" borderLeft="6px solid" borderLeftColor="indigo.600">
-                                        <SimpleGrid columns={{ base: 1, md: 3 }} gap={6}>
-                                            <VStack align="start" gap={1}>
-                                                <Text color="indigo.600" fontSize="10px" fontWeight="black" letterSpacing="widest">STUDENT NAME</Text>
-                                                <Text color="black" fontSize="md" fontWeight="bold" textTransform="uppercase">
-                                                    {data.student.first_name} {data.student.last_name}
-                                                </Text>
-                                            </VStack>
-                                            <VStack align="start" gap={1}>
-                                                <Text color="indigo.600" fontSize="10px" fontWeight="black" letterSpacing="widest">REGISTRATION NO</Text>
-                                                <Text color="black" fontSize="md" fontWeight="bold">
-                                                    {data.student.admission_number || 'N/A'}
-                                                </Text>
-                                            </VStack>
-                                            <VStack align="start" gap={1}>
-                                                <Text color="indigo.600" fontSize="10px" fontWeight="black" letterSpacing="widest">INSTITUTION</Text>
-                                                <Text color="black" fontSize="md" fontWeight="semibold">
-                                                    {data.student.institution_name || 'N/A'}
-                                                </Text>
-                                            </VStack>
-                                        </SimpleGrid>
-                                    </Box>
-                                )}
-
-                                {/* AI Skill Analysis Section */}
-                                <Box bg="indigo.50" p={6} rounded="xl" border="1px solid" borderColor="indigo.100" borderLeft="6px solid" borderLeftColor="indigo.400">
-                                    <HStack mb={4}>
-                                        <Icon as={LuZap} color="indigo.600" />
-                                        <Heading size="xs" color="indigo.900" textTransform="uppercase" letterSpacing="widest" fontWeight="black">
-                                            Skills & Academic Performance
-                                        </Heading>
-                                    </HStack>
-                                    {(!data.analysis || 
-                                      !data.analysis.insights || 
-                                      data.analysis.insights.includes('{') || 
-                                      data.analysis.insights.toLowerCase().includes('string') ||
-                                      data.analysis.recommendation?.toLowerCase().includes('string')) ? (
-                                        <VStack align="start" gap={4} py={2}>
-                                            <HStack gap={4}>
-                                                <Spinner size="xs" color="indigo.600" />
-                                                <Text color="indigo.700" fontSize="xs" fontWeight="bold" fontStyle="italic">
-                                                    {data.analysis?.insights?.includes('{') || data.analysis?.insights?.toLowerCase().includes('string') 
-                                                        ? 'UPDATING INSIGHTS...' 
-                                                        : 'GENERATING ACADEMIC INSIGHTS...'}
-                                                </Text>
+                            <VStack align="stretch" gap={10}>
+                                {/* Header Stats Cards */}
+                                <SimpleGrid columns={{ base: 1, md: 3 }} gap={4}>
+                                    <MotionBox
+                                        whileHover={{ y: -2 }}
+                                        p={4} bg="rgba(255,255,255,0.03)" border="1px solid" borderColor="rgba(255,255,255,0.05)" borderRadius="2xl"
+                                    >
+                                        <VStack align="start" gap={1}>
+                                            <Text fontSize="10px" color="indigo.400" fontWeight="black" letterSpacing="widest">GPA STATUS</Text>
+                                            <HStack>
+                                                <Badge bg="green.500" color="white" borderRadius="full" px={3} py={0.5} fontSize="xs" fontWeight="black">
+                                                    {data.analysis?.status || "VERIFIED"}
+                                                </Badge>
+                                                <Icon as={LuShieldCheck} color="green.400" boxSize={3} />
                                             </HStack>
-                                            <Button 
-                                                size="xs" 
-                                                variant="outline" 
-                                                colorPalette="indigo" 
-                                                onClick={() => {
-                                                    if (data.student?.admission_number) {
-                                                        StudentService.syncProfile(data.student.admission_number).then(() => fetchData());
-                                                    }
-                                                }}
-                                            >
-                                                UPDATE ANALYSIS
-                                            </Button>
                                         </VStack>
+                                    </MotionBox>
+                                    <MotionBox
+                                        whileHover={{ y: -2 }}
+                                        p={4} bg="rgba(255,255,255,0.03)" border="1px solid" borderColor="rgba(255,255,255,0.05)" borderRadius="2xl"
+                                    >
+                                        <VStack align="start" gap={1}>
+                                            <Text fontSize="10px" color="indigo.400" fontWeight="black" letterSpacing="widest">RECORDS_SYNCED</Text>
+                                            <Text fontSize="lg" color="white" fontWeight="black">{data.records.length} UNITS</Text>
+                                        </VStack>
+                                    </MotionBox>
+                                    <MotionBox
+                                        whileHover={{ y: -2 }}
+                                        p={4} bg="rgba(0,136,204,0.1)" border="1px solid" borderColor="brand.500" borderRadius="2xl"
+                                    >
+                                        <VStack align="start" gap={1}>
+                                            <Text fontSize="10px" color="brand.400" fontWeight="black" letterSpacing="widest">INSTITUTION</Text>
+                                            <Text fontSize="xs" color="white" fontWeight="bold" noOfLines={1} textTransform="uppercase">
+                                                {data.student?.institution_name || 'MASINDE MULIRO'}
+                                            </Text>
+                                        </VStack>
+                                    </MotionBox>
+                                </SimpleGrid>
+
+                                {/* AI Intelligence Highlight (Centerpiece) */}
+                                <MotionBox
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.8 }}
+                                    p={8} 
+                                    bgGradient="linear(to-br, rgba(79, 70, 229, 0.15), rgba(0, 136, 204, 0.05))" 
+                                    rounded="3xl" 
+                                    border="1px solid" 
+                                    borderColor="brand.400" 
+                                    pos="relative"
+                                    overflow="hidden"
+                                    boxShadow="0 0 40px rgba(0, 136, 204, 0.2)"
+                                >
+                                    <Box pos="absolute" top={-10} right={-10} opacity={0.1}>
+                                        <Icon as={LuBot} boxSize={48} />
+                                    </Box>
+                                    <HStack mb={6} justify="space-between">
+                                        <HStack gap={3}>
+                                            <Flex bg="brand.500" p={2} borderRadius="lg">
+                                                <Icon as={LuSparkles} color="white" />
+                                            </Flex>
+                                            <VStack align="start" gap={0}>
+                                                <Heading size="sm" color="white" fontWeight="black" letterSpacing="widest">CAREER SYNC INSIGHTS</Heading>
+                                                <Text fontSize="xs" color="brand.400" fontWeight="black">AI REASONING ENGINE ACTIVE</Text>
+                                            </VStack>
+                                        </HStack>
+                                    </HStack>
+
+                                    {(!data.analysis || !data.analysis.insights || data.analysis.insights.includes('{')) ? (
+                                        <HStack gap={4} py={8} justify="center">
+                                            <Spinner color="brand.400" size="sm" />
+                                            <Text color="brand.400" fontSize="xs" fontWeight="black" letterSpacing="widest">REFINING INTELLIGENCE...</Text>
+                                        </HStack>
                                     ) : (
-                                        <VStack align="stretch" gap={4}>
-                                            <MarkdownText 
-                                                content={data.analysis?.insights} 
-                                                color="indigo.900" 
-                                                fontSize="sm" 
-                                                lineHeight="tall" 
-                                                fontWeight="medium" 
-                                            />
-                                            <Box bg="white" p={4} borderRadius="xl" border="1px solid" borderColor="indigo.200" boxShadow="sm">
-                                                <HStack mb={2}>
-                                                    <Icon as={LuTrendingUp} color="green.600" size="sm" />
-                                                    <Text color="green.700" fontSize="10px" fontWeight="black" letterSpacing="widest">CAREER RECOMMENDATION</Text>
-                                                </HStack>
-                                                <Text color="indigo.900" fontSize="sm" fontWeight="bold" lineHeight="relaxed">
-                                                    {data.analysis?.recommendation}
-                                                </Text>
+                                        <VStack align="stretch" gap={6}>
+                                            <Box color="whiteAlpha.900" fontSize="sm" lineHeight="tall" fontWeight="semibold">
+                                                <MarkdownText content={data.analysis.insights} />
                                             </Box>
+                                            
+                                            <Flex 
+                                                p={5} 
+                                                bg="rgba(0,0,0,0.3)" 
+                                                borderRadius="2xl" 
+                                                borderLeft="4px solid" 
+                                                borderColor="green.400"
+                                                align="center"
+                                                gap={4}
+                                            >
+                                                <Icon as={LuTrendingUp} color="green.400" boxSize={6} />
+                                                <VStack align="start" gap={0}>
+                                                    <Text color="green.400" fontSize="9px" fontWeight="black" letterSpacing="2px">EXPERT RECOMMENDATION</Text>
+                                                    <Text color="white" fontSize="sm" fontWeight="black">
+                                                        {data.analysis.recommendation}
+                                                    </Text>
+                                                </VStack>
+                                            </Flex>
                                         </VStack>
                                     )}
-                                </Box>
+                                </MotionBox>
 
-                                {/* Grouped Transcript View */}
-                                <VStack align="stretch" gap={10}>
-                                    {Object.keys(groupedRecords).map((period) => (
+                                {/* Detailed Transcript Timeline */}
+                                <VStack align="stretch" gap={12}>
+                                    {Object.keys(groupedRecords).map((period, pIdx) => (
                                         <Box key={period}>
-                                            <Flex mb={4} justify="space-between" align="center">
-                                                <Heading size="xs" color="indigo.900" textTransform="uppercase" letterSpacing="widest" fontWeight="black">
-                                                    {period}
-                                                </Heading>
-                                                <Badge colorPalette="indigo" variant="subtle" size="sm" borderRadius="md" px={3}>
-                                                    {groupedRecords[period].length} UNITS_VERIFIED
+                                            <Flex mb={6} justify="space-between" align="center">
+                                                <HStack gap={3}>
+                                                    <Text color="indigo.400" fontSize="xs" fontWeight="black">0{pIdx + 1}</Text>
+                                                    <Heading size="xs" color="white" textTransform="uppercase" letterSpacing="2px" fontWeight="black">
+                                                        {period}
+                                                    </Heading>
+                                                </HStack>
+                                                <Badge bg="whiteAlpha.100" color="whiteAlpha.700" variant="solid" size="sm" borderRadius="full" px={4} py={1} border="1px solid" borderColor="whiteAlpha.200">
+                                                    {groupedRecords[period].length} VERIFIED ENTRIES
                                                 </Badge>
                                             </Flex>
-                                            <TableRoot size="sm" variant="line" colorPalette="indigo">
-                                                <TableHeader bg="gray.50">
-                                                    <TableRow borderBottom="2px solid" borderColor="gray.200">
-                                                        <TableColumnHeader color="indigo.900" py={3} fontWeight="black" fontSize="10px">UNIT CODE</TableColumnHeader>
-                                                        <TableColumnHeader color="indigo.900" py={3} fontWeight="black" fontSize="10px">UNIT NAME</TableColumnHeader>
-                                                        <TableColumnHeader color="indigo.900" py={3} fontWeight="black" fontSize="10px" textAlign="center">MARK</TableColumnHeader>
-                                                        <TableColumnHeader color="indigo.900" py={3} fontWeight="black" fontSize="10px" textAlign="center">GRADE</TableColumnHeader>
-                                                        <TableColumnHeader color="indigo.900" py={3} fontWeight="black" fontSize="10px" textAlign="right">VERIFICATION</TableColumnHeader>
-                                                    </TableRow>
-                                                </TableHeader>
-                                                <TableBody>
-                                                    {groupedRecords[period].map((record: any, idx: number) => (
-                                                        <TableRow key={idx} _hover={{ bg: "gray.50" }} transition="all 0.2s" borderBottom="1px solid" borderColor="gray.100">
-                                                            <TableCell color="indigo.700" fontWeight="black" fontSize="xs">{record.unit_code}</TableCell>
-                                                            <TableCell color="black" fontSize="sm" fontWeight="semibold">{record.unit_name}</TableCell>
-                                                            <TableCell textAlign="center" color="indigo.900" fontWeight="black">
-                                                                {record.mark !== null && record.mark !== undefined ? `${record.mark}%` : 'N/A'}
-                                                            </TableCell>
-                                                            <TableCell textAlign="center">
-                                                                <Badge colorPalette={record.grade?.startsWith('A') ? 'green' : 'orange'} variant="solid" px={3} borderRadius="md">
-                                                                    {record.grade || 'N/A'}
-                                                                </Badge>
-                                                            </TableCell>
-                                                            <TableCell textAlign="right">
-                                                                <Icon as={LuCircleCheck} color="green.600" size="sm" />
-                                                            </TableCell>
+                                            <Box borderRadius="2xl" overflow="hidden" border="1px solid" borderColor="whiteAlpha.100" bg="whiteAlpha.05">
+                                                <TableRoot size="sm" variant="line">
+                                                    <TableHeader bg="whiteAlpha.100">
+                                                        <TableRow borderBottom="1px solid" borderColor="whiteAlpha.200">
+                                                            <TableColumnHeader color="indigo.400" py={4} fontWeight="black" fontSize="10px">CODE</TableColumnHeader>
+                                                            <TableColumnHeader color="indigo.400" py={4} fontWeight="black" fontSize="10px">UNIT NAME</TableColumnHeader>
+                                                            <TableColumnHeader color="indigo.400" py={4} fontWeight="black" fontSize="10px" textAlign="center">SCORE</TableColumnHeader>
+                                                            <TableColumnHeader color="indigo.400" py={4} fontWeight="black" fontSize="10px" textAlign="center">GRADE</TableColumnHeader>
                                                         </TableRow>
-                                                    ))}
-                                                </TableBody>
-                                            </TableRoot>
+                                                    </TableHeader>
+                                                    <TableBody>
+                                                        {groupedRecords[period].map((record: any, idx: number) => (
+                                                            <TableRow key={idx} _hover={{ bg: "whiteAlpha.100" }} transition="all 0.2s" borderBottom="1px solid" borderColor="whiteAlpha.05">
+                                                                <TableCell color="brand.400" fontWeight="black" fontSize="xs">{record.unit_code}</TableCell>
+                                                                <TableCell color="white" fontSize="sm" fontWeight="bold">{record.unit_name}</TableCell>
+                                                                <TableCell textAlign="center" color="white" fontWeight="black">
+                                                                    {record.mark !== null && record.mark !== undefined ? `${record.mark}%` : '--'}
+                                                                </TableCell>
+                                                                <TableCell textAlign="center">
+                                                                    <Badge 
+                                                                        bg={record.grade?.startsWith('A') ? "rgba(72, 187, 120, 0.2)" : "rgba(237, 137, 54, 0.2)"} 
+                                                                        color={record.grade?.startsWith('A') ? "green.400" : "orange.400"}
+                                                                        border="1px solid"
+                                                                        borderColor={record.grade?.startsWith('A') ? "green.400" : "orange.400"}
+                                                                        borderRadius="lg" px={3}
+                                                                    >
+                                                                        {record.grade || 'N/A'}
+                                                                    </Badge>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        ))}
+                                                    </TableBody>
+                                                </TableRoot>
+                                            </Box>
                                         </Box>
                                     ))}
                                 </VStack>
                             </VStack>
                         ) : (
-                            <VStack py={20} gap={6}>
-                                <Text color="indigo.900" textAlign="center" fontWeight="black" letterSpacing="widest">NO DATA FOUND</Text>
-                                <Button variant="outline" size="sm" colorPalette="indigo" onClick={fetchData} borderRadius="full" px={8}>
+                            <Flex py={32} align="center" justify="center" direction="column" gap={6}>
+                                <Icon as={LuActivity} color="whiteAlpha.200" boxSize={20} />
+                                <VStack gap={2}>
+                                    <Text color="whiteAlpha.400" textAlign="center" fontWeight="black" letterSpacing="widest">NO ACADEMIC RECORDS DETECTED</Text>
+                                    <Text color="whiteAlpha.200" fontSize="xs" fontWeight="bold">Sync your student portal to initialize the matrix scanning.</Text>
+                                </VStack>
+                                <Button variant="outline" colorPalette="brand" size="md" borderRadius="full" px={10} onClick={fetchData} borderColor="brand.400" color="brand.400">
                                     RE-INITIALIZE SCAN
                                 </Button>
-                            </VStack>
+                            </Flex>
                         )}
                     </DialogBody>
 
-                    <DialogFooter borderTop="1px solid" borderColor="gray.100" bg="gray.50">
+                    <DialogFooter bg="rgba(0,0,0,0.2)" borderTop="1px solid" borderColor="rgba(255, 255, 255, 0.05)" p={6}>
                         <HStack justify="space-between" w="full">
-                            <Button variant="ghost" onClick={fetchData} size="sm" color="indigo.600" fontWeight="black">
-                                UPDATE ACADEMIC DATA
+                            <Button variant="ghost" onClick={fetchData} size="sm" color="brand.400" fontWeight="black" letterSpacing="widest" _hover={{ bg: "brand.900" }}>
+                                <Icon as={LuZap} mr={2} /> RE-SYNC PORTAL
                             </Button>
                             <HStack gap={4}>
-                                <Button colorPalette="indigo" size="sm" onClick={handleDownload} disabled={!data || data.records?.length === 0} borderRadius="full" px={6} fontWeight="black">
-                                    <LuDownload /> DOWNLOAD PDF REPORT
+                                <Button 
+                                    bg="brand.500" 
+                                    _hover={{ bg: "brand.600", transform: "translateY(-1px)" }}
+                                    size="md" 
+                                    onClick={handleDownload} 
+                                    disabled={!data || data.records?.length === 0} 
+                                    borderRadius="xl" px={8} 
+                                    fontWeight="black"
+                                    boxShadow="0 4px 15px rgba(0, 136, 204, 0.3)"
+                                >
+                                    <LuDownload /> GENERATE PDF REPORT
                                 </Button>
-                                <DialogActionTrigger asChild>
-                                    <Button variant="ghost" color="indigo.900" size="sm" onClick={onClose} fontWeight="black">
-                                        CLOSE
-                                    </Button>
-                                </DialogActionTrigger>
                             </HStack>
                         </HStack>
                     </DialogFooter>

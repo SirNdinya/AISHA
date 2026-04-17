@@ -451,11 +451,7 @@ const StudentDashboard: React.FC = () => {
                                             </Grid>
                                         </VStack>
                                     </Flex>
-                                ) : (matchIntelligence || []).length === 0 ? (
-                                    <Flex flex={1} align="center" justify="center" border="1px dashed" borderColor="brand.200" borderRadius="2xl" p={8}>
-                                        <Text fontSize="xs" color="indigo.400" textAlign="center" letterSpacing="widest" fontWeight="black">NO MATCHES FOUND YET. UPDATE YOUR PROFILE.</Text>
-                                    </Flex>
-                                ) : (
+                                ) : (matchIntelligence || []).length === 0 ? null : (
                                     <VStack gap={6} align="stretch">
                                         {/* Unified Premium Match Card */}
                                         {matchIntelligence[0] && (
