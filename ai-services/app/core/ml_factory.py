@@ -1,4 +1,5 @@
 import logging
+import gc
 from google import genai
 from typing import List, Union, Optional
 from app.core.config import settings
@@ -23,7 +24,7 @@ class MLModelFactory:
         if cls._instance is None:
             cls._instance = super(MLModelFactory, cls).__new__(cls)
             cls._instance.initialize_gemini()
-            cls._instance.initialize_local_model()
+            # Removed initialize_local_model from startup to save RAM (Lazy Loading)
         return cls._instance
 
     def get_model(self):
@@ -45,21 +46,28 @@ class MLModelFactory:
             logger.error(f"[ML-FACTORY] Gemini Initialization FAILED: {e}")
             self._ready = False
 
-    def initialize_local_model(self):
-        """Initializes FastEmbed for local fallback matching."""
+    def _ensure_local_model(self):
+        """Lazy initializer for FastEmbed to minimize startup RAM usage."""
+        if self._local_ready and self._local_model:
+            return True
+        
         if not FASTEMBED_AVAILABLE:
-            logger.warning("[ML-FACTORY] FastEmbed not installed. Local fallback will be unavailable.")
-            return
+            return False
 
         try:
-            # Use a tiny, fast model optimized for low RAM (e.g., bge-small-en-v1.5)
-            # This uses ~30MB and is surprisingly accurate.
-            self._local_model = TextEmbedding(model_name="BAAI/bge-small-en-v1.5")
+            logger.info("[ML-FACTORY] Lazy Loading Local Semantic Engine (FastEmbed)...")
+            # Limit threads to 1 and use bge-small to minimize RAM spikes on Render
+            self._local_model = TextEmbedding(
+                model_name="BAAI/bge-small-en-v1.5",
+                threads=1 
+            )
             self._local_ready = True
-            logger.info("[ML-FACTORY] Local Semantic Engine (FastEmbed) Online.")
+            gc.collect() # Force cleanup after model loading
+            logger.info("[ML-FACTORY] Local Semantic Engine Online.")
+            return True
         except Exception as e:
-            logger.error(f"[ML-FACTORY] Local Engine Initialization FAILED: {e}")
-            self._local_ready = False
+            logger.error(f"[ML-FACTORY] Local Engine Loading FAILED: {e}")
+            return False
 
     def encode(self, texts: Union[str, List[str]], convert_to_tensor: bool = False):
         """
@@ -80,8 +88,8 @@ class MLModelFactory:
             except Exception as e:
                 logger.warning(f"[ML-FACTORY] Gemini Embedding failed (likely 429). Falling back to Local Engine: {e}")
 
-        # --- TIER 2: LOCAL FASTEMBED (Smart Fallback) ---
-        if self._local_ready and self._local_model:
+        # --- TIER 2: LOCAL FASTEMBED (Smart Fallback - Lazy Loaded) ---
+        if self._ensure_local_model() and self._local_model:
             try:
                 # TextEmbedding.embed returns a generator
                 embeddings_gen = self._local_model.embed(texts if isinstance(texts, list) else [texts])
@@ -93,7 +101,7 @@ class MLModelFactory:
                 logger.error(f"[ML-FACTORY] Local Embedding FAILED: {e}")
 
         # --- TIER 3: ZERO-VECTOR (Hard Fallback) ---
-        dim = 384 # bge-small dim, gemini is 768 but our cos_sim handles any equal dims
+        dim = 384 # bge-small dim
         if isinstance(texts, list):
             return [[0.0] * dim for _ in texts]
         return [0.0] * dim
