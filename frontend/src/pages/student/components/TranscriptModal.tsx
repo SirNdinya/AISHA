@@ -11,7 +11,7 @@ import {
     TableRoot, TableHeader, TableRow, TableColumnHeader,
     TableBody, TableCell
 } from '@chakra-ui/react';
-import { LuBookOpen, LuDownload, LuZap, LuTrendingUp, LuShieldCheck, LuSparkles, LuBot, LuActivity } from "react-icons/lu";
+import { LuBookOpen, LuDownload, LuZap, LuTrendingUp, LuSparkles, LuBot, LuActivity } from "react-icons/lu";
 import StudentService from '../../../services/studentService';
 import MarkdownText from '../../../components/common/MarkdownText';
 import { motion } from 'framer-motion';
@@ -112,9 +112,8 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                                 </Flex>
                                 <VStack align="start" gap={0}>
                                     <DialogTitle fontSize="xl" fontWeight="black" letterSpacing="widest" textTransform="uppercase">
-                                        Academic Intelligence Hub
+                                        Official Academic Transcript
                                     </DialogTitle>
-                                    <Text fontSize="10px" color="indigo.400" fontWeight="black" letterSpacing="2px">SECURE BIOMETRIC SYNC_V8.4</Text>
                                 </VStack>
                             </HStack>
                             <DialogActionTrigger asChild>
@@ -136,33 +135,19 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                                             transition={{ duration: 1.5, repeat: Infinity }}
                                         />
                                     </Box>
-                                    <Text color="brand.400" fontSize="xs" fontWeight="black" letterSpacing="widest" textTransform="uppercase">Extracting Academic Matrix...</Text>
+                                    <Text color="brand.400" fontSize="xs" fontWeight="black" letterSpacing="widest" textTransform="uppercase">Loading Academic Records...</Text>
                                 </VStack>
                             </Flex>
                         ) : data && data.records?.length > 0 ? (
                             <VStack align="stretch" gap={10}>
                                 {/* Header Stats Cards */}
-                                <SimpleGrid columns={{ base: 1, md: 3 }} gap={4}>
+                                <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
                                     <MotionBox
                                         whileHover={{ y: -2 }}
                                         p={4} bg="rgba(255,255,255,0.03)" border="1px solid" borderColor="rgba(255,255,255,0.05)" borderRadius="2xl"
                                     >
                                         <VStack align="start" gap={1}>
-                                            <Text fontSize="10px" color="indigo.400" fontWeight="black" letterSpacing="widest">GPA STATUS</Text>
-                                            <HStack>
-                                                <Badge bg="green.500" color="white" borderRadius="full" px={3} py={0.5} fontSize="xs" fontWeight="black">
-                                                    {data.analysis?.status || "VERIFIED"}
-                                                </Badge>
-                                                <Icon as={LuShieldCheck} color="green.400" boxSize={3} />
-                                            </HStack>
-                                        </VStack>
-                                    </MotionBox>
-                                    <MotionBox
-                                        whileHover={{ y: -2 }}
-                                        p={4} bg="rgba(255,255,255,0.03)" border="1px solid" borderColor="rgba(255,255,255,0.05)" borderRadius="2xl"
-                                    >
-                                        <VStack align="start" gap={1}>
-                                            <Text fontSize="10px" color="indigo.400" fontWeight="black" letterSpacing="widest">RECORDS_SYNCED</Text>
+                                            <Text fontSize="10px" color="indigo.400" fontWeight="black" letterSpacing="widest">VERIFIED RECORDS</Text>
                                             <Text fontSize="lg" color="white" fontWeight="black">{data.records.length} UNITS</Text>
                                         </VStack>
                                     </MotionBox>
@@ -202,8 +187,8 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                                                 <Icon as={LuSparkles} color="white" />
                                             </Flex>
                                             <VStack align="start" gap={0}>
-                                                <Heading size="sm" color="white" fontWeight="black" letterSpacing="widest">CAREER SYNC INSIGHTS</Heading>
-                                                <Text fontSize="xs" color="brand.400" fontWeight="black">AI REASONING ENGINE ACTIVE</Text>
+                                                <Heading size="sm" color="white" fontWeight="black" letterSpacing="widest">ACADEMIC PERFORMANCE INSIGHTS</Heading>
+                                                <Text fontSize="xs" color="brand.400" fontWeight="black">AI PERFORMANCE ANALYSIS</Text>
                                             </VStack>
                                         </HStack>
                                     </HStack>
@@ -211,7 +196,7 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                                     {(!data.analysis || !data.analysis.insights || data.analysis.insights.includes('{')) ? (
                                         <HStack gap={4} py={8} justify="center">
                                             <Spinner color="brand.400" size="sm" />
-                                            <Text color="brand.400" fontSize="xs" fontWeight="black" letterSpacing="widest">REFINING INTELLIGENCE...</Text>
+                                            <Text color="brand.400" fontSize="xs" fontWeight="black" letterSpacing="widest">GENERATING INSIGHTS...</Text>
                                         </HStack>
                                     ) : (
                                         <VStack align="stretch" gap={6}>
@@ -297,11 +282,11 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                             <Flex py={32} align="center" justify="center" direction="column" gap={6}>
                                 <Icon as={LuActivity} color="whiteAlpha.200" boxSize={20} />
                                 <VStack gap={2}>
-                                    <Text color="whiteAlpha.400" textAlign="center" fontWeight="black" letterSpacing="widest">NO ACADEMIC RECORDS DETECTED</Text>
-                                    <Text color="whiteAlpha.200" fontSize="xs" fontWeight="bold">Sync your student portal to initialize the matrix scanning.</Text>
+                                    <Text color="whiteAlpha.400" textAlign="center" fontWeight="black" letterSpacing="widest">NO ACADEMIC RECORDS FOUND</Text>
+                                    <Text color="whiteAlpha.200" fontSize="xs" fontWeight="bold">Update your student portal to load your academic records.</Text>
                                 </VStack>
                                 <Button variant="outline" colorPalette="brand" size="md" borderRadius="full" px={10} onClick={fetchData} borderColor="brand.400" color="brand.400">
-                                    RE-INITIALIZE SCAN
+                                    REFRESH RECORDS
                                 </Button>
                             </Flex>
                         )}
@@ -310,7 +295,7 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                     <DialogFooter bg="rgba(0,0,0,0.2)" borderTop="1px solid" borderColor="rgba(255, 255, 255, 0.05)" p={6}>
                         <HStack justify="space-between" w="full">
                             <Button variant="ghost" onClick={fetchData} size="sm" color="brand.400" fontWeight="black" letterSpacing="widest" _hover={{ bg: "brand.900" }}>
-                                <Icon as={LuZap} mr={2} /> RE-SYNC PORTAL
+                                <Icon as={LuZap} mr={2} /> REFRESH PORTAL
                             </Button>
                             <HStack gap={4}>
                                 <Button 
