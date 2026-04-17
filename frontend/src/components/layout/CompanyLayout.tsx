@@ -41,28 +41,24 @@ const CompanyLayout: React.FC = () => {
 
     return (
         <WebSocketProvider userId={user.id}>
-            <Box minH="100vh" display="flex">
+            <Box minH="100vh">
                 <CompanySidebar
                     isCollapsed={isSidebarCollapsed}
                     onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
                     onLogout={handleLogout}
                 />
-
                 <Box
                     flex="1"
                     ml={{ base: 0, lg: "20px" }}
                     transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
-                    display="flex"
-                    flexDirection="column"
                 >
                     <CompanyHeader />
                     <Box
                         as="main"
-                        p={{ base: 4, md: 8 }}
+                        p={8}
                         ml={{ base: 0, lg: sidebarWidth }}
                         w={{ base: "full", lg: `calc(100% - ${sidebarWidth})` }}
                         transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
-                        flex="1"
                     >
                         <Outlet />
                     </Box>

@@ -32,13 +32,17 @@ const StudentSidebar: React.FC<StudentSidebarProps> = ({ isCollapsed, onToggle, 
     return (
         <Box
             w={isCollapsed ? '80px' : '280px'}
-            h="full"
+            h="calc(100vh - 32px)"
             className="glass-panel"
-            position="relative"
+            position="fixed"
+            left="4"
+            top="4"
+            bottom="4"
             m="0"
             borderRadius="24px"
             p={isCollapsed ? 3 : 6}
             zIndex={100}
+            display={{ base: "none", lg: "block" }}
             transition="all 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
             overflow="hidden"
         >

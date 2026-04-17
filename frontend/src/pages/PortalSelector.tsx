@@ -1,9 +1,7 @@
-import { Box, Heading, Text, Button, VStack, HStack, Card, Icon, Container, SimpleGrid, Link, Input, Textarea } from '@chakra-ui/react';
+import { Box, Heading, Text, Button, VStack, HStack, Card, Icon, Container, SimpleGrid, Link, Input, Textarea, Image } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useEffect } from 'react';
 import { FaGraduationCap, FaBuilding, FaUniversity, FaUserShield, FaLinkedin, FaTwitter, FaGithub, FaEnvelope, FaMapMarkerAlt, FaPhone } from 'react-icons/fa';
-import { Rocket } from 'lucide-react';
 
 interface PortalOption {
     title: string;
@@ -65,40 +63,34 @@ const PortalSelector: React.FC = () => {
                 bg="rgba(15, 23, 42, 0.6)"
                 borderBottom="1px solid"
                 borderColor="whiteAlpha.100"
-                px={6}
-                py={4}
             >
-                <Container maxW="container.xl">
-                    <HStack justify="space-between" align="center">
+                <Container maxW="container.xl" py={4}>
+                    <HStack justify="space-between">
                         <HStack gap={2}>
-                            <Box w="32px" h="32px" bg="indigo.500" borderRadius="8px" display="flex" alignItems="center" justifyContent="center">
-                                <Rocket color="white" size={18} />
+                            <Box boxSize="40px" bgGradient="to-br" gradientFrom="indigo.500" gradientTo="blue.600" borderRadius="xl" display="flex" alignItems="center" justifyContent="center">
+                                <Text fontWeight="black" fontSize="xl">A</Text>
                             </Box>
-                            <Heading size="md" fontWeight="black" letterSpacing="tight">AISHA</Heading>
+                            <Heading size="lg" fontWeight="black" letterSpacing="tighter">AISHA</Heading>
                         </HStack>
-
-                        <HStack gap={8} display={{ base: "none", lg: "flex" }}>
-                            <Link href="#hero" color="whiteAlpha.700" fontWeight="medium" _hover={{ color: "indigo.400" }}>Home</Link>
-                            <Link href="#about" color="whiteAlpha.700" fontWeight="medium" _hover={{ color: "indigo.400" }}>About</Link>
-                            <Link href="#portals" color="whiteAlpha.700" fontWeight="medium" _hover={{ color: "indigo.400" }}>Portals</Link>
-                            <Link href="#contact" color="whiteAlpha.700" fontWeight="medium" _hover={{ color: "indigo.400" }}>Contact</Link>
+                        <HStack gap={8} display={{ base: 'none', md: 'flex' }}>
+                            <Link href="#hero" fontWeight="bold" fontSize="sm" _hover={{ color: 'indigo.400' }}>Home</Link>
+                            <Link href="#about" fontWeight="bold" fontSize="sm" _hover={{ color: 'indigo.400' }}>About</Link>
+                            <Link href="#portals" fontWeight="bold" fontSize="sm" _hover={{ color: 'indigo.400' }}>Portals</Link>
+                            <Link href="#contact" fontWeight="bold" fontSize="sm" _hover={{ color: 'indigo.400' }}>Contact</Link>
                         </HStack>
-
-                        <HStack gap={4}>
-                            <Button
-                                variant="subtle"
-                                colorPalette="indigo"
-                                size="sm"
-                                display={{ base: "none", md: "flex" }}
-                                onClick={() => window.open('https://aisha.saps.ke', '_blank')}
-                            >
-                                Documentation
-                            </Button>
-                        </HStack>
+                        <Button
+                            colorPalette="indigo"
+                            size="sm"
+                            borderRadius="full"
+                            px={6}
+                            fontWeight="bold"
+                            onClick={scrollToPortals}
+                        >
+                            Get Started
+                        </Button>
                     </HStack>
                 </Container>
             </Box>
-
 
             {/* Hero Section */}
             <Box id="hero" pt={32} pb={20} position="relative" overflow="hidden">

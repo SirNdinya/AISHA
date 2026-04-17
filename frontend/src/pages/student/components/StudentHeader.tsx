@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import {
     Box, Heading, Text, VStack, Badge, Flex,
-    HStack, Button, Container, Image, IconButton
+    HStack, Icon, Button, Container, Image
 } from '@chakra-ui/react';
 import { LuSettings, LuX } from "react-icons/lu";
 import { Avatar } from "../../../components/ui/avatar";
@@ -11,9 +11,6 @@ import { logout } from '../../../store/authSlice';
 import type { AppDispatch, RootState } from '../../../store';
 import NotificationCenter from '../../../components/common/NotificationCenter';
 
-interface StudentHeaderProps {
-}
-
 const BACKEND_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api')
     .replace(/\/api(.*)?$/, '');
 const getMediaUrl = (url?: string | null): string => {
@@ -22,10 +19,10 @@ const getMediaUrl = (url?: string | null): string => {
     return `${BACKEND_URL}${url}`;
 };
 
-const StudentHeader: React.FC<StudentHeaderProps> = () => {
+const StudentHeader: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
-    const { profile } = useSelector((state: RootState) => state.student);
+    const { profile, error } = useSelector((state: RootState) => state.student);
     const [isPhotoOpen, setIsPhotoOpen] = useState(false);
 
     const handleLogout = () => {
@@ -44,10 +41,10 @@ const StudentHeader: React.FC<StudentHeaderProps> = () => {
 
     return (
         <>
-            <Box bg="transparent" borderBottom="1px solid" borderColor="whiteAlpha.100" py={{ base: 4, md: 2 }} mb={2} pos="sticky" top={0} zIndex={1100} backdropFilter="blur(20px)">
+            <Box bg="transparent" borderBottom="1px solid" borderColor="gray.200" py={1} mb={1} pos="sticky" top={0} zIndex={1100} backdropFilter="blur(20px)">
                 <Container maxW="container.xl">
-                    <Flex justify="space-between" align={{ base: "center", md: "flex-end" }} gap={4}>
-                        <HStack gap={4}>
+                    <Flex justify="space-between" align="flex-end">
+                        <VStack align="start" gap={4}>
                             <Box
                                 pos="relative"
                                 cursor="pointer"
@@ -56,14 +53,15 @@ const StudentHeader: React.FC<StudentHeaderProps> = () => {
                                 display="inline-block"
                             >
                                 <Avatar
-                                    size={{ base: "md", md: "lg" }}
+                                    size="md"
                                     border="2px solid"
-                                    borderColor="indigo.400"
+                                    borderColor={error ? "red.500" : "indigo.400"}
                                     src={photoUrl}
                                     name={`${profile?.first_name || ''} ${profile?.last_name || ''}`}
                                     transition="all 0.3s"
                                     _groupHover={{ opacity: 0.7, transform: "scale(1.08)" }}
                                 />
+                                {/* "Click to view" overlay — only shown if there's a real photo */}
                                 {photoUrl && (
                                     <Box
                                         pos="absolute"
@@ -78,35 +76,35 @@ const StudentHeader: React.FC<StudentHeaderProps> = () => {
                                         _groupHover={{ opacity: 1 }}
                                         pointerEvents="none"
                                     >
-                                        <Text fontSize="10px" fontWeight="bold" color="white" textAlign="center" lineHeight="1.2" px={2}>
+                                        <Text fontSize="7px" fontWeight="bold" color="white" textAlign="center" lineHeight="1.2" px={1}>
                                             VIEW
                                         </Text>
                                     </Box>
                                 )}
                             </Box>
 
-                            <VStack align="start" gap={0}>
+                            <VStack align="start" gap={1}>
                                 <HStack gap={3}>
-                                    <Heading size={{ base: "md", md: "lg" }} color="#F8FAFC" fontWeight="black" letterSpacing="tight">
+                                    <Heading size="md" color="#F8FAFC" fontWeight="black" letterSpacing="tight">
                                         {greeting}, {profile?.last_name || '...'}
                                     </Heading>
+                                    {error && <Badge size="sm" colorPalette="red" variant="subtle" fontWeight="bold">SYNC ERROR</Badge>}
                                 </HStack>
+                                {/* Subtext removed per user request */}
                             </VStack>
-                        </HStack>
+                        </VStack>
 
-                        <HStack gap={8}>
+                        <HStack gap={8} mb={1}>
                             <HStack gap={5}>
                                 <NotificationCenter />
-                                <IconButton
-                                    aria-label="Settings"
-                                    variant="ghost"
+                                <Icon
+                                    as={LuSettings}
+                                    cursor="pointer"
                                     color="whiteAlpha.600"
                                     _hover={{ color: "indigo.400" }}
                                     onClick={() => navigate('/student/settings')}
-                                    size="sm"
-                                >
-                                    <LuSettings size={20} />
-                                </IconButton>
+                                    boxSize={5}
+                                />
                                 <Button 
                                     variant="outline" 
                                     colorPalette="indigo" 
@@ -115,7 +113,7 @@ const StudentHeader: React.FC<StudentHeaderProps> = () => {
                                     border="1px solid" 
                                     borderColor="indigo.900" 
                                     _hover={{ bg: "indigo.900", color: "white" }}
-                                    display={{ base: "none", md: "flex" }}
+                                    display={{ base: "flex", lg: "none" }}
                                 >
                                     SIGN OUT
                                 </Button>
@@ -125,6 +123,7 @@ const StudentHeader: React.FC<StudentHeaderProps> = () => {
                 </Container>
             </Box>
 
+            {/* Lightbox: full-screen photo preview */}
             {isPhotoOpen && (
                 <Box
                     pos="fixed"
@@ -139,6 +138,7 @@ const StudentHeader: React.FC<StudentHeaderProps> = () => {
                     animation="fadeIn 0.2s ease"
                     style={{ cursor: 'zoom-out' }}
                 >
+                    {/* Close button */}
                     <Box
                         pos="absolute"
                         top={4}
@@ -151,9 +151,10 @@ const StudentHeader: React.FC<StudentHeaderProps> = () => {
                         onClick={(e) => { e.stopPropagation(); setIsPhotoOpen(false); }}
                         zIndex={1}
                     >
-                        <LuX size={24} color="#F8FAFC" />
+                        <LuX size={20} color="#F8FAFC" />
                     </Box>
 
+                    {/* Photo */}
                     <Image
                         src={photoUrl}
                         alt={`${profile?.first_name} ${profile?.last_name}`}
@@ -167,6 +168,13 @@ const StudentHeader: React.FC<StudentHeaderProps> = () => {
                         onClick={(e) => e.stopPropagation()}
                         style={{ cursor: 'default' }}
                     />
+
+                    {/* Name caption */}
+                    <Box pos="absolute" bottom={6} textAlign="center">
+                        <Text color="whiteAlpha.700" fontSize="sm" fontWeight="medium">
+                            {profile?.first_name} {profile?.last_name}
+                        </Text>
+                    </Box>
                 </Box>
             )}
         </>

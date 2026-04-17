@@ -27,24 +27,20 @@ const AdminLayout: React.FC = () => {
 
     return (
         <Flex direction="column" minH="100vh">
-            <Box as="nav" bg="var(--terminal-card)" px={{ base: 4, md: 8 }} py={4} shadow="md" borderBottom="1px solid" borderColor="var(--terminal-border)" pos="sticky" top={0} zIndex={1100}>
+            <Box as="nav" bg="var(--terminal-card)" px={8} py={4} shadow="md" borderBottom="1px solid" borderColor="var(--terminal-border)">
                 <Flex justify="space-between" align="center">
                     <Heading size="md">SAPS Admin</Heading>
-                    
                     <HStack gap={6}>
-                        <HStack gap={6} display={{ base: "none", md: "flex" }}>
-                            <Link to="/admin/dashboard">Dashboard</Link>
-                            <ThemeToggle />
-                        </HStack>
+                        <Link to="/admin/dashboard">Dashboard</Link>
+                        <ThemeToggle />
                         <HStack>
-                            <Text fontSize="sm" fontWeight="bold" display={{ base: "none", sm: "block" }}>{user.firstName}</Text>
+                            <Text fontSize="sm" fontWeight="bold">{user.firstName} (Admin)</Text>
                             <Button size="sm" colorPalette="red" variant="solid" onClick={handleLogout}>Sign Out</Button>
                         </HStack>
                     </HStack>
                 </Flex>
             </Box>
-
-            <Box flex="1" bg="transparent" p={{ base: 4, md: 6 }}>
+            <Box flex="1" bg="transparent" p={6}>
                 <Outlet />
             </Box>
         </Flex>

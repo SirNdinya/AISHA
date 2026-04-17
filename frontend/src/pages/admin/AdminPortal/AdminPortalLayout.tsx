@@ -49,13 +49,86 @@ const AdminPortalLayout: React.FC = () => {
                 zIndex={20}
             >
                 <VStack h="full" py={8} px={4} gap={8} align="stretch">
-                    <SidebarContent 
-                        isSidebarOpen={isSidebarOpen} 
-                        setSidebarOpen={setSidebarOpen} 
-                        user={user} 
-                        location={location} 
-                        handleLogout={handleLogout} 
-                    />
+                    {/* Logo */}
+                    <Flex align="center" px={2} h="40px">
+                        <Box
+                            w="40px"
+                            h="40px"
+                            borderRadius="10px"
+                            bg="linear-gradient(135deg, var(--terminal-accent) 0%, #2dd4bf 100%)"
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="center"
+                            mr={isSidebarOpen ? 3 : 0}
+                        >
+                            <Box w="20px" h="20px" bg="white" borderRadius="4px" />
+                        </Box>
+                        {isSidebarOpen && (
+                            <Heading size="md" className="gradient-text" fontWeight="bold">
+                                AISHA
+                            </Heading>
+                        )}
+                    </Flex>
+
+                    {/* Toggle Button */}
+                    <Flex justify={isSidebarOpen ? 'flex-end' : 'center'} px={isSidebarOpen ? 1 : 0}>
+                        <IconButton
+                            aria-label={isSidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+                            variant="ghost"
+                            color="whiteAlpha.500"
+                            _hover={{ color: 'white', bg: 'whiteAlpha.100' }}
+                            size="sm"
+                            rounded="lg"
+                            onClick={() => setSidebarOpen(!isSidebarOpen)}
+                        >
+                            {isSidebarOpen ? <LuPanelLeftClose /> : <LuPanelLeftOpen />}
+                        </IconButton>
+                    </Flex>
+
+                    {/* Nav Links */}
+                    <VStack gap={2} align="stretch">
+                        {navItems.filter(item => {
+                            if (!item.roles) return true;
+                            const userRole = (user?.role || '').toUpperCase();
+                            return item.roles.some(r => r.toUpperCase() === userRole);
+                        }).map((item) => {
+                            const userRole = (user?.role || '').toUpperCase();
+                            const targetPath = (userRole === 'DEPARTMENT_ADMIN' && item.deptPath ? item.deptPath : item.path) || '/';
+                            const isActive = location.pathname === targetPath;
+                            return (
+                                <NavLink key={item.name} to={targetPath}>
+                                    <Flex
+                                        align="center"
+                                        p={3}
+                                        borderRadius="12px"
+                                        transition="all 0.2s"
+                                        bg={isActive ? "rgba(56, 189, 248, 0.15)" : "transparent"}
+                                        color={isActive ? "var(--terminal-accent)" : "gray.400"}
+                                        _hover={{ bg: "rgba(255, 255, 255, 0.05)", color: "white" }}
+                                    >
+                                        <Icon as={item.icon} boxSize={5} mr={isSidebarOpen ? 4 : 0} />
+                                        {isSidebarOpen && <Text fontWeight="medium">{item.name}</Text>}
+                                    </Flex>
+                                </NavLink>
+                            );
+                        })}
+                    </VStack>
+
+                    {/* Footer / Logout */}
+                    <Box mt="auto" px={2}>
+                        <Flex
+                            align="center"
+                            p={3}
+                            borderRadius="12px"
+                            cursor="pointer"
+                            color="gray.400"
+                            _hover={{ bg: "rgba(239, 68, 68, 0.1)", color: "red.400" }}
+                            onClick={handleLogout}
+                        >
+                            <Icon as={LogOut} boxSize={5} mr={isSidebarOpen ? 4 : 0} />
+                            {isSidebarOpen && <Text fontWeight="medium">Sign Out</Text>}
+                        </Flex>
+                    </Box>
                 </VStack>
             </Box>
 
@@ -66,14 +139,14 @@ const AdminPortalLayout: React.FC = () => {
                     h="70px"
                     align="center"
                     justify="space-between"
-                    px={{ base: 4, md: 8 }}
+                    px={8}
                     position="sticky"
                     top={0}
                     zIndex={1100}
                     className="sidebar-glass"
                     backdropFilter="blur(10px)"
                 >
-                    <Box display={{ base: "none", md: "block" }}></Box>
+                    <Box></Box>
 
                     <Flex align="center" gap={6}>
                         <NotificationCenter />
@@ -130,104 +203,6 @@ const AdminPortalLayout: React.FC = () => {
                 <AishaAssistant />
             </Box>
         </Flex>
-    );
-};
-
-interface SidebarContentProps {
-    isSidebarOpen: boolean;
-    setSidebarOpen: (val: boolean) => void;
-    user: any;
-    location: any;
-    handleLogout: () => void;
-    isMobile?: boolean;
-}
-
-const SidebarContent: React.FC<SidebarContentProps> = ({ isSidebarOpen, setSidebarOpen, user, location, handleLogout, isMobile }) => {
-    return (
-        <>
-            {/* Logo */}
-            <Flex align="center" px={2} h="40px">
-                <Box
-                    w="40px"
-                    h="40px"
-                    borderRadius="10px"
-                    bg="linear-gradient(135deg, var(--terminal-accent) 0%, #2dd4bf 100%)"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    mr={isSidebarOpen ? 3 : 0}
-                >
-                    <Box w="20px" h="20px" bg="white" borderRadius="4px" />
-                </Box>
-                {isSidebarOpen && (
-                    <Heading size="md" className="gradient-text" fontWeight="bold">
-                        AISHA
-                    </Heading>
-                )}
-            </Flex>
-
-            {/* Toggle Button - Hidden on mobile */}
-            {!isMobile && (
-                <Flex justify={isSidebarOpen ? 'flex-end' : 'center'} px={isSidebarOpen ? 1 : 0}>
-                    <IconButton
-                        aria-label={isSidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
-                        variant="ghost"
-                        color="whiteAlpha.500"
-                        _hover={{ color: 'white', bg: 'whiteAlpha.100' }}
-                        size="sm"
-                        rounded="lg"
-                        onClick={() => setSidebarOpen(!isSidebarOpen)}
-                    >
-                        {isSidebarOpen ? <LuPanelLeftClose /> : <LuPanelLeftOpen />}
-                    </IconButton>
-                </Flex>
-            )}
-
-            {/* Nav Links */}
-            <VStack gap={2} align="stretch">
-                {navItems.filter(item => {
-                    if (!item.roles) return true;
-                    const userRole = (user?.role || '').toUpperCase();
-                    return item.roles.some(r => r.toUpperCase() === userRole);
-                }).map((item) => {
-                    const userRole = (user?.role || '').toUpperCase();
-                    const targetPath = (userRole === 'DEPARTMENT_ADMIN' && item.deptPath ? item.deptPath : item.path) || '/';
-                    const isActive = location.pathname === targetPath;
-                    return (
-                        <NavLink key={item.name} to={targetPath}>
-                            <Flex
-                                align="center"
-                                p={3}
-                                borderRadius="12px"
-                                transition="all 0.2s"
-                                bg={isActive ? "rgba(56, 189, 248, 0.15)" : "transparent"}
-                                color={isActive ? "var(--terminal-accent)" : "gray.400"}
-                                _hover={{ bg: "rgba(255, 255, 255, 0.05)", color: "white" }}
-                            >
-                                <Icon as={item.icon} boxSize={5} mr={isSidebarOpen ? 4 : 0} />
-                                {isSidebarOpen && <Text fontWeight="medium">{item.name}</Text>}
-                            </Flex>
-                        </NavLink>
-                    );
-                })}
-            </VStack>
-
-            {/* Footer / Logout */}
-            <Box mt="auto" px={2}>
-                <Flex
-                    align="center"
-                    p={3}
-                    borderRadius="12px"
-                    cursor="pointer"
-                    color="gray.400"
-                    _hover={{ bg: "rgba(239, 68, 68, 0.1)", color: "red.400" }}
-                    onClick={handleLogout}
-                >
-                    <Icon as={LogOut} boxSize={5} mr={isSidebarOpen ? 4 : 0} />
-                    {isSidebarOpen && <Text fontWeight="medium">Sign Out</Text>}
-                </Flex>
-            </Box>
-        </>
     );
 };
 
