@@ -4,16 +4,18 @@ import time
 import numpy as np
 
 def cos_sim(a, b):
-    a = np.array(a)
-    b = np.array(b)
-    if a.ndim == 1 and b.ndim == 1:
-        return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b) + 1e-9)
-    elif a.ndim == 1 and b.ndim == 2:
-        return np.dot(b, a) / (np.linalg.norm(b, axis=1) * np.linalg.norm(a) + 1e-9)
-    # Default 2D vs 2D
-    norm_a = np.linalg.norm(a, axis=1, keepdims=True)
-    norm_b = np.linalg.norm(b, axis=1, keepdims=True)
-    return np.dot(a, b.T) / (np.dot(norm_a, norm_b.T) + 1e-9)
+    try:
+        a = np.array(a)
+        b = np.array(b)
+        if a.shape != b.shape:
+            return 0.0
+        norm_a = np.linalg.norm(a)
+        norm_b = np.linalg.norm(b)
+        if norm_a == 0 or norm_b == 0:
+            return 0.0
+        return np.dot(a, b) / (norm_a * norm_b + 1e-9)
+    except Exception:
+        return 0.0
 
 logger = logging.getLogger(__name__)
 

@@ -158,14 +158,13 @@ export class StudentController extends BaseController {
                 result = await pool.query(query, values);
             }
 
-            // Sync with student_interests table
+            // Sync with student_interests table (Batched)
             if (interests && Array.isArray(interests)) {
                 await pool.query('DELETE FROM student_interests WHERE student_id = $1', [studentId]);
-                for (const interest of interests) {
-                    await pool.query(
-                        'INSERT INTO student_interests (student_id, interest) VALUES ($1, $2) ON CONFLICT DO NOTHING',
-                        [studentId, interest]
-                    );
+                if (interests.length > 0) {
+                    const valuesArr = interests.map((_, i) => `($1, $${i + 2})`).join(', ');
+                    const insertQuery = `INSERT INTO student_interests (student_id, interest) VALUES ${valuesArr} ON CONFLICT DO NOTHING`;
+                    await pool.query(insertQuery, [studentId, ...interests]);
                 }
             }
 

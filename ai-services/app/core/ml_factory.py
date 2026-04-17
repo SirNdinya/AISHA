@@ -39,11 +39,17 @@ class MLModelFactory:
         """
         Prioritizes Gemini, returns zeros on failure.
         """
+        # Filter out empty strings/None to prevent Gemini 400 Error
+        if isinstance(texts, list):
+            processed_texts = [str(t) if t else "N/A" for t in texts]
+        else:
+            processed_texts = str(texts) if texts else "N/A"
+
         if self._ready and self.client:
             try:
                 response = self.client.models.embed_content(
                     model="gemini-embedding-001",
-                    contents=texts
+                    contents=processed_texts
                 )
                 if isinstance(texts, list):
                     return [e.values for e in response.embeddings]

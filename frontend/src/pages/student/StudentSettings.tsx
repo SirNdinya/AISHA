@@ -118,7 +118,7 @@ const StudentSettings: React.FC = () => {
         }
     };
 
-    // Real-Time Sync Logic
+    // Real-Time Sync Logic (Only if not already synced)
     useEffect(() => {
         if (!settings.admission_number) {
             dispatch(clearInstitutionalData());
@@ -126,12 +126,17 @@ const StudentSettings: React.FC = () => {
             return;
         }
 
+        // If profile is already synced, don't trigger auto-sync on mount
+        if (profile?.admission_number === settings.admission_number && profile?.sync_status === 'SYNCED') {
+            return;
+        }
+
         const debounceTimer = setTimeout(() => {
             handleSync();
-        }, 800); // 800ms debounce for typing
+        }, 1200); // Increased debounce for stability
 
         return () => clearTimeout(debounceTimer);
-    }, [settings.admission_number]);
+    }, [settings.admission_number, profile?.sync_status]);
 
     // Populate settings when profile is loaded
     useEffect(() => {
@@ -177,8 +182,20 @@ const StudentSettings: React.FC = () => {
         }
 
         await dispatch(updateStudentProfile(updateData));
+        // Immediately trigger matching update
+        dispatch(clearMatchData());
+        dispatch(fetchStudentProfile()); // Refresh profile to get updated keywords
+        setTimeout(() => {
+            dispatch(fetchMatchIntelligence());
+        }, 500);
+        
         setIsSaving(false);
         toaster.create({ title: "Preferences Saved", description: "Your matching criteria have been updated.", type: "success" });
+        
+        // Return to dashboard after saving to show results
+        setTimeout(() => {
+            navigate('/student/dashboard');
+        }, 1500);
     };
 
     const handleDownloadSummary = () => {

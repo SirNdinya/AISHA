@@ -120,18 +120,20 @@ const StudentDashboard: React.FC = () => {
 
 
     // Real-time update on registration number change
+    // Only clear if the admission number actually CHANGED to prevent lag on every profile update
+    const [prevReg, setPrevReg] = React.useState<string | undefined>(profile?.admission_number);
     useEffect(() => {
-        if (profile?.admission_number) {
+        if (profile?.admission_number && profile.admission_number !== prevReg) {
             dispatch(clearMatchData());
             setHasChosenStrategy(false);
+            setPrevReg(profile.admission_number);
             const timer = setTimeout(() => {
-                // Removed: dispatch(fetchMatchIntelligence());
                 dispatch(fetchAcademicRecords());
                 dispatch(fetchDashboardData());
             }, 100);
             return () => clearTimeout(timer);
         }
-    }, [profile?.admission_number, dispatch]);
+    }, [profile?.admission_number, dispatch, prevReg]);
 
 
 
@@ -139,9 +141,10 @@ const StudentDashboard: React.FC = () => {
         dispatch(fetchStudentProfile());
         dispatch(fetchAcademicRecords());
         dispatch(fetchDashboardData()).then((result) => {
-            // If the user already has applications or placements, 
-            // we should show them without prompting.
-            if (result.payload && typeof result.payload === 'object' && 'stats' in result.payload) {
+            // Auto-trigger matching if preferences already exist
+            if (profile?.skills?.length || profile?.interests?.length) {
+                dispatch(fetchMatchIntelligence());
+            } else if (result.payload && typeof result.payload === 'object' && 'stats' in result.payload) {
                 const stats = (result.payload as any).stats;
                 if (stats.active_placements > 0 || stats.total_applications > 0) {
                     dispatch(fetchMatchIntelligence());
@@ -412,7 +415,7 @@ const StudentDashboard: React.FC = () => {
                                             </Text>
                                         </VStack>
                                     </Flex>
-                                ) : (matchIntelligence || []).length === 0 && !hasChosenStrategy ? (
+                                ) : (matchIntelligence || []).length === 0 && !hasChosenStrategy && (profile?.skills || []).length === 0 && (profile?.interests || []).length === 0 ? (
                                     <Flex flex={1} align="center" justify="center" direction="column" gap={6} p={8} bg="var(--terminal-card)" borderRadius="3xl" border="1px dashed" borderColor="brand.400">
                                         <VStack gap={4} textAlign="center">
                                             <Icon as={LuBot} boxSize={12} color="brand.400" />
