@@ -50,11 +50,13 @@ const CompanyLayout: React.FC = () => {
     return (
         <WebSocketProvider userId={user.id}>
             <Box minH="100vh" display="flex">
-                <CompanySidebar
-                    isCollapsed={isSidebarCollapsed}
-                    onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-                    onLogout={handleLogout}
-                />
+                <Box display={{ base: "none", lg: "block" }}>
+                    <CompanySidebar
+                        isCollapsed={isSidebarCollapsed}
+                        onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                        onLogout={handleLogout}
+                    />
+                </Box>
 
                 {/* Mobile Drawer */}
                 <DrawerRoot

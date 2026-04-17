@@ -58,7 +58,6 @@ const AdminPortalLayout: React.FC = () => {
                 display={{ base: "none", lg: "block" }}
             >
                 <VStack h="full" py={8} px={4} gap={8} align="stretch">
-                    {/* ... Sidebar Content ... */}
                     <SidebarContent 
                         isSidebarOpen={isSidebarOpen} 
                         setSidebarOpen={setSidebarOpen} 

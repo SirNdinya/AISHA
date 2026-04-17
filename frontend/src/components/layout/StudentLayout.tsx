@@ -53,11 +53,13 @@ const StudentLayout: React.FC = () => {
         <WebSocketProvider userId={user.id}>
             <Box className="dashboard-container" h="100vh" bg="transparent" overflow="hidden" display="flex" flexDirection="column">
 
-                <StudentSidebar
-                    isCollapsed={isSidebarCollapsed}
-                    onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-                    onLogout={handleLogout}
-                />
+                <Box display={{ base: "none", lg: "block" }}>
+                    <StudentSidebar
+                        isCollapsed={isSidebarCollapsed}
+                        onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                        onLogout={handleLogout}
+                    />
+                </Box>
 
                 {/* Mobile Drawer */}
                 <DrawerRoot

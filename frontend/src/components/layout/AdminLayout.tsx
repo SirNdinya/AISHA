@@ -1,5 +1,5 @@
-import React from 'react';
-import { Box, Flex, Heading, HStack, Button, Text } from '@chakra-ui/react';
+import React, { useState } from 'react';
+import { Box, Flex, Heading, HStack, Button, Text, VStack } from '@chakra-ui/react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import ThemeToggle from '../common/ThemeToggle';
