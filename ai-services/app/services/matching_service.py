@@ -240,8 +240,8 @@ class MatchingService:
             
             for i, opp in enumerate(opps):
                 OpportunityCache.embeddings[str(opp.id)] = {
-                    "job_reqs_emb": job_embs[i],
-                    "interest_emb": interest_embs[i],
+                    "job_reqs_emb": job_embs[i] if job_embs is not None else None,
+                    "interest_emb": interest_embs[i] if interest_embs is not None else None,
                     "location_text": (opp.location or "").lower(),
                     "skills_required": set(opp.skills_required) if opp.skills_required else set()
                 }
