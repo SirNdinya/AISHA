@@ -88,6 +88,7 @@ const StudentDashboard: React.FC = () => {
     const [isTranscriptOpen, setIsTranscriptOpen] = React.useState(false);
 
     const [viewingId, setViewingId] = React.useState<string | null>(null);
+    const [hasChosenStrategy, setHasChosenStrategy] = React.useState(false);
 
     const handleView = async (opportunityId: string, matchScore?: number, matchReason?: string) => {
         if (!opportunityId) return;
@@ -122,8 +123,9 @@ const StudentDashboard: React.FC = () => {
     useEffect(() => {
         if (profile?.admission_number) {
             dispatch(clearMatchData());
+            setHasChosenStrategy(false);
             const timer = setTimeout(() => {
-                dispatch(fetchMatchIntelligence());
+                // Removed: dispatch(fetchMatchIntelligence());
                 dispatch(fetchAcademicRecords());
                 dispatch(fetchDashboardData());
             }, 100);
@@ -135,9 +137,17 @@ const StudentDashboard: React.FC = () => {
 
     useEffect(() => {
         dispatch(fetchStudentProfile());
-        dispatch(fetchDashboardData());
         dispatch(fetchAcademicRecords());
-        dispatch(fetchMatchIntelligence());
+        dispatch(fetchDashboardData()).then((result) => {
+            // If the user already has applications or placements, 
+            // we should show them without prompting.
+            if (result.payload && typeof result.payload === 'object' && 'stats' in result.payload) {
+                const stats = (result.payload as any).stats;
+                if (stats.active_placements > 0 || stats.total_applications > 0) {
+                    dispatch(fetchMatchIntelligence());
+                }
+            }
+        });
     }, [dispatch]);
 
     useEffect(() => {
@@ -400,6 +410,42 @@ const StudentDashboard: React.FC = () => {
                                              <Text fontSize="xs" color="brand.500" fontWeight="bold" letterSpacing="widest">
                                                  FINDING YOUR BEST MATCHES...
                                              </Text>
+                                         </VStack>
+                                     </Flex>
+                                 ) : (matchIntelligence || []).length === 0 && !hasChosenStrategy ? (
+                                     <Flex flex={1} align="center" justify="center" direction="column" gap={6} p={8} bg="var(--terminal-card)" borderRadius="3xl" border="1px dashed" borderColor="brand.400">
+                                         <VStack gap={4} textAlign="center">
+                                             <Icon as={LuBot} boxSize={12} color="brand.400" />
+                                             <Heading size="md" color="#F8FAFC" fontWeight="black" letterSpacing="widest">MATCHING STRATEGY</Heading>
+                                             <Text fontSize="sm" color="var(--terminal-accent)" fontWeight="bold">Academic records synchronized. How would you like to proceed with your placement?</Text>
+                                             <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={4} w="full" mt={4}>
+                                                 <Button 
+                                                     height="60px" 
+                                                     variant="outline" 
+                                                     borderColor="brand.400" 
+                                                     color="brand.400"
+                                                     onClick={() => navigate('/student/settings')}
+                                                     fontSize="xs"
+                                                     fontWeight="black"
+                                                     letterSpacing="widest"
+                                                 >
+                                                     ADD CAREER INTERESTS
+                                                 </Button>
+                                                 <Button 
+                                                     height="60px" 
+                                                     bg="brand.400" 
+                                                     color="black"
+                                                     onClick={() => {
+                                                         setHasChosenStrategy(true);
+                                                         dispatch(fetchMatchIntelligence());
+                                                     }}
+                                                     fontSize="xs"
+                                                     fontWeight="black"
+                                                     letterSpacing="widest"
+                                                 >
+                                                     CONTINUE ON PERFORMANCE
+                                                 </Button>
+                                             </Grid>
                                          </VStack>
                                      </Flex>
                                  ) : (matchIntelligence || []).length === 0 ? (

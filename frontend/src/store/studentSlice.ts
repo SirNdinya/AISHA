@@ -161,7 +161,7 @@ const studentSlice = createSlice({
             state.matchIntelligence = [];
             state.academicRecords = [];
             state.dashboardStats = null;
-            state.isMatchingLoading = true;
+            state.isMatchingLoading = false;
             state.isAcademicLoading = true;
         }
     },
