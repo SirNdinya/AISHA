@@ -116,7 +116,7 @@ class MatchingService:
             
             return {
                 "score": final_alg_score,
-                "reasoning": f"Algorithmic Match: Computed {final_alg_score * 100:.1f}% transcript vector alignment."
+                "reasoning": f"Your academic trajectory shows a strong alignment with the requirements for {opp.title}."
             }
         except Exception as e:
             logger.error(f"Algorithmic Embedding Error: {str(e)}")
@@ -163,6 +163,8 @@ class MatchingService:
         - top_relevant_units: List of 2 critical units from the transcript.
         
         Respond ONLY with valid JSON.
+        - Ensure 'reasoning' is a professional, ONE-SENTENCE justification that starts with 'You' or 'Your'.
+        - DO NOT mention 'Algorithmic Match', 'Vector Alignment', or technical scores in the reasoning.
         """
         
         try:
@@ -426,14 +428,18 @@ class MatchingService:
         # Final Sort
         matches.sort(key=lambda x: x['match_score'], reverse=True)
         
-        # Ensure the Absolute Best Match has professional reasoning
-        top_match = matches[0]
-        if "Algorithmic match" in top_match["reasoning"] or "recommendation for" in top_match["reasoning"]:
-             # Quick cleanup for top match reasoning if it somehow missed the LLM tier
-             prompt = f"Role: {top_match['job_title']} Reqs: {top_match['reasoning']} TASK: Synthesize a unique, professional ONE sentence match justification addressing the user as 'You'."
-             try:
-                 res = await llm_service.analyze_structured(prompt, {"reasoning": ""})
-                 top_match["reasoning"] = res.get("reasoning", top_match["reasoning"])
-             except: pass
+        # Ensure all Top matches have professional reasoning (Max top 3)
+        for i in range(min(3, len(matches))):
+            match = matches[i]
+            # Detect technical or placeholder reasoning
+            is_technical = any(term in match["reasoning"].lower() for term in ["algorithmic", "vector", "score:", "computed", "[system]"])
+            
+            if is_technical:
+                 prompt = f"Role: {match['job_title']} at {match['company_name']}. Justification context: {match['reasoning']}. TASK: Rewrite this into a unique, professional ONE sentence match justification addressing the user as 'You'. Avoid technical jargon."
+                 try:
+                     res = await llm_service.analyze_structured(prompt, {"reasoning": ""})
+                     if res.get("reasoning"):
+                         match["reasoning"] = res["reasoning"]
+                 except: pass
 
-        return matches[:10]  # Return top 10 for the UI to pick from
+        return matches[:10]

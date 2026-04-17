@@ -21,6 +21,19 @@ export class AutomationService {
         
         const matches = await AIService.getMatchIntelligence(studentId);
         
+        // Proactively generate/refresh academic analysis
+        try {
+            const recordsQuery = await pool.query('SELECT * FROM student_academic_records WHERE student_id = $1', [studentId]);
+            if (recordsQuery.rows.length > 0) {
+                const analysis = await AIService.analyzeTranscript(recordsQuery.rows, student.first_name);
+                if (analysis) {
+                    await pool.query('UPDATE students SET academic_analysis = $1 WHERE id = $2', [JSON.stringify(analysis), studentId]);
+                }
+            }
+        } catch (err) {
+            console.error('[AI SERVICE] Pre-match Academic Analysis failed:', err);
+        }
+        
         if (!matches || matches.length === 0) {
             return { matches_found: 0, message: 'No opportunities currently match your strict profile.' };
         }
