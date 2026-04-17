@@ -47,20 +47,20 @@ const Confetti: React.FC = () => {
                     w="4px"
                     h="4px"
                     borderRadius="full"
-                    initial={{ 
-                        x: "50%", 
-                        y: "50%", 
+                    initial={{
+                        x: "50%",
+                        y: "50%",
                         scale: 0,
-                        opacity: 1 
+                        opacity: 1
                     }}
-                    animate={{ 
+                    animate={{
                         x: `${50 + (Math.random() - 0.5) * 100}%`,
                         y: `${50 + (Math.random() - 0.5) * 100}%`,
                         scale: [0, 1.5, 0],
                         opacity: [1, 1, 0]
                     }}
-                    transition={{ 
-                        duration: 2 + Math.random(), 
+                    transition={{
+                        duration: 2 + Math.random(),
                         repeat: Infinity,
                         delay: Math.random() * 2,
                         ease: "easeOut"
@@ -184,7 +184,7 @@ const StudentDashboard: React.FC = () => {
     let progress = 0;
     let progressText = "Initializing...";
     let progressColor = "gray.500";
-    
+
     if (!profile?.admission_number) {
         progress = 10;
         progressText = "Registration Pending";
@@ -290,7 +290,7 @@ const StudentDashboard: React.FC = () => {
 
     return (
         <Box bg="transparent" minH="100%" display="flex" flexDirection="column">
-            
+
             {/* Top Level Dynamic Progress Bar */}
             <Box w="100%" px={{ base: 4, lg: 8 }} mb={1} transition="all 0.3s ease">
                 <Flex justify="space-between" align="center" mb={1}>
@@ -317,9 +317,9 @@ const StudentDashboard: React.FC = () => {
             </Box>
 
             <Container maxW="container.xl" pt={1} pb={8}>
-                <Grid 
-                    templateColumns={{ base: "1fr", lg: "1fr 1.2fr" }} 
-                    gap={4} 
+                <Grid
+                    templateColumns={{ base: "1fr", lg: "1fr 1.2fr" }}
+                    gap={4}
                 >
                     {/* Left Column: Academic & Skill Core */}
                     <VStack gap={4} align="stretch">
@@ -340,17 +340,17 @@ const StudentDashboard: React.FC = () => {
                             </Flex>
 
                             <VStack align="stretch" gap={2} flex={1} overflowY="auto" pr={2}>
-                                 {isAcademicLoading && (academicRecords || []).length === 0 ? (
-                                     <HStack py={8} justify="center" gap={4}>
-                                         <Spinner size="sm" color="var(--terminal-accent)" />
-                                         <Text fontSize="sm" color="var(--terminal-accent)" fontWeight="black">Loading Records...</Text>
-                                     </HStack>
-                                 ) : (academicRecords || []).length === 0 ? (
+                                {isAcademicLoading && (academicRecords || []).length === 0 ? (
+                                    <HStack py={8} justify="center" gap={4}>
+                                        <Spinner size="sm" color="var(--terminal-accent)" />
+                                        <Text fontSize="sm" color="var(--terminal-accent)" fontWeight="black">Loading Records...</Text>
+                                    </HStack>
+                                ) : (academicRecords || []).length === 0 ? (
                                     <Flex flex={1} align="center" justify="center" direction="column" gap={2}>
                                         <Icon as={LuGraduationCap} color="whiteAlpha.200" boxSize={10} />
                                         <Text fontSize="sm" color="var(--terminal-accent)" fontWeight="black" textAlign="center">No records found. Update profile to load.</Text>
                                     </Flex>
-                                 ) : (
+                                ) : (
                                     (academicRecords || []).slice(0, 4).map((record: any) => (
                                         <Flex key={record.id} justify="space-between" align="center" py={3} borderBottom="1px solid" borderColor="gray.200">
                                             <VStack align="start" gap={0}>
@@ -362,14 +362,14 @@ const StudentDashboard: React.FC = () => {
                                             </Badge>
                                         </Flex>
                                     ))
-                                 )}
-                                 {(academicRecords || []).length > 4 && (
-                                     <Text fontSize="10px" color="var(--terminal-accent)" textAlign="center" mt={2} letterSpacing="widest" fontWeight="black">
-                                         + {(academicRecords || []).length - 4} MORE_UNITS_IN_FULL_RECORDS
-                                     </Text>
-                                 )}
+                                )}
+                                {(academicRecords || []).length > 4 && (
+                                    <Text fontSize="10px" color="var(--terminal-accent)" textAlign="center" mt={2} letterSpacing="widest" fontWeight="black">
+                                        + {(academicRecords || []).length - 4} MORE_UNITS_IN_FULL_RECORDS
+                                    </Text>
+                                )}
                             </VStack>
-                            
+
                             <Flex justify="center" mt={4}>
                                 <Button size="sm" colorPalette="brand" variant="solid" borderRadius="full" px={10} onClick={() => setIsTranscriptOpen(true)} fontWeight="black">
                                     SHOW ANALYSIS
@@ -398,61 +398,61 @@ const StudentDashboard: React.FC = () => {
                             </HStack>
 
                             <Box flex={1} overflowY="auto" pr={2}>
-                                 {isMatchingActive && (!matchIntelligence || matchIntelligence.length === 0 || matchIntelligence[0].status !== 'ACCEPTED') ? (
-                                     <Flex flex={1} align="center" justify="center" py={12}>
-                                         <VStack gap={4}>
-                                             <MotionBox
-                                                 animate={{ rotate: 360 }}
-                                                 transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-                                             >
+                                {isMatchingActive && (!matchIntelligence || matchIntelligence.length === 0 || matchIntelligence[0].status !== 'ACCEPTED') ? (
+                                    <Flex flex={1} align="center" justify="center" py={12}>
+                                        <VStack gap={4}>
+                                            <MotionBox
+                                                animate={{ rotate: 360 }}
+                                                transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                                            >
                                                 <Icon as={LuBot} boxSize={16} color="brand.500" />
-                                             </MotionBox>
-                                             <Text fontSize="xs" color="brand.500" fontWeight="bold" letterSpacing="widest">
-                                                 FINDING YOUR BEST MATCHES...
-                                             </Text>
-                                         </VStack>
-                                     </Flex>
-                                 ) : (matchIntelligence || []).length === 0 && !hasChosenStrategy ? (
-                                     <Flex flex={1} align="center" justify="center" direction="column" gap={6} p={8} bg="var(--terminal-card)" borderRadius="3xl" border="1px dashed" borderColor="brand.400">
-                                         <VStack gap={4} textAlign="center">
-                                             <Icon as={LuBot} boxSize={12} color="brand.400" />
-                                             <Heading size="md" color="#F8FAFC" fontWeight="black" letterSpacing="widest">MATCHING STRATEGY</Heading>
-                                             <Text fontSize="sm" color="var(--terminal-accent)" fontWeight="bold">Academic records synchronized. How would you like to proceed with your placement?</Text>
-                                             <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={4} w="full" mt={4}>
-                                                 <Button 
-                                                     height="60px" 
-                                                     variant="outline" 
-                                                     borderColor="brand.400" 
-                                                     color="brand.400"
-                                                     onClick={() => navigate('/student/settings')}
-                                                     fontSize="xs"
-                                                     fontWeight="black"
-                                                     letterSpacing="widest"
-                                                 >
-                                                     ADD CAREER INTERESTS
-                                                 </Button>
-                                                 <Button 
-                                                     height="60px" 
-                                                     bg="brand.400" 
-                                                     color="black"
-                                                     onClick={() => {
-                                                         setHasChosenStrategy(true);
-                                                         dispatch(fetchMatchIntelligence());
-                                                     }}
-                                                     fontSize="xs"
-                                                     fontWeight="black"
-                                                     letterSpacing="widest"
-                                                 >
-                                                     CONTINUE ON PERFORMANCE
-                                                 </Button>
-                                             </Grid>
-                                         </VStack>
-                                     </Flex>
-                                 ) : (matchIntelligence || []).length === 0 ? (
-                                     <Flex flex={1} align="center" justify="center" border="1px dashed" borderColor="brand.200" borderRadius="2xl" p={8}>
-                                         <Text fontSize="xs" color="indigo.400" textAlign="center" letterSpacing="widest" fontWeight="black">NO MATCHES FOUND YET. UPDATE YOUR PROFILE.</Text>
-                                     </Flex>
-                                 ) : (
+                                            </MotionBox>
+                                            <Text fontSize="xs" color="brand.500" fontWeight="bold" letterSpacing="widest">
+                                                FINDING YOUR BEST MATCHES...
+                                            </Text>
+                                        </VStack>
+                                    </Flex>
+                                ) : (matchIntelligence || []).length === 0 && !hasChosenStrategy ? (
+                                    <Flex flex={1} align="center" justify="center" direction="column" gap={6} p={8} bg="var(--terminal-card)" borderRadius="3xl" border="1px dashed" borderColor="brand.400">
+                                        <VStack gap={4} textAlign="center">
+                                            <Icon as={LuBot} boxSize={12} color="brand.400" />
+                                            <Heading size="md" color="#F8FAFC" fontWeight="black" letterSpacing="widest">MATCHING STRATEGY</Heading>
+                                            <Text fontSize="sm" color="var(--terminal-accent)" fontWeight="bold">Academic records synchronized. How would you like to proceed with your placement?</Text>
+                                            <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={4} w="full" mt={4}>
+                                                <Button
+                                                    height="60px"
+                                                    variant="outline"
+                                                    borderColor="brand.400"
+                                                    color="brand.400"
+                                                    onClick={() => navigate('/student/settings')}
+                                                    fontSize="xs"
+                                                    fontWeight="black"
+                                                    letterSpacing="widest"
+                                                >
+                                                    ADD CAREER INTERESTS
+                                                </Button>
+                                                <Button
+                                                    height="60px"
+                                                    bg="brand.400"
+                                                    color="black"
+                                                    onClick={() => {
+                                                        setHasChosenStrategy(true);
+                                                        dispatch(fetchMatchIntelligence());
+                                                    }}
+                                                    fontSize="xs"
+                                                    fontWeight="black"
+                                                    letterSpacing="widest"
+                                                >
+                                                    ACADEMIC MATCH
+                                                </Button>
+                                            </Grid>
+                                        </VStack>
+                                    </Flex>
+                                ) : (matchIntelligence || []).length === 0 ? (
+                                    <Flex flex={1} align="center" justify="center" border="1px dashed" borderColor="brand.200" borderRadius="2xl" p={8}>
+                                        <Text fontSize="xs" color="indigo.400" textAlign="center" letterSpacing="widest" fontWeight="black">NO MATCHES FOUND YET. UPDATE YOUR PROFILE.</Text>
+                                    </Flex>
+                                ) : (
                                     <VStack gap={6} align="stretch">
                                         {/* Unified Premium Match Card */}
                                         {matchIntelligence[0] && (
@@ -485,12 +485,12 @@ const StudentDashboard: React.FC = () => {
                                                             border="3px solid"
                                                             borderColor="brand.300"
                                                             src={
-                                                                matchIntelligence[0].profile_picture_url 
-                                                                ? getMediaUrl(matchIntelligence[0].profile_picture_url)
-                                                                : matchIntelligence[0].logo_url
-                                                                ? getMediaUrl(matchIntelligence[0].logo_url)
-                                                                : `https://logo.clearbit.com/${matchIntelligence[0].company_name?.toLowerCase().replace(/\s+/g, '')}.com`
-                                                             }
+                                                                matchIntelligence[0].profile_picture_url
+                                                                    ? getMediaUrl(matchIntelligence[0].profile_picture_url)
+                                                                    : matchIntelligence[0].logo_url
+                                                                        ? getMediaUrl(matchIntelligence[0].logo_url)
+                                                                        : `https://logo.clearbit.com/${matchIntelligence[0].company_name?.toLowerCase().replace(/\s+/g, '')}.com`
+                                                            }
                                                             portrayedIcon={<Icon as={LuBuilding2} color="brand.400" boxSize={10} />}
                                                         />
                                                         <VStack align="start" gap={1} flex="1">
@@ -528,23 +528,23 @@ const StudentDashboard: React.FC = () => {
                                                         boxShadow="lg"
                                                         _hover={{ transform: "translateY(-2px)", boxShadow: "xl" }}
                                                         onClick={() => handleView(
-                                                            matchIntelligence[0].opportunity_id, 
-                                                            matchIntelligence[0].match_score, 
+                                                            matchIntelligence[0].opportunity_id,
+                                                            matchIntelligence[0].match_score,
                                                             matchIntelligence[0].reasoning
                                                         )}
                                                         loading={viewingId === matchIntelligence[0].opportunity_id}
                                                     >
                                                         {
-                                                            matchIntelligence[0].status === 'ACCEPTED' ? 'View Placement' : 
-                                                            matchIntelligence[0].status === 'OFFERED' ? 'Respond to Offer' : 
-                                                            matchIntelligence[0].status === 'PENDING' ? 'View Application' : 'Open Match'
+                                                            matchIntelligence[0].status === 'ACCEPTED' ? 'View Placement' :
+                                                                matchIntelligence[0].status === 'OFFERED' ? 'Respond to Offer' :
+                                                                    matchIntelligence[0].status === 'PENDING' ? 'View Application' : 'Open Match'
                                                         }
                                                     </Button>
                                                 </VStack>
                                             </MotionBox>
                                         )}
                                     </VStack>
-                                 )}
+                                )}
                             </Box>
                         </MotionBox>
                     </VStack>
