@@ -31,6 +31,8 @@ const RedesignedPlacement: React.FC = () => {
     const { user } = useSelector((state: RootState) => state.auth);
     const [searchParams] = useSearchParams();
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+    const [isViewing, setIsViewing] = useState(false);
+    const [isDownloading, setIsDownloading] = useState(false);
 
     const expandId = searchParams.get('expand');
 
@@ -162,6 +164,7 @@ const RedesignedPlacement: React.FC = () => {
     };
 
     const handleDownloadLetter = async (appId: string) => {
+        setIsDownloading(true);
         try {
             const response = await apiClient.get(`/applications/download-acceptance-letter/${appId}`, { responseType: 'blob' });
             const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
@@ -175,10 +178,13 @@ const RedesignedPlacement: React.FC = () => {
             toaster.create({ title: "Letter Downloaded", description: "Your official acceptance PDF is ready.", type: "success" });
         } catch (error) {
             toaster.create({ title: "Download Failed", description: "Acceptance letter is not yet available.", type: "error" });
+        } finally {
+            setIsDownloading(false);
         }
     };
 
     const handleViewLetter = async (appId: string) => {
+        setIsViewing(true);
         try {
             const response = await apiClient.get(`/applications/download-acceptance-letter/${appId}`, { responseType: 'blob' });
             const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
@@ -186,6 +192,8 @@ const RedesignedPlacement: React.FC = () => {
             setTimeout(() => window.URL.revokeObjectURL(url), 1000);
         } catch (error) {
             toaster.create({ title: "View Failed", description: "Acceptance letter cannot be viewed at this time.", type: "error" });
+        } finally {
+            setIsViewing(false);
         }
     };
 
@@ -437,6 +445,7 @@ const RedesignedPlacement: React.FC = () => {
                                         size="xs" variant="solid" colorPalette="brand"
                                         onClick={() => handleViewLetter(targetApp.id)}
                                         borderRadius="lg" cursor="pointer"
+                                        loading={isViewing}
                                     >
                                         <Icon as={LuEye} /> View
                                     </Button>
@@ -444,6 +453,7 @@ const RedesignedPlacement: React.FC = () => {
                                         size="xs" colorPalette="brand" variant="solid" fontWeight="black"
                                         onClick={() => handleDownloadLetter(targetApp.id)}
                                         borderRadius="lg" cursor="pointer"
+                                        loading={isDownloading}
                                     >
                                         <Icon as={LuDownload} /> Download
                                     </Button>
