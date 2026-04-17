@@ -11,7 +11,7 @@ import {
     TableRoot, TableHeader, TableRow, TableColumnHeader,
     TableBody, TableCell
 } from '@chakra-ui/react';
-import { LuBookOpen, LuDownload, LuZap, LuTrendingUp, LuCircleCheck, LuShieldCheck, LuSparkles, LuBot, LuActivity } from "react-icons/lu";
+import { LuBookOpen, LuDownload, LuZap, LuTrendingUp, LuShieldCheck, LuSparkles, LuBot, LuActivity } from "react-icons/lu";
 import StudentService from '../../../services/studentService';
 import MarkdownText from '../../../components/common/MarkdownText';
 import { motion } from 'framer-motion';
@@ -128,7 +128,7 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                             <Flex justify="center" align="center" py={24}>
                                 <VStack gap={6}>
                                     <Box pos="relative">
-                                        <Spinner size="xl" thickness="3px" color="brand.400" />
+                                        <Spinner size="xl" borderWidth="3px" color="brand.400" />
                                         <MotionBox
                                             pos="absolute" inset="-15px"
                                             border="1px solid" borderColor="brand.400" borderRadius="full" opacity={0.3}
@@ -172,7 +172,7 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                                     >
                                         <VStack align="start" gap={1}>
                                             <Text fontSize="10px" color="brand.400" fontWeight="black" letterSpacing="widest">INSTITUTION</Text>
-                                            <Text fontSize="xs" color="white" fontWeight="bold" noOfLines={1} textTransform="uppercase">
+                                            <Text fontSize="xs" color="white" fontWeight="bold" lineClamp={1} textTransform="uppercase">
                                                 {data.student?.institution_name || 'MASINDE MULIRO'}
                                             </Text>
                                         </VStack>
