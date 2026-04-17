@@ -28,7 +28,7 @@ from app import models
 from typing import List, Dict, Any
 from app.core.ml_factory import model_factory
 from app.services.llm_service import llm_service
-from app.core.templates import get_fallback_reasoning
+from app.core.templates import get_fallback_reasoning, get_transcript_reasoning, get_academic_only_reasoning
 
 class OpportunityCache:
     opportunities: List[models.Opportunity] = []
@@ -293,7 +293,15 @@ class MatchingService:
             location_embs = None
         
         student_sk = set(student.skills) if student.skills else set()
-        w = self.weights
+        w = self.weights.copy()
+        is_academic_only = not student.interests or len(student.interests) == 0
+        
+        if is_academic_only:
+            # Shift interest weight to academic and skills
+            w["academic"] += (w["interest"] * 0.6)
+            w["skills"] += (w["interest"] * 0.4)
+            w["interest"] = 0.0
+            logger.info(f"MATCH_ENGINE: Student {student_id} has no preferences. Pivoting to Academic Priority Matching.")
 
         # --- TIER 1: VECTOR SCAN & HEURISTIC FILTER (All Opportunities) ---
         candidates = []
@@ -409,10 +417,20 @@ class MatchingService:
             final_score = (w["academic"] * 0.4) + cand["heuristic_score"]
             
             # Dynamic reasoning for local fallback
-            if cand["skill_score"] > 0.6:
+            if is_academic_only:
+                # Find the most relevant unit if possible
+                top_unit = "your core academic units"
+                if transcript_text:
+                    # Very simple extraction for fallback reasoning
+                    lines = [l for l in transcript_text.split('\n') if len(l) > 10][:1]
+                    if lines: top_unit = lines[0].strip()
+                reasoning = get_academic_only_reasoning(top_unit)
+            elif cand["skill_score"] > 0.6:
                 reasoning = get_fallback_reasoning()
             elif cand["interest_score"] > 0.6:
                 reasoning = f"Your career interests align well with the {cand['opp'].title} position."
+            else:
+                reasoning = get_fallback_reasoning()
             matches.append({
                 "opportunity_id": str(cand["opp"].id),
                 "job_title": cand["opp"].title,

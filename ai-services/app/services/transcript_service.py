@@ -90,19 +90,19 @@ class TranscriptService:
             
             # Static Fallback Logic
             top_units = sorted(records, key=lambda x: x.get('mark', 0) if x.get('mark') is not None else 0, reverse=True)[:3]
-            top_names = [u.get('unit_name', 'Unknown') for u in top_units]
+            top_unit_name = top_units[0].get('unit_name', 'your core units') if top_units else 'your core units'
             avg_mark = sum(r.get('mark', 0) for r in records if r.get('mark') is not None) / len(records) if records else 0
             
             status = "EXCELLENT" if avg_mark >= 70 else "ADVANCING" if avg_mark >= 50 else "STABLE"
             
-            insights = f"You have demonstrated strong technical aptitude in **{', '.join(top_names)}**. 🚀 Your academic record shows consistent performance with an average mark of **{avg_mark:.1f}%**, indicating a solid foundation for specialized career paths. 💡"
-            
-            recommendation = f"Based on your excellence in {top_names[0] if top_names else 'your core units'}, we recommend pursuing roles that leverage these specific technical strengths. ⚡"
+            # Use the specialized transcript reservoir
+            from app.core.templates import get_transcript_reasoning
+            analysis_text = get_transcript_reasoning(top_unit_name)
             
             return {
                 "status": status,
-                "recommendation": recommendation,
-                "insights": insights,
+                "recommendation": "Academic Optimization: Based on your strong foundation.",
+                "insights": analysis_text,
                 "detected_clusters": [u.get('unit_name', 'General') for u in top_units[:1]]
             }
 
