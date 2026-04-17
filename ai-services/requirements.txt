@@ -20,4 +20,3 @@ httpx
 beautifulsoup4
 google-genai>=0.1.0
 nltk==3.9.4
-fastembed>=0.5.1
