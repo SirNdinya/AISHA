@@ -46,9 +46,9 @@ class MLModelFactory:
             return [0.0] * 768
 
         try:
-            # New SDK uses client.models.embed_content
+            # Use gemini-embedding-001 as it is more widely available
             response = self.client.models.embed_content(
-                model="models/text-embedding-004",
+                model="models/gemini-embedding-001",
                 contents=texts
             )
             # The new SDK returns an object with an 'embeddings' or 'embedding' attribute
