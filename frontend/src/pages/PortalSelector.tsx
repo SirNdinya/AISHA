@@ -1,7 +1,7 @@
-import { Box, Heading, Text, Button, VStack, HStack, Card, Icon, Container, SimpleGrid, Link, Input, Textarea, IconButton } from '@chakra-ui/react';
+import { Box, Heading, Text, Button, VStack, HStack, Card, Icon, Container, SimpleGrid, Link, Input, Textarea } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { FaGraduationCap, FaBuilding, FaUniversity, FaUserShield, FaLinkedin, FaTwitter, FaGithub, FaEnvelope, FaMapMarkerAlt, FaPhone } from 'react-icons/fa';
 import { Rocket } from 'lucide-react';
 

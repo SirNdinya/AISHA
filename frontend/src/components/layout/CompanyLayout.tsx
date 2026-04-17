@@ -7,7 +7,6 @@ import { fetchCompanyProfile } from '../../store/companySlice';
 import type { RootState, AppDispatch } from '../../store';
 import CompanySidebar from '../../pages/company/components/CompanySidebar';
 import CompanyHeader from '../../pages/company/components/CompanyHeader';
-import { Box } from '@chakra-ui/react';
 import { WebSocketProvider } from '../../context/WebSocketContext';
 import { logout } from '../../store/authSlice';
 import AishaAssistant from '../common/AishaAssistant';
@@ -16,7 +15,6 @@ const CompanyLayout: React.FC = () => {
     const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
-    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
     useEffect(() => {
