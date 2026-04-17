@@ -25,7 +25,7 @@ class MLModelFactory:
             if settings.GEMINI_API_KEY:
                 self.client = genai.Client(
                     api_key=settings.GEMINI_API_KEY,
-                    http_options={'api_version': 'v1'}
+                    http_options={'api_version': 'v1beta'}
                 )
                 self._ready = True
                 logger.info("[ML-FACTORY] Gemini Neural Engine Online. (New GenAI SDK)")
@@ -46,9 +46,9 @@ class MLModelFactory:
             return [0.0] * 768
 
         try:
-            # Use gemini-embedding-001 as it is more widely available
+            # Use gemini-embedding-001 on v1beta as confirmed available
             response = self.client.models.embed_content(
-                model="models/gemini-embedding-001",
+                model="gemini-embedding-001",
                 contents=texts
             )
             # The new SDK returns an object with an 'embeddings' or 'embedding' attribute
