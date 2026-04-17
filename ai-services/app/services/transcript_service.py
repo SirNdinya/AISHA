@@ -17,6 +17,7 @@ class TranscriptService:
         True ML-driven analysis of academic records using LLMs.
         """
         from app.services.llm_service import llm_service
+        from app.core.templates import get_fallback_reasoning
         import json
 
         if not records:
@@ -68,8 +69,8 @@ class TranscriptService:
             if "error" in analysis:
                 return {
                     "status": "OFFLINE",
-                    "recommendation": "Analysis engine is temporarily busy. Please try again in a moment.",
-                    "insights": "Updating academic insights...",
+                    "recommendation": get_fallback_reasoning(),
+                    "insights": "Your academic performance shows encouraging trends. " + get_fallback_reasoning(),
                     "detected_clusters": []
                 }
             

@@ -28,6 +28,7 @@ from app import models
 from typing import List, Dict, Any
 from app.core.ml_factory import model_factory
 from app.services.llm_service import llm_service
+from app.core.templates import get_fallback_reasoning
 
 class OpportunityCache:
     opportunities: List[models.Opportunity] = []
@@ -42,10 +43,10 @@ class MatchingService:
         # Default weights - Can be autonomously adjusted by the system
         # Enhanced weights to prioritize career path and academic/transcript records
         self.weights = {
-            "academic": 0.35,
+            "academic": 0.25,
             "skills": 0.25,
-            "interest": 0.10,
-            "career_path": 0.20,
+            "interest": 0.25,
+            "career_path": 0.15,
             "location": 0.10
         }
         self.autonomous_mode = True
@@ -116,7 +117,7 @@ class MatchingService:
             
             return {
                 "score": final_alg_score,
-                "reasoning": f"Your academic trajectory shows a strong alignment with the requirements for {opp.title}."
+                "reasoning": get_fallback_reasoning()
             }
         except Exception as e:
             logger.error(f"Algorithmic Embedding Error: {str(e)}")
@@ -189,7 +190,7 @@ class MatchingService:
                 avg_grade_score = total_grade_score / len(top_units) if top_units else 0.5
                 
                 llm_score = (0.6 * float(res.get("relevance_score", 0.0))) + (0.4 * float(avg_grade_score)) if transcript_text else (0.4 * float(res.get("relevance_score", 0.0))) + (0.6 * float(avg_grade_score))
-                llm_reasoning = str(res.get("reasoning", "[SYSTEM] SEMANTIC_MATCH_VERIFIED."))
+                llm_reasoning = str(res.get("reasoning", get_fallback_reasoning()))
             
         except Exception as e:
             t_fail = time.time()
@@ -409,7 +410,7 @@ class MatchingService:
             
             # Dynamic reasoning for local fallback
             if cand["skill_score"] > 0.6:
-                reasoning = f"Your skill set in {student_skills_text[:50]}... closely matches the requirements for {cand['opp'].title}."
+                reasoning = get_fallback_reasoning()
             elif cand["interest_score"] > 0.6:
                 reasoning = f"Your career interests align well with the {cand['opp'].title} position."
             matches.append({

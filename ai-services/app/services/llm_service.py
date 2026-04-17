@@ -66,7 +66,7 @@ class LLMService:
                 # Fix: Use types.GenerateContentConfig for the configuration
                 # This resolves the 400 Bad Request error by correctly mapping response_mime_type
                 response = await self.client.aio.models.generate_content(
-                    model='gemini-1.5-flash',
+                    model='gemini-2.0-flash',
                     contents=f"{prompt}\n\nRespond ONLY with a JSON object that follows this schema: {json.dumps(schema)}",
                     config=types.GenerateContentConfig(
                         response_mime_type='application/json'
