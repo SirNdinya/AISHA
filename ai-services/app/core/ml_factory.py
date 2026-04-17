@@ -1,5 +1,5 @@
 import logging
-import google.generativeai as genai
+from google import genai
 from typing import List, Union
 from app.core.config import settings
 
@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 class MLModelFactory:
     _instance = None
     _ready = False
+    client = None
 
     def __new__(cls):
         if cls._instance is None:
@@ -18,9 +19,9 @@ class MLModelFactory:
     def initialize_gemini(self):
         try:
             if settings.GEMINI_API_KEY:
-                genai.configure(api_key=settings.GEMINI_API_KEY)
+                self.client = genai.Client(api_key=settings.GEMINI_API_KEY)
                 self._ready = True
-                logger.info("[ML-FACTORY] Gemini Neural Engine Online. (PyTorch bypassed)")
+                logger.info("[ML-FACTORY] Gemini Neural Engine Online. (New GenAI SDK)")
             else:
                 logger.warning("[ML-FACTORY] GEMINI_API_KEY is missing. Embeddings will fail.")
         except Exception as e:
@@ -31,18 +32,22 @@ class MLModelFactory:
         """
         Mimics the original sentence_transformers.SentenceTransformer.encode() signature.
         """
-        if not self._ready:
+        if not self._ready or not self.client:
             # Fallback to random/zero vectors if offline
             if isinstance(texts, list):
                 return [[0.0] * 768 for _ in texts]
             return [0.0] * 768
 
         try:
-            response = genai.embed_content(
-                model="models/text-embedding-004",
-                content=texts
+            # New SDK uses client.models.embed_content
+            response = self.client.models.embed_content(
+                model="text-embedding-004",
+                contents=texts
             )
-            return response['embedding'] if isinstance(texts, list) else response['embedding']
+            # The new SDK returns an object with an 'embeddings' or 'embedding' attribute
+            if isinstance(texts, list):
+                return [e.values for e in response.embeddings]
+            return response.embeddings[0].values if hasattr(response, 'embeddings') else response.embedding.values
         except Exception as e:
             logger.error(f"[ML-FACTORY] Embedding generation failed: {e}")
             if isinstance(texts, list):

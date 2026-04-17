@@ -7,11 +7,11 @@ logger = logging.getLogger(__name__)
 
 # Try to import Gemini SDK
 try:
-    import google.generativeai as genai
+    from google import genai
     GEMINI_AVAILABLE = True
 except ImportError:
     GEMINI_AVAILABLE = False
-    logger.warning("google-generativeai not installed, Gemini will be unavailable.")
+    logger.warning("google-genai not installed, Gemini will be unavailable.")
 
 # Try to import Ollama
 try:
@@ -30,13 +30,13 @@ class LLMService:
         
         # Initialize Gemini
         self.gemini_ready = False
+        self.client = None
         if GEMINI_AVAILABLE and self.gemini_key:
             try:
-                genai.configure(api_key=self.gemini_key)
-                # Using gemini-flash-latest (1.5) for better quota and stability
-                self.gemini_model = genai.GenerativeModel('models/gemini-flash-latest')
+                # New SDK uses Client
+                self.client = genai.Client(api_key=self.gemini_key)
                 self.gemini_ready = True
-                logger.info("Gemini initialized successfully.")
+                logger.info("Gemini initialized successfully with New SDK.")
             except Exception as e:
                 logger.error(f"Failed to initialize Gemini: {e}")
                 
@@ -46,7 +46,7 @@ class LLMService:
             try:
                 self.ollama_client = ollama.Client(host=self.ollama_host)
                 self.ollama_ready = True
-                logger.info(f"Ollama client will be initialized per call: host={self.ollama_host}, model={self.ollama_model}")
+                logger.info(f"Ollama client initialized: host={self.ollama_host}, model={self.ollama_model}")
             except Exception as e:
                 logger.error(f"Failed to initialize Ollama client: {e}")
 
@@ -55,14 +55,17 @@ class LLMService:
         Primary entry point for generation.
         Prioritizes Gemini, falls back to Ollama on failure or if Gemini is disabled.
         """
-        if self.gemini_ready:
+        if self.gemini_ready and self.client:
             try:
-                # Use gemini-2.5-flash
-                logger.info(f"Calling Gemini (gemini-2.5-flash) for generate_response...")
+                # Use gemini-1.5-flash via new SDK
+                logger.info("Calling Gemini (gemini-1.5-flash) via aio...")
                 
-                # Combine system prompt if provided
+                # Combine system prompt if provided (New SDK supports config for system instructions too, but this is simple)
                 full_prompt = f"SYSTEM: {system_prompt}\n\nUSER: {prompt}" if system_prompt else prompt
-                response = await self.gemini_model.generate_content_async(full_prompt)
+                response = await self.client.aio.models.generate_content(
+                    model='gemini-1.5-flash',
+                    contents=full_prompt
+                )
                 logger.info("Gemini response received.")
                 return response.text
             except Exception as e:
@@ -77,16 +80,16 @@ class LLMService:
         """
         Generates a structured JSON response based on a schema.
         """
-        if self.gemini_ready:
+        if self.gemini_ready and self.client:
             try:
-                logger.info("Calling Gemini for structured analysis...")
-                prompt_with_schema = f"{prompt}\n\nRespond ONLY with a JSON object that follows this schema: {json.dumps(schema)}"
-                
-                response = await self.gemini_model.generate_content_async(
-                    prompt_with_schema,
-                    generation_config=genai.types.GenerationConfig(
-                        response_mime_type="application/json",
-                    ),
+                logger.info("Calling Gemini for structured analysis via aio...")
+                # In the new SDK, we can pass response_mime_type in generation_config via config param
+                response = await self.client.aio.models.generate_content(
+                    model='gemini-1.5-flash',
+                    contents=f"{prompt}\n\nRespond ONLY with a JSON object that follows this schema: {json.dumps(schema)}",
+                    config={
+                        'response_mime_type': 'application/json'
+                    }
                 )
                 logger.info("Gemini structured response received.")
                 text = response.text
@@ -112,7 +115,6 @@ class LLMService:
                     
             except Exception as e:
                 logger.warning(f"Gemini structured analysis failed: {e}")
-                logger.error(f"Gemini Structured Error: {e}. Falling back to Ollama...")
                 # Continue to Ollama block
                 
         if self.ollama_ready:

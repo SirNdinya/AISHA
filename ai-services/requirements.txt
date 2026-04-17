@@ -19,5 +19,5 @@ pytest-asyncio
 httpx
 ollama==0.4.7
 beautifulsoup4
-google-generativeai>=0.8.0
+google-genai>=0.1.0
 nltk==3.9.4

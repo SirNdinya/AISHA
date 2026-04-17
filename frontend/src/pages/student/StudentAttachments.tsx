@@ -169,12 +169,20 @@ const RedesignedPlacement: React.FC = () => {
             const response = await apiClient.get(`/applications/download-acceptance-letter/${appId}`, { responseType: 'blob' });
             const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
             const a = document.createElement('a');
+            a.style.display = 'none';
             a.href = url;
             a.download = `Acceptance_Letter_${targetApp.company_name}.pdf`;
             document.body.appendChild(a);
             a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
+            
+            // Wait before cleanup to ensure the browser has initiated the download
+            setTimeout(() => {
+                window.URL.revokeObjectURL(url);
+                if (document.body.contains(a)) {
+                    document.body.removeChild(a);
+                }
+            }, 10000); // 10s is plenty of time for any browser to start the download
+
             toaster.create({ title: "Letter Downloaded", description: "Your official acceptance PDF is ready.", type: "success" });
         } catch (error) {
             toaster.create({ title: "Download Failed", description: "Acceptance letter is not yet available.", type: "error" });

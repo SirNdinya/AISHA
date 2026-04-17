@@ -32,7 +32,7 @@ class MessageResponse(BaseModel):
     is_read: bool
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 @router.get("/history/{user_id}/{other_user_id}", response_model=List[MessageResponse])
 def get_chat_history(
