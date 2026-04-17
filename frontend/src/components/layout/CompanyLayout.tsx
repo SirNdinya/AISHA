@@ -8,6 +8,7 @@ import type { RootState, AppDispatch } from '../../store';
 import CompanySidebar from '../../pages/company/components/CompanySidebar';
 import CompanyHeader from '../../pages/company/components/CompanyHeader';
 import { WebSocketProvider } from '../../context/WebSocketContext';
+import { logout } from '../../store/authSlice';
 import AishaAssistant from '../common/AishaAssistant';
 
 const CompanyLayout: React.FC = () => {
@@ -21,6 +22,11 @@ const CompanyLayout: React.FC = () => {
             dispatch(fetchCompanyProfile());
         }
     }, [dispatch, isAuthenticated, user]);
+
+    const handleLogout = () => {
+        dispatch(logout());
+        navigate('/login');
+    };
 
     const sidebarWidth = isSidebarCollapsed ? '100px' : '300px';
 
@@ -39,6 +45,7 @@ const CompanyLayout: React.FC = () => {
                 <CompanySidebar
                     isCollapsed={isSidebarCollapsed}
                     onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                    onLogout={handleLogout}
                 />
                 <Box
                     flex="1"

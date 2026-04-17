@@ -10,7 +10,8 @@ import {
     LuShield,
     LuPanelLeftClose,
     LuPanelLeftOpen,
-    LuCreditCard
+    LuCreditCard,
+    LuActivity
 } from 'react-icons/lu';
 
 const navItems = [
@@ -24,9 +25,10 @@ const navItems = [
 interface CompanySidebarProps {
     isCollapsed: boolean;
     onToggle: () => void;
+    onLogout: () => void;
 }
 
-const CompanySidebar: React.FC<CompanySidebarProps> = ({ isCollapsed, onToggle }) => {
+const CompanySidebar: React.FC<CompanySidebarProps> = ({ isCollapsed, onToggle, onLogout }) => {
     return (
         <Box
             w={isCollapsed ? '80px' : '280px'}
@@ -117,6 +119,28 @@ const CompanySidebar: React.FC<CompanySidebarProps> = ({ isCollapsed, onToggle }
                         </NavLink>
                     ))}
                 </VStack>
+
+                <Separator opacity={0.1} />
+
+                {/* Logout Section */}
+                <Box px={isCollapsed ? 0 : 2} pb={2}>
+                    <HStack
+                        px={isCollapsed ? 0 : 4}
+                        py={3}
+                        gap={3}
+                        color="red.400"
+                        cursor="pointer"
+                        _hover={{ bg: 'red.900/20', color: 'red.300' }}
+                        borderRadius="12px"
+                        justify={isCollapsed ? 'center' : 'flex-start'}
+                        onClick={onLogout}
+                    >
+                        <Icon as={LuActivity} transform="rotate(45deg)" boxSize={5} flexShrink={0} />
+                        {!isCollapsed && (
+                            <Text fontWeight="black" fontSize="sm" letterSpacing="widest">SIGN OUT</Text>
+                        )}
+                    </HStack>
+                </Box>
 
 
             </VStack>
