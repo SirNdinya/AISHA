@@ -47,12 +47,37 @@ class EventListener:
 
     async def start_listening(self):
         """Background task to listen for messages."""
-        async for message in self.pubsub.listen():
-            if message['type'] == 'message':
-                channel = message['channel']
-                if channel in self.handlers:
-                    try:
-                        data = json.loads(message['data'])
-                        await self.handlers[channel](data)
-                    except Exception as e:
-                        logger.error(f"Error handling message on {channel}: {e}")
+        self._running = True
+        try:
+            async with self.pubsub as p:
+                if self.handlers:
+                    await p.subscribe(*self.handlers.keys())
+                    while self._running:
+                        try:
+                            message = await p.get_message(ignore_subscribe_messages=True, timeout=1.0)
+                            if message and message['type'] == 'message':
+                                channel = message['channel']
+                                if channel in self.handlers:
+                                    data = json.loads(message['data'])
+                                    await self.handlers[channel](data)
+                        except asyncio.TimeoutError:
+                            continue
+                        except Exception as e:
+                            logger.error(f"Error in pubsub loop: {e}")
+                            await asyncio.sleep(1)
+                else:
+                    logger.warning("No handlers registered for EventListener.")
+        except asyncio.CancelledError:
+            logger.info("EventListener task cancelled.")
+        finally:
+            self._running = False
+            logger.info("EventListener stopped listening.")
+
+    async def stop(self):
+        """Stop listening and close connections."""
+        self._running = False
+        try:
+            await self.pubsub.unsubscribe()
+        except: pass
+        await self.redis.close()
+        logger.info("Redis connections closed.")

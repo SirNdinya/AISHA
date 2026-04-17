@@ -45,7 +45,8 @@ async def startup_event():
     scheduler.start_scheduler()
 
     # Start the Redis Event Listener in the background
-    listener = EventListener()
+    app.state.listener = EventListener()
+    listener = app.state.listener
     
     # Define handlers for events -> Broadcast to WebSockets
     async def forward_to_student(data):
@@ -68,8 +69,25 @@ async def startup_event():
     await listener.subscribe("company_events", forward_to_company)
     await listener.subscribe("chat_events", forward_chat)
     
-    # Run loop
-    asyncio.create_task(listener.start_listening())
+    # Run loop and store task in state
+    app.state.listener_task = asyncio.create_task(listener.start_listening())
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    logger.info("Service shutting down...")
+    
+    # Stop the Redis Event Listener
+    if hasattr(app.state, "listener"):
+        await app.state.listener.stop()
+        
+    if hasattr(app.state, "listener_task"):
+        app.state.listener_task.cancel()
+        try:
+            await app.state.listener_task
+        except asyncio.CancelledError:
+            pass
+            
+    logger.info("Shutdown complete.")
 
 # Basic health check
 @app.get("/health")

@@ -395,7 +395,7 @@ class MatchingService:
                     "interest_score": round(cand["interest_score"], 2),
                     "career_path_score": round(cand["career_path_score"], 2),
                     "method": "holistic_deep_match_v8",
-                    "provider": "Gemini-2.5-Flash + Ollama Parallel"
+                    "provider": "Gemini-1.5-Flash"
                 }
             })
 
