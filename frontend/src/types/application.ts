@@ -42,4 +42,5 @@ export interface Application {
     first_assessment_date?: string | Date;
     second_assessment_date?: string | Date;
     start_date?: string | Date;
+    is_paid?: boolean;
 }

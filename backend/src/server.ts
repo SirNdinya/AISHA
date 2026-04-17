@@ -1,15 +1,15 @@
-// Triggering restart for env changes
-import app from './app';
 import dotenv from 'dotenv';
-import http from 'http';
-import { Server } from 'socket.io';
-
 import path from 'path';
-import { AutomationService } from './services/AutomationService';
 
+// Load environment variables immediately
 if (process.env.NODE_ENV !== 'production') {
     dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 }
+
+import app from './app';
+import http from 'http';
+import { Server } from 'socket.io';
+import { AutomationService } from './services/AutomationService';
 
 const PORT = process.env.PORT || 3000;
 

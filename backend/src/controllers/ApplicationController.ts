@@ -504,7 +504,7 @@ export class ApplicationController extends BaseController {
             const doc = new PDFDocument({ margin: 55, size: 'A4' });
             
             res.setHeader('Content-Type', 'application/pdf');
-            res.setHeader('Content-Disposition', `attachment; filename=Acceptance_Letter_${d.last_name}_${d.first_name}.pdf`);
+            res.setHeader('Content-Disposition', `inline; filename=Acceptance_Letter_${d.last_name}_${d.first_name}.pdf`);
             doc.pipe(res);
 
             // ============================================================

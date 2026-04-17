@@ -184,13 +184,58 @@ const RedesignedPlacement: React.FC = () => {
     };
 
     const handleViewLetter = async (appId: string) => {
+        // Create the window reference immediately in the synchronous path
+        let newTab: Window | null = null;
+        try {
+            newTab = window.open('about:blank', '_blank');
+        } catch (e) {
+            console.error('Failed to open new tab:', e);
+        }
+
+        if (!newTab) {
+            toaster.create({ 
+                title: "Pop-up Blocked", 
+                description: "Please allow pop-ups for this site to view the letter.", 
+                type: "error" 
+            });
+            return;
+        }
+
+        // Show a temporary loading message in the new tab
+        try {
+            newTab.document.write(`
+                <html>
+                    <head><title>Loading Acceptance Letter...</title></head>
+                    <body style="background: #0f172a; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif; margin: 0;">
+                        <div style="text-align: center;">
+                            <div style="border: 4px solid rgba(255,255,255,0.1); border-left-color: #6366f1; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+                            <p style="font-weight: bold; font-size: 1.1rem; letter-spacing: 0.05em;">AISHA IS GENERATING YOUR LETTER...</p>
+                            <p style="color: #94a3b8; font-size: 0.9rem;">Please wait while we secure your document.</p>
+                        </div>
+                        <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+                    </body>
+                </html>
+            `);
+        } catch (e) {
+            // Some browsers might restrict document.write on cross-origin or for other reasons
+            console.warn('Could not write to new tab document:', e);
+        }
+
         setIsViewing(true);
         try {
             const response = await apiClient.get(`/applications/download-acceptance-letter/${appId}`, { responseType: 'blob' });
             const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
-            window.open(url, '_blank');
-            setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+            
+            if (newTab && !newTab.closed) {
+                newTab.location.href = url;
+                // Revoke URL after a delay to ensure it's loaded
+                setTimeout(() => window.URL.revokeObjectURL(url), 5000);
+            } else {
+                // If window was closed by user, just clean up
+                window.URL.revokeObjectURL(url);
+            }
         } catch (error) {
+            if (newTab && !newTab.closed) newTab.close();
             toaster.create({ title: "View Failed", description: "Acceptance letter cannot be viewed at this time.", type: "error" });
         } finally {
             setIsViewing(false);

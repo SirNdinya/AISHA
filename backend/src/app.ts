@@ -3,12 +3,7 @@ import axios from 'axios';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import dotenv from 'dotenv';
 import pool from './config/database';
-
-if (process.env.NODE_ENV !== 'production') {
-    dotenv.config();
-}
 
 const app: Application = express();
 
