@@ -16,10 +16,17 @@ class MLModelFactory:
             cls._instance.initialize_gemini()
         return cls._instance
 
+    def get_model(self):
+        """Compatibility method for existing service calls"""
+        return self
+
     def initialize_gemini(self):
         try:
             if settings.GEMINI_API_KEY:
-                self.client = genai.Client(api_key=settings.GEMINI_API_KEY)
+                self.client = genai.Client(
+                    api_key=settings.GEMINI_API_KEY,
+                    http_options={'api_version': 'v1'}
+                )
                 self._ready = True
                 logger.info("[ML-FACTORY] Gemini Neural Engine Online. (New GenAI SDK)")
             else:

@@ -34,7 +34,10 @@ class LLMService:
         if GEMINI_AVAILABLE and self.gemini_key:
             try:
                 # New SDK uses Client
-                self.client = genai.Client(api_key=self.gemini_key)
+                self.client = genai.Client(
+                    api_key=self.gemini_key,
+                    http_options={'api_version': 'v1'}
+                )
                 self.gemini_ready = True
                 logger.info("Gemini initialized successfully with New SDK.")
             except Exception as e:
