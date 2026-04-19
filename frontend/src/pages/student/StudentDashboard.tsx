@@ -355,12 +355,12 @@ const StudentDashboard: React.FC = () => {
                                     </Flex>
                                 ) : (
                                     (academicRecords || []).slice(0, 4).map((record: any) => (
-                                        <Flex key={record.id} justify="space-between" align="center" py={3} borderBottom="1px solid" borderColor="gray.200">
-                                            <VStack align="start" gap={0}>
-                                                <Text fontSize="md" color="#F8FAFC" fontWeight="bold">{record.unit_name}</Text>
-                                                <Text fontSize="xs" color="var(--terminal-accent)" fontWeight="black" letterSpacing="wide">{record.unit_code} | SEMEST_{record.semester}</Text>
+                                        <Flex key={record.id} justify="space-between" align="center" py={{ base: 2, md: 3 }} borderBottom="1px solid" borderColor="gray.200">
+                                            <VStack align="start" gap={0} flex={1} mr={2}>
+                                                <Text fontSize={{ base: "sm", md: "md" }} color="#F8FAFC" fontWeight="bold" lineClamp={1}>{record.unit_name}</Text>
+                                                <Text fontSize="10px" color="var(--terminal-accent)" fontWeight="black" letterSpacing="wide">{record.unit_code} | SEMEST_{record.semester}</Text>
                                             </VStack>
-                                            <Badge colorPalette={record.grade?.startsWith('A') ? 'green' : 'cyan'} variant="solid" px={3} py={1} borderRadius="md" fontSize="sm" fontWeight="black">
+                                            <Badge colorPalette={record.grade?.startsWith('A') ? 'green' : 'cyan'} variant="solid" px={{ base: 2, md: 3 }} py={1} borderRadius="md" fontSize={{ base: "xs", md: "sm" }} fontWeight="black">
                                                 {record.grade || 'N/A'} {record.mark ? `(${record.mark}%)` : ''}
                                             </Badge>
                                         </Flex>
@@ -456,7 +456,7 @@ const StudentDashboard: React.FC = () => {
                                         {/* Unified Premium Match Card */}
                                         {matchIntelligence[0] && (
                                             <MotionBox
-                                                p={8}
+                                                p={{ base: 4, md: 8 }}
                                                 bg="var(--terminal-card)"
                                                 borderRadius="3xl"
                                                 border="1px solid"
@@ -478,9 +478,9 @@ const StudentDashboard: React.FC = () => {
                                                         </HStack>
                                                     </HStack>
 
-                                                    <Flex gap={5} align="center">
+                                                    <Flex gap={{ base: 3, md: 5 }} align="center">
                                                         <Avatar
-                                                            size="xl"
+                                                            size={{ base: "lg", md: "xl" }}
                                                             border="3px solid"
                                                             borderColor="brand.300"
                                                             src={
@@ -490,17 +490,17 @@ const StudentDashboard: React.FC = () => {
                                                                         ? getMediaUrl(matchIntelligence[0].logo_url)
                                                                         : `https://logo.clearbit.com/${matchIntelligence[0].company_name?.toLowerCase().replace(/\s+/g, '')}.com`
                                                             }
-                                                            portrayedIcon={<Icon as={LuBuilding2} color="brand.400" boxSize={10} />}
+                                                            portrayedIcon={<Icon as={LuBuilding2} color="brand.400" boxSize={{ base: 6, md: 10 }} />}
                                                         />
                                                         <VStack align="start" gap={1} flex="1">
-                                                            <Heading size="lg" color="#F8FAFC" fontWeight="black" letterSpacing="tight">
+                                                            <Heading size={{ base: "md", md: "lg" }} color="#F8FAFC" fontWeight="black" letterSpacing="tight">
                                                                 {matchIntelligence[0].job_title}
                                                             </Heading>
-                                                            <Text fontSize="sm" color="var(--terminal-accent)" fontWeight="black" letterSpacing="widest">
+                                                            <Text fontSize={{ base: "xs", md: "sm" }} color="var(--terminal-accent)" fontWeight="black" letterSpacing="widest">
                                                                 {matchIntelligence[0].company_name}
                                                             </Text>
                                                         </VStack>
-                                                        <VStack align="end" gap={0}>
+                                                        <VStack align="end" gap={0} display={{ base: "none", sm: "flex" }}>
                                                             <Text fontSize="3xl" color="#F8FAFC" fontWeight="black" lineHeight={1}>
                                                                 {matchIntelligence[0].match_score > 100 ? 100 : matchIntelligence[0].match_score}%
                                                             </Text>

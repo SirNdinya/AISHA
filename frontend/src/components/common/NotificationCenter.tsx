@@ -151,7 +151,7 @@ const NotificationCenter: React.FC = () => {
                     position="absolute"
                     top="120%"
                     right={0}
-                    w="400px"
+                    w={{ base: "90vw", sm: "400px" }}
                     maxH="600px"
                     bg="rgba(13, 17, 23, 0.95)"
                     backdropFilter="blur(20px) saturate(180%)"

@@ -1,9 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import {
     Box, Heading, Text, VStack, Badge, Flex,
-    HStack, Icon, Button, Container, Image
+    HStack, Button, Container, Image, IconButton
 } from '@chakra-ui/react';
-import { LuSettings, LuX } from "react-icons/lu";
+import { LuSettings, LuX, LuMenu } from "react-icons/lu";
 import { Avatar } from "../../../components/ui/avatar";
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -19,7 +19,11 @@ const getMediaUrl = (url?: string | null): string => {
     return `${BACKEND_URL}${url}`;
 };
 
-const StudentHeader: React.FC = () => {
+interface StudentHeaderProps {
+    onMenuClick?: () => void;
+}
+
+const StudentHeader: React.FC<StudentHeaderProps> = ({ onMenuClick }) => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const { profile, error } = useSelector((state: RootState) => state.student);
@@ -41,16 +45,26 @@ const StudentHeader: React.FC = () => {
 
     return (
         <>
-            <Box bg="transparent" borderBottom="1px solid" borderColor="gray.200" py={1} mb={1} pos="sticky" top={0} zIndex={1100} backdropFilter="blur(20px)">
+            <Box bg="transparent" borderBottom="1px solid" borderColor="gray.200" py={{ base: 2, lg: 1 }} mb={1} pos="sticky" top={0} zIndex={1100} backdropFilter="blur(20px)">
                 <Container maxW="container.xl">
-                    <Flex justify="space-between" align="flex-end">
-                        <VStack align="start" gap={4}>
+                    <Flex justify="space-between" align="center">
+                        <HStack gap={4}>
+                            <IconButton
+                                aria-label="Toggle navigation"
+                                variant="ghost"
+                                color="white"
+                                display={{ base: "flex", lg: "none" }}
+                                onClick={onMenuClick}
+                            >
+                                <LuMenu size={24} />
+                            </IconButton>
+
                             <Box
                                 pos="relative"
                                 cursor="pointer"
                                 onClick={() => photoUrl && setIsPhotoOpen(true)}
                                 role="group"
-                                display="inline-block"
+                                display={{ base: "none", sm: "inline-block" }}
                             >
                                 <Avatar
                                     size="md"
@@ -61,7 +75,6 @@ const StudentHeader: React.FC = () => {
                                     transition="all 0.3s"
                                     _groupHover={{ opacity: 0.7, transform: "scale(1.08)" }}
                                 />
-                                {/* "Click to view" overlay — only shown if there's a real photo */}
                                 {photoUrl && (
                                     <Box
                                         pos="absolute"
@@ -83,39 +96,41 @@ const StudentHeader: React.FC = () => {
                                 )}
                             </Box>
 
-                            <VStack align="start" gap={1}>
+                            <VStack align="start" gap={0}>
                                 <HStack gap={3}>
-                                    <Heading size="md" color="#F8FAFC" fontWeight="black" letterSpacing="tight">
+                                    <Heading size={{ base: "sm", md: "md" }} color="#F8FAFC" fontWeight="black" letterSpacing="tight">
                                         {greeting}, {profile?.last_name || '...'}
                                     </Heading>
                                     {error && <Badge size="sm" colorPalette="red" variant="subtle" fontWeight="bold">SYNC ERROR</Badge>}
                                 </HStack>
-                                {/* Subtext removed per user request */}
                             </VStack>
-                        </VStack>
+                        </HStack>
 
-                        <HStack gap={8} mb={1}>
-                            <HStack gap={5}>
+                        <HStack gap={{ base: 4, md: 8 }}>
+                            <HStack gap={{ base: 2, md: 5 }}>
                                 <NotificationCenter />
-                                <Icon
-                                    as={LuSettings}
-                                    cursor="pointer"
+                                <IconButton
+                                    aria-label="Settings"
+                                    variant="ghost"
                                     color="whiteAlpha.600"
                                     _hover={{ color: "indigo.400" }}
                                     onClick={() => navigate('/student/settings')}
-                                    boxSize={5}
-                                />
+                                    size="sm"
+                                >
+                                    <LuSettings size={20} />
+                                </IconButton>
                                 <Button 
                                     variant="outline" 
                                     colorPalette="indigo" 
-                                    size="sm" 
+                                    size="xs" 
                                     onClick={handleLogout} 
                                     border="1px solid" 
                                     borderColor="indigo.900" 
                                     _hover={{ bg: "indigo.900", color: "white" }}
                                     display={{ base: "flex", lg: "none" }}
+                                    px={3}
                                 >
-                                    SIGN OUT
+                                    LOGOUT
                                 </Button>
                             </HStack>
                         </HStack>

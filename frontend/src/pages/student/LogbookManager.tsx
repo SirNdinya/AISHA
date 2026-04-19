@@ -232,14 +232,20 @@ const LogbookManager: React.FC = () => {
                                 </HStack>
                             </VStack>
                         </HStack>
-                        <HStack gap={3}>
+                        <Flex 
+                            gap={3} 
+                            wrap="wrap" 
+                            justify={{ base: "center", md: "flex-end" }} 
+                            mt={{ base: 4, md: 0 }}
+                            w={{ base: "full", md: "auto" }}
+                        >
                             <Button size="sm" variant="outline" color="whiteAlpha.700" borderColor="var(--terminal-border)" _hover={{ bg: "whiteAlpha.100" }} onClick={() => handleSave(false)} loading={isSaving} disabled={isReadOnly}>
-                                <LuSave /> Save Draft
+                                <LuSave /> <Text display={{ base: "none", sm: "inline" }}>Save Draft</Text>
                             </Button>
                             <Button size="sm" bg="var(--terminal-accent)" color="black" fontWeight="bold" onClick={() => handleSave(true)} loading={isSaving} disabled={isReadOnly}>
-                                <LuCheck /> Confirm & Send
+                                <LuCheck /> <Text display={{ base: "none", sm: "inline" }}>Confirm & Send</Text>
                             </Button>
-                            <HStack gap={1} bg="whiteAlpha.50" p={1} borderRadius="md" border="1px solid" borderColor="var(--terminal-border)">
+                            <HStack gap={1} bg="whiteAlpha.50" p={1} borderRadius="md" border="1px solid" borderColor="var(--terminal-border)" wrap="wrap" justify="center">
                                 <Button 
                                     size="xs" 
                                     variant="subtle" 
@@ -249,7 +255,6 @@ const LogbookManager: React.FC = () => {
                                 >
                                     <LuDownload /> Week {selectedWeekNum}
                                 </Button>
-                                <Box w="1px" h="15px" bg="whiteAlpha.100" />
                                 <Button 
                                     size="xs" 
                                     variant="subtle" 
@@ -265,7 +270,6 @@ const LogbookManager: React.FC = () => {
                                 >
                                     <LuDownload /> Range
                                 </Button>
-                                <Box w="1px" h="15px" bg="whiteAlpha.100" />
                                 <Button 
                                     size="xs" 
                                     variant="subtle" 
@@ -276,7 +280,7 @@ const LogbookManager: React.FC = () => {
                                     <LuDownload /> Full Archive
                                 </Button>
                             </HStack>
-                        </HStack>
+                        </Flex>
                     </Flex>
                 </Container>
             </Box>
@@ -338,13 +342,22 @@ const LogbookManager: React.FC = () => {
                                 </Flex>
 
                                 <Box bg="white" border="1px solid" borderColor="gray.300" borderRadius="md" overflow="hidden" boxShadow="sm">
-                                    {/* Table Header */}
-                                    <Grid templateColumns="120px 1fr 150px" bg="gray.100" borderBottom="2px solid" borderColor="gray.300" fontWeight="bold" color="black" p={3}>
+                                    {/* Table Header (Desktop Only) */}
+                                    <Grid 
+                                        templateColumns="120px 1fr 150px" 
+                                        bg="gray.100" 
+                                        borderBottom="2px solid" 
+                                        borderColor="gray.300" 
+                                        fontWeight="bold" 
+                                        color="black" 
+                                        p={3}
+                                        display={{ base: "none", md: "grid" }}
+                                    >
                                         <Text>DAY & DATE</Text>
                                         <Text>DESCRIPTION OF WORK DONE</Text>
                                         <Text fontSize="xs" textAlign="center">Industry Supervisor Signature</Text>
                                     </Grid>
-
+                                    
                                     {/* Monday-Friday Rows */}
                                     {[
                                         { day: 'MONDAY', key: 'monday_description', offset: 0 },
@@ -353,12 +366,26 @@ const LogbookManager: React.FC = () => {
                                         { day: 'THURSDAY', key: 'thursday_description', offset: 3 },
                                         { day: 'FRIDAY', key: 'friday_description', offset: 4 },
                                     ].map((row, idx) => (
-                                        <Grid key={row.day} templateColumns="120px 1fr 150px" borderBottom={idx < 4 ? "1px solid" : "none"} borderColor="gray.200">
-                                            <VStack align="start" justify="center" p={3} borderRight="1px solid" borderColor="gray.200" bg="gray.50">
+                                        <Grid 
+                                            key={row.day} 
+                                            templateColumns={{ base: "1fr", md: "120px 1fr 150px" }} 
+                                            borderBottom={idx < 4 ? "1px solid" : "none"} 
+                                            borderColor="gray.200"
+                                        >
+                                            <Flex 
+                                                direction={{ base: "row", md: "column" }}
+                                                justify={{ base: "space-between", md: "center" }}
+                                                align={{ base: "center", md: "start" }}
+                                                p={3} 
+                                                borderRight={{ base: "none", md: "1px solid" }} 
+                                                borderBottom={{ base: "1px solid", md: "none" }}
+                                                borderColor="gray.200" 
+                                                bg="gray.50"
+                                            >
                                                 <Text fontWeight="black" fontSize="sm" color="black">{row.day}</Text>
                                                 <Text fontSize="xs" color="gray.600">{getFormattedDateForDay(row.offset)}</Text>
-                                            </VStack>
-                                            <Box p={2} borderRight="1px solid" borderColor="gray.200">
+                                            </Flex>
+                                            <Box p={2} borderRight={{ base: "none", md: "1px solid" }} borderColor="gray.200">
                                                 <Textarea 
                                                     value={entry[row.key]} 
                                                     onChange={(e) => handleFieldChange(row.key, e.target.value)}
@@ -373,7 +400,14 @@ const LogbookManager: React.FC = () => {
                                                     readOnly={isReadOnly}
                                                 />
                                             </Box>
-                                            <Flex align="center" justify="center" p={3} bg="white">
+                                            <Flex 
+                                                align="center" 
+                                                justify={{ base: "flex-end", md: "center" }} 
+                                                p={3} 
+                                                bg={{ base: "whiteAlpha.50", md: "white" }}
+                                                borderTop={{ base: "1px solid", md: "none" }}
+                                                borderColor="gray.100"
+                                            >
                                                 <Text fontSize="xs" fontStyle="italic" color="gray.400">Signed digitally</Text>
                                             </Flex>
                                         </Grid>
