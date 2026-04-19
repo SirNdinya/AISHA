@@ -93,7 +93,7 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
 
     return (
         <DialogRoot open={isOpen} onOpenChange={onClose} size="xl" scrollBehavior="inside">
-            <DialogBackdrop backdropFilter="blur(8px)" bg="rgba(0,0,0,0.4)" />
+            <DialogBackdrop backdropFilter="blur(12px)" bg="rgba(0,0,0,0.4)" />
             <DialogPositioner>
                 <DialogContent 
                     bg="#020617" 

@@ -106,6 +106,7 @@ const NotificationCenter: React.FC = () => {
             case 'SUCCESS': return <LuCircleCheck color="#10b981" />;
             case 'WARNING': return <LuTriangleAlert color="#f59e0b" />;
             case 'ERROR': return <LuCircleX color="#ef4444" />;
+            case 'ai_match': return <LuZap color="#a78bfa" />;
             default: return <LuInfo color="#3b82f6" />;
         }
     };
@@ -149,180 +150,151 @@ const NotificationCenter: React.FC = () => {
                 )}
             </IconButton>
 
-            {isOpen && (
-                <Box
-                    ref={dropDownRef}
-                    position="absolute"
-                    top="120%"
-                    right={{ base: "-4vw", sm: 0 }}
-                    w={{ base: "90vw", sm: "400px" }}
-                    maxH="600px"
-                    bg="rgba(13, 17, 23, 0.95)"
-                    backdropFilter="blur(20px) saturate(180%)"
-                    border="1px solid rgba(255, 255, 255, 0.1)"
-                    shadow="dark-lg"
-                    borderRadius="2xl"
-                    zIndex={2000}
-                    overflow="hidden"
-                    animation="fade-in 0.2s ease-out"
-                >
-                    <VStack align="stretch" gap={0}>
-                        {/* Header */}
-                        <Flex
-                            justify="space-between"
-                            align="center"
-                            p={4}
-                            borderBottom="1px solid rgba(255, 255, 255, 0.1)"
-                            bg="rgba(255, 255, 255, 0.03)"
-                        >
-                            <VStack align="start" gap={0}>
-                                <Text fontWeight="bold" fontSize="md" color="white">Notifications</Text>
-                                {notifications.length > 0 && (
-                                    <HStack gap={2} mt={1}>
-                                        <Checkbox 
+            <DialogRoot 
+                open={isOpen} 
+                onOpenChange={(details) => !details.open && setIsOpen(false)}
+                placement="top"
+            >
+                <DialogBackdrop backdropFilter="blur(12px)" bg="rgba(0,0,0,0.4)" />
+                <DialogPositioner>
+                    <DialogContent 
+                        ref={dropDownRef}
+                        position={{ base: "fixed", sm: "absolute" }}
+                        top={{ base: "70px", sm: "120%" }}
+                        left={{ base: "10px", sm: "auto" }}
+                        right={{ base: "10px", sm: 0 }}
+                        w={{ base: "auto", sm: "400px" }}
+                        maxH={{ base: "80vh", sm: "600px" }}
+                        bg="rgba(13, 17, 23, 0.95)"
+                        backdropFilter="blur(20px) saturate(180%)"
+                        border="1px solid rgba(255, 255, 255, 0.1)"
+                        shadow="dark-lg"
+                        borderRadius="2xl"
+                        zIndex={2000}
+                        overflow="hidden"
+                    >
+                        <VStack align="stretch" gap={0} h="full">
+                            <Flex p={4} borderBottom="1px solid rgba(255, 255, 255, 0.1)" justify="space-between" align="center" bg="rgba(167, 139, 250, 0.05)">
+                                <Heading size="sm" color="white" fontWeight="black" display="flex" alignItems="center">
+                                    <LuBell style={{ marginRight: '8px' }} /> Notifications
+                                </Heading>
+                                <HStack gap={1}>
+                                    {notifications.length > 0 && (
+                                        <Button 
                                             size="xs" 
-                                            colorPalette="purple"
-                                            checked={selectedIds.length === notifications.length && notifications.length > 0}
-                                            onCheckedChange={(e) => handleSelectAll(!!e.checked)}
-                                        />
-                                        <Text fontSize="10px" color="gray.400">Select All</Text>
-                                    </HStack>
+                                            variant="ghost" 
+                                            color="#a78bfa"
+                                            _hover={{ bg: "rgba(167, 139, 250, 0.1)" }}
+                                            onClick={handleMarkAllRead}
+                                        >
+                                            <LuCheck style={{ marginRight: '4px' }} /> Mark all read
+                                        </Button>
+                                    )}
+                                    <DialogCloseTrigger asChild>
+                                        <IconButton 
+                                            size="sm" 
+                                            variant="ghost" 
+                                            color="gray.400"
+                                            _hover={{ color: "white", bg: "whiteAlpha.100" }}
+                                            onClick={() => setIsOpen(false)}
+                                        >
+                                            <LuX size={16} />
+                                        </IconButton>
+                                    </DialogCloseTrigger>
+                                </HStack>
+                            </Flex>
+
+                            <VStack 
+                                align="stretch" 
+                                maxH={{ base: "70vh", sm: "500px" }} 
+                                overflowY="auto" 
+                                scrollBehavior="smooth"
+                                className="custom-scrollbar"
+                            >
+                                {notifications.length === 0 ? (
+                                    <Flex direction="column" align="center" justify="center" p={10} color="gray.500">
+                                        <LuBell size={40} style={{ marginBottom: '16px', opacity: 0.2 }} />
+                                        <Text fontSize="sm">No new notifications</Text>
+                                    </Flex>
+                                ) : (
+                                    notifications.map((n) => (
+                                        <Box 
+                                            key={n.id} 
+                                            p={4} 
+                                            borderBottom="1px solid rgba(255, 255, 255, 0.05)"
+                                            bg={!n.is_read ? "rgba(167, 139, 250, 0.03)" : "transparent"}
+                                            _hover={{ bg: "rgba(255, 255, 255, 0.02)" }}
+                                            cursor="pointer"
+                                            onClick={() => {
+                                                dispatch(markNotificationsRead(n.id));
+                                                setSelectedNotification(n);
+                                            }}
+                                            transition="background 0.2s"
+                                            position="relative"
+                                            role="group"
+                                        >
+                                            <Flex gap={3} align="start">
+                                                <Box p={2} borderRadius="xl" bg="whiteAlpha.50">
+                                                    {getIcon(n.type)}
+                                                </Box>
+                                                <VStack align="start" flex={1} gap={0.5}>
+                                                    <Text fontWeight="bold" fontSize="sm" color={!n.is_read ? "white" : "gray.300"} lineClamp={1}>
+                                                        {n.title}
+                                                    </Text>
+                                                    <Text fontSize="xs" color="gray.400" lineClamp={2} lineHeight="short">
+                                                        {n.message}
+                                                    </Text>
+                                                    <Flex mt={1} align="center" justify="space-between" w="full">
+                                                        <Text fontSize="10px" color="gray.600">
+                                                            {new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                        </Text>
+                                                        {!n.is_read && (
+                                                            <Box w="6px" h="6px" bg="#a78bfa" borderRadius="full" />
+                                                        )}
+                                                    </Flex>
+
+                                                    {n.type === 'ai_match' && n.ai_metadata?.amount && (
+                                                        <Button
+                                                            size="xs"
+                                                            colorPalette="green"
+                                                            mt={3}
+                                                            rounded="lg"
+                                                            bg="#4FB13C"
+                                                            _hover={{ bg: "#43a032" }}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setPaymentModal({
+                                                                    open: true,
+                                                                    amount: n.ai_metadata.amount,
+                                                                    opportunityId: n.ai_metadata.opportunityId
+                                                                });
+                                                            }}
+                                                        >
+                                                            <LuSmartphone style={{ marginRight: '4px' }} /> Pay KES {n.ai_metadata.amount}
+                                                        </Button>
+                                                    )}
+                                                </VStack>
+                                                <IconButton
+                                                    aria-label="Delete notification"
+                                                    variant="ghost"
+                                                    size="xs"
+                                                    opacity={0}
+                                                    _groupHover={{ opacity: 0.6 }}
+                                                    _hover={{ opacity: 1, color: "red.400" }}
+                                                    onClick={(e) => handleDeleteSingle(e, n.id)}
+                                                    mt={0.5}
+                                                >
+                                                    <LuTrash2 size={14} />
+                                                </IconButton>
+                                            </Flex>
+                                        </Box>
+                                    ))
                                 )}
                             </VStack>
-                            <HStack gap={2}>
-                                {selectedIds.length > 0 ? (
-                                    <Button
-                                        size="xs"
-                                        variant="ghost"
-                                        colorPalette="red"
-                                        onClick={handleDeleteSelected}
-                                        fontSize="xs"
-                                        fontWeight="bold"
-                                        _hover={{ bg: "red.500/10" }}
-                                    >
-                                        <LuTrash2 /> Delete ({selectedIds.length})
-                                    </Button>
-                                ) : (
-                                    <Button
-                                        size="xs"
-                                        variant="ghost"
-                                        onClick={handleMarkAllRead}
-                                        fontSize="xs"
-                                        color="purple.300"
-                                        _hover={{ bg: "whiteAlpha.100" }}
-                                    >
-                                        <LuCheck /> Mark all read
-                                    </Button>
-                                )}
-                            </HStack>
-                        </Flex>
-
-                        {/* List */}
-                        <VStack align="stretch" maxH="450px" overflowY="auto" gap={0} css={{
-                            '&::-webkit-scrollbar': { width: '4px' },
-                            '&::-webkit-scrollbar-thumb': { background: 'rgba(255,255,255,0.1)', borderRadius: '10px' }
-                        }}>
-                            {loading && notifications.length === 0 ? (
-                                <Flex p={10} justify="center"><Spinner size="sm" color="purple.400" /></Flex>
-                            ) : notifications.length === 0 ? (
-                                <VStack p={16} gap={3}>
-                                    <Box p={4} borderRadius="full" bg="whiteAlpha.50">
-                                        <LuBell size={32} opacity={0.3} color="white" />
-                                    </Box>
-                                    <Text textAlign="center" fontSize="sm" color="gray.500" fontWeight="medium">
-                                        Your inbox is clear!
-                                    </Text>
-                                </VStack>
-                            ) : (
-                                notifications.map(n => (
-                                    <Box
-                                        key={n.id}
-                                        p={4}
-                                        bg={n.is_read ? 'transparent' : 'rgba(167, 139, 250, 0.05)'}
-                                        borderBottom="1px solid rgba(255, 255, 255, 0.03)"
-                                        _hover={{ bg: 'rgba(255, 255, 255, 0.03)' }}
-                                        transition="all 0.2s"
-                                        position="relative"
-                                        role="group"
-                                    >
-                                        <Flex gap={3} align="start">
-                                            <Box pt={1}>
-                                                <Checkbox 
-                                                    colorPalette="purple" 
-                                                    checked={selectedIds.includes(n.id)}
-                                                    onCheckedChange={() => handleToggleSelect(n.id)}
-                                                    onClick={(e) => e.stopPropagation()}
-                                                />
-                                            </Box>
-                                            <Box 
-                                                flex={1} 
-                                                cursor="pointer" 
-                                                onClick={() => {
-                                                    dispatch(markNotificationsRead(n.id));
-                                                    setSelectedNotification(n);
-                                                    setIsOpen(false);
-                                                }}
-                                            >
-                                                <Flex gap={3} align="start">
-                                                    <Box mt={0.5}>{getIcon(n.type)}</Box>
-                                                    <Box flex={1}>
-                                                        <Text fontSize="sm" fontWeight={!n.is_read ? 'bold' : 'medium'} color="white" mb={1}>
-                                                            {n.title}
-                                                        </Text>
-                                                        <Text fontSize="xs" color="gray.400" lineClamp={2} lineHeight="short">
-                                                            {n.message}
-                                                        </Text>
-                                                        <Flex mt={2} align="center" justify="space-between">
-                                                            <Text fontSize="10px" color="gray.600" fontWeight="bold">
-                                                                {new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                            </Text>
-                                                            {!n.is_read && (
-                                                                <Box w="6px" h="6px" bg="#a78bfa" borderRadius="full" />
-                                                            )}
-                                                        </Flex>
-                                                        {n.ai_metadata?.type === 'PAYMENT_REQUIRED' && (
-                                                            <Button
-                                                                size="xs"
-                                                                colorPalette="green"
-                                                                mt={3}
-                                                                rounded="lg"
-                                                                bg="#4FB13C"
-                                                                _hover={{ bg: "#43a032" }}
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    setPaymentModal({
-                                                                        open: true,
-                                                                        amount: n.ai_metadata.amount,
-                                                                        opportunityId: n.ai_metadata.opportunityId
-                                                                    });
-                                                                }}
-                                                            >
-                                                                <LuSmartphone style={{ marginRight: '4px' }} /> Pay KES {n.ai_metadata.amount}
-                                                            </Button>
-                                                        )}
-                                                    </Box>
-                                                </Flex>
-                                            </Box>
-                                            <IconButton
-                                                aria-label="Delete notification"
-                                                variant="ghost"
-                                                size="xs"
-                                                opacity={0}
-                                                _groupHover={{ opacity: 0.6 }}
-                                                _hover={{ opacity: 1, color: "red.400" }}
-                                                onClick={(e) => handleDeleteSingle(e, n.id)}
-                                                mt={0.5}
-                                            >
-                                                <LuTrash2 size={14} />
-                                            </IconButton>
-                                        </Flex>
-                                    </Box>
-                                ))
-                            )}
                         </VStack>
-                    </VStack>
-                </Box>
-            )}
+                    </DialogContent>
+                </DialogPositioner>
+            </DialogRoot>
 
             {/* Notification Detail Dialog - Centered */}
             <DialogRoot 

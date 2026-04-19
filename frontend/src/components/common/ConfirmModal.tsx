@@ -2,13 +2,22 @@ import React from 'react';
 import {
     Box,
     VStack,
-    Heading,
     Text,
     Button,
     Flex,
     Icon,
+    DialogRoot,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogBody,
+    DialogFooter,
+    DialogBackdrop,
+    DialogPositioner,
+    DialogCloseTrigger,
+    IconButton
 } from '@chakra-ui/react';
-import { AlertTriangle } from 'lucide-react';
+import { LuTriangleAlert, LuX } from "react-icons/lu";
 
 interface ConfirmModalProps {
     isOpen: boolean;
@@ -31,72 +40,88 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
     cancelText = "Cancel",
     confirmColor = "purple.500"
 }) => {
-    if (!isOpen) return null;
-
     return (
-        <Box
-            position="fixed"
-            top={0}
-            left={0}
-            right={0}
-            bottom={0}
-            bg="rgba(0, 0, 0, 0.7)"
-            backdropFilter="blur(10px)"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            zIndex={2000}
-            onClick={onClose}
+        <DialogRoot 
+            open={isOpen} 
+            onOpenChange={(details) => !details.open && onClose()}
+            size="sm"
+            placement="center"
         >
-            <Box
-                className="glass-card"
-                maxW="400px"
-                w="90%"
-                p={8}
-                borderRadius="32px"
-                onClick={(e) => e.stopPropagation()}
-                animation="slideUp 0.3s ease-out"
-                border="1px solid rgba(255, 255, 255, 0.1)"
-                boxShadow="0 25px 50px -12px rgba(0, 0, 0, 0.5)"
-            >
-                <VStack gap={6} align="center" textAlign="center">
-                    <Box p={4} borderRadius="full" bg="rgba(167, 139, 250, 0.1)">
-                        <Icon as={AlertTriangle} boxSize={8} color="purple.400" />
-                    </Box>
-                    <Box>
-                        <Heading size="md" mb={2} color="white">{title}</Heading>
-                        <Text color="gray.400" fontSize="sm">{description}</Text>
-                    </Box>
-                    <Flex gap={4} w="full">
-                        <Button
-                            flex={1}
-                            variant="ghost"
-                            onClick={onClose}
-                            borderRadius="xl"
-                            h={12}
-                            _hover={{ bg: "whiteAlpha.100" }}
-                        >
-                            {cancelText}
-                        </Button>
-                        <Button
-                            flex={1}
-                            bg={confirmColor}
-                            color="white"
-                            onClick={() => {
-                                onConfirm();
-                                onClose();
-                            }}
-                            borderRadius="xl"
-                            h={12}
-                            _hover={{ opacity: 0.9, transform: "translateY(-2px)" }}
-                            transition="all 0.2s"
-                        >
-                            {confirmText}
-                        </Button>
-                    </Flex>
-                </VStack>
-            </Box>
-        </Box>
+            <DialogBackdrop backdropFilter="blur(12px)" bg="rgba(0,0,0,0.4)" />
+            <DialogPositioner>
+                <DialogContent 
+                    bg="#0d1117" 
+                    borderRadius="3xl" 
+                    border="1px solid rgba(255, 255, 255, 0.1)"
+                    shadow="2xl"
+                    p={2}
+                    w={{ base: "90%", sm: "400px" }}
+                >
+                    <DialogHeader>
+                        <VStack gap={4} align="center" pt={4}>
+                            <Box p={4} borderRadius="full" bg="rgba(167, 139, 250, 0.1)">
+                                <Icon as={LuTriangleAlert} boxSize={8} color="purple.400" />
+                            </Box>
+                            <DialogTitle color="white" fontWeight="black" fontSize="xl">{title}</DialogTitle>
+                        </VStack>
+                        <DialogCloseTrigger asChild>
+                            <IconButton
+                                aria-label="Close"
+                                variant="ghost" 
+                                color="whiteAlpha.600" 
+                                position="absolute" 
+                                top={4} 
+                                right={4}
+                                rounded="full"
+                                _hover={{ bg: "whiteAlpha.100", color: "white" }}
+                            >
+                                <LuX />
+                            </IconButton>
+                        </DialogCloseTrigger>
+                    </DialogHeader>
+
+                    <DialogBody textAlign="center" py={4}>
+                        <Text color="gray.400" fontSize="sm" lineHeight="relaxed">
+                            {description}
+                        </Text>
+                    </DialogBody>
+
+                    <DialogFooter pb={6}>
+                        <Flex gap={4} w="full">
+                            <Button
+                                flex={1}
+                                variant="ghost"
+                                onClick={onClose}
+                                borderRadius="2xl"
+                                h={12}
+                                fontWeight="bold"
+                                color="gray.400"
+                                _hover={{ bg: "whiteAlpha.100", color: "white" }}
+                            >
+                                {cancelText}
+                            </Button>
+                            <Button
+                                flex={1}
+                                bg={confirmColor}
+                                color="white"
+                                onClick={() => {
+                                    onConfirm();
+                                    onClose();
+                                }}
+                                borderRadius="2xl"
+                                h={12}
+                                fontWeight="black"
+                                _hover={{ opacity: 0.9, transform: "translateY(-2px)" }}
+                                transition="all 0.2s"
+                                boxShadow={`0 8px 20px ${confirmColor}33`}
+                            >
+                                {confirmText}
+                            </Button>
+                        </Flex>
+                    </DialogFooter>
+                </DialogContent>
+            </DialogPositioner>
+        </DialogRoot>
     );
 };
 

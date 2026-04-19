@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import {
     Box, Button, Heading, Text, VStack,
-    Input, Icon, Flex, Spinner, Alert
+    Input, Icon, Flex, Spinner, Alert,
+    DialogRoot, DialogContent, DialogHeader, DialogTitle, DialogBody,
+    DialogFooter, DialogBackdrop, DialogPositioner, DialogCloseTrigger,
+    IconButton
 } from '@chakra-ui/react';
-import { LuX, LuSmartphone, LuShieldCheck, LuZap } from "react-icons/lu";
+import { LuX, LuSmartphone, LuShieldCheck } from "react-icons/lu";
 import apiClient from '../../services/apiClient';
 
 interface MpesaPaymentModalProps {
@@ -19,8 +22,6 @@ const MpesaPaymentModal: React.FC<MpesaPaymentModalProps> = ({ isOpen, onClose, 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [status, setStatus] = useState<'IDLE' | 'PENDING' | 'SUCCESS'>('IDLE');
-
-    if (!isOpen) return null;
 
     const handlePayment = async () => {
         const phoneRegex = /^0[71]\d{8}$/;
@@ -46,7 +47,6 @@ const MpesaPaymentModal: React.FC<MpesaPaymentModalProps> = ({ isOpen, onClose, 
 
             if (response.data.status === 'success') {
                 setStatus('PENDING');
-                // In a real app, we might poll for status, but for now we'll show a success message
                 setTimeout(() => {
                     setStatus('SUCCESS');
                     setIsLoading(false);
@@ -63,111 +63,140 @@ const MpesaPaymentModal: React.FC<MpesaPaymentModalProps> = ({ isOpen, onClose, 
     };
 
     return (
-        <Box
-            position="fixed" top={0} left={0} w="full" h="full" bg="blackAlpha.800"
-            display="flex" justifyContent="center" alignItems="center" zIndex={2000}
-            backdropFilter="blur(10px)" p={4}
+        <DialogRoot 
+            open={isOpen} 
+            onOpenChange={(details) => !details.open && onClose()}
+            size="md"
+            placement="center"
         >
-            <Box
-                bg="gray.900" p={8} borderRadius="3xl" w={{ base: "full", md: "450px" }}
-                border="1px solid" borderColor="whiteAlpha.200" shadow="2xl"
-                position="relative"
-            >
-                <IconButton
-                    aria-label="Close"
-                    variant="ghost" color="whiteAlpha.600" position="absolute" top={4} right={4}
-                    onClick={onClose} rounded="full"
+            <DialogBackdrop backdropFilter="blur(12px)" bg="rgba(0,0,0,0.4)" />
+            <DialogPositioner>
+                <DialogContent 
+                    bg="#0d1117" 
+                    borderRadius="3xl" 
+                    w={{ base: "95%", sm: "450px" }}
+                    border="1px solid rgba(255, 255, 255, 0.1)"
+                    shadow="2xl"
+                    overflow="hidden"
                 >
-                    <LuX />
-                </IconButton>
-
-                <VStack gap={6} align="stretch">
-                    <Box textAlign="center">
-                        <Box bg="green.500/20" p={4} borderRadius="full" display="inline-block" mb={4}>
-                            <Icon as={LuSmartphone} color="green.400" boxSize={8} />
-                        </Box>
-                        <Heading size="lg" color="white">M-PESA Express</Heading>
-                        <Text color="gray.400" fontSize="sm">STK Push Authentication</Text>
-                    </Box>
-
-                    {status === 'IDLE' && (
-                        <>
-                            <Box bg="whiteAlpha.50" p={4} borderRadius="xl" border="1px dashed" borderColor="whiteAlpha.200">
-                                <Flex justify="space-between" align="center">
-                                    <Text color="gray.400" fontSize="xs">Transaction Amount</Text>
-                                    <Text color="green.400" fontWeight="bold" fontSize="xl">KES {amount.toLocaleString()}</Text>
-                                </Flex>
+                    <DialogHeader borderBottom="1px solid rgba(255, 255, 255, 0.05)" pb={4}>
+                        <Flex justify="center" pt={4}>
+                            <Box bg="green.500/20" p={4} borderRadius="full">
+                                <Icon as={LuSmartphone} color="#4FB13C" boxSize={8} />
                             </Box>
+                        </Flex>
+                        <DialogTitle textAlign="center" color="white" mt={4} fontWeight="black" fontSize="xl">M-PESA Express</DialogTitle>
+                        <Text textAlign="center" color="gray.500" fontSize="xs" fontWeight="bold">STK Push Authentication</Text>
+                        <DialogCloseTrigger asChild>
+                            <IconButton
+                                aria-label="Close"
+                                variant="ghost" 
+                                color="whiteAlpha.600" 
+                                position="absolute" 
+                                top={4} 
+                                right={4}
+                                rounded="full"
+                                _hover={{ bg: "whiteAlpha.100", color: "white" }}
+                            >
+                                <LuX />
+                            </IconButton>
+                        </DialogCloseTrigger>
+                    </DialogHeader>
 
-                            <Box>
-                                <Text color="slate.500" fontSize="xs" mb={2}>M-PESA PHONE NUMBER</Text>
-                                <Input
-                                    placeholder="e.g. 0712345678"
-                                    bg="whiteAlpha.100" border="none" color="white" h={12}
-                                    value={phoneNumber}
-                                    onChange={e => setPhoneNumber(e.target.value)}
-                                />
-                                <Text fontSize="10px" color="slate.600" mt={2}>
-                                    A payment request will be sent to this device.
-                                </Text>
-                            </Box>
+                    <DialogBody py={8}>
+                        <VStack gap={6} align="stretch">
+                            {status === 'IDLE' && (
+                                <>
+                                    <Box bg="whiteAlpha.50" p={5} borderRadius="2xl" border="1px dashed" borderColor="whiteAlpha.200">
+                                        <Flex justify="space-between" align="center">
+                                            <Text color="gray.400" fontSize="xs" fontWeight="bold">Transaction Amount</Text>
+                                            <Text color="#4FB13C" fontWeight="black" fontSize="2xl">KES {amount.toLocaleString()}</Text>
+                                        </Flex>
+                                    </Box>
 
-                            {error && (
-                                <Alert.Root status="error" variant="subtle" borderRadius="lg">
-                                    <Alert.Indicator />
-                                    <Alert.Title fontSize="xs">{error}</Alert.Title>
-                                </Alert.Root>
+                                    <Box>
+                                        <Text color="gray.500" fontSize="xs" mb={2} fontWeight="black">M-PESA PHONE NUMBER</Text>
+                                        <Input
+                                            placeholder="e.g. 0712345678"
+                                            bg="rgba(255, 255, 255, 0.05)" 
+                                            border="1px solid rgba(255, 255, 255, 0.1)" 
+                                            color="white" 
+                                            h={14}
+                                            borderRadius="xl"
+                                            fontSize="lg"
+                                            _focus={{ borderColor: "#4FB13C", bg: "rgba(255, 255, 255, 0.08)" }}
+                                            value={phoneNumber}
+                                            onChange={e => setPhoneNumber(e.target.value)}
+                                        />
+                                        <Text fontSize="10px" color="gray.600" mt={2} fontWeight="bold">
+                                            A secure STK push request will be sent to this device.
+                                        </Text>
+                                    </Box>
+
+                                    {error && (
+                                        <Alert.Root status="error" variant="subtle" borderRadius="xl">
+                                            <Alert.Indicator />
+                                            <Alert.Title fontSize="xs" color="red.400">{error}</Alert.Title>
+                                        </Alert.Root>
+                                    )}
+
+                                    <Button
+                                        size="lg" 
+                                        rounded="2xl" 
+                                        h={16}
+                                        onClick={handlePayment}
+                                        disabled={isLoading}
+                                        bg="#4FB13C"
+                                        color="black"
+                                        fontWeight="black"
+                                        fontSize="md"
+                                        letterSpacing="1px"
+                                        _hover={{ bg: "#43a032", transform: "translateY(-2px)" }}
+                                        boxShadow="0 10px 20px rgba(79, 177, 60, 0.2)"
+                                        transition="all 0.2s"
+                                    >
+                                        {isLoading ? <Spinner size="sm" mr={3} /> : <LuSmartphone style={{ marginRight: '8px' }} />}
+                                        {isLoading ? 'INITIATING...' : 'PAY WITH M-PESA'}
+                                    </Button>
+                                </>
                             )}
 
-                            <Button
-                                colorPalette="green" size="lg" rounded="xl" h={14}
-                                onClick={handlePayment}
-                                disabled={isLoading}
-                                bg="#4FB13C"
-                                _hover={{ bg: "#43a032" }}
-                                boxShadow="0 0 20px rgba(72, 187, 120, 0.3)"
-                            >
-                                {isLoading ? <Spinner size="sm" mr={3} /> : <LuSmartphone style={{ marginRight: '8px' }} />}
-                                {isLoading ? 'Processing...' : 'Pay with M-PESA'}
-                            </Button>
-                        </>
-                    )}
+                            {status === 'PENDING' && (
+                                <VStack py={4} gap={6} textAlign="center">
+                                    <Spinner size="xl" thickness="4px" color="#4FB13C" />
+                                    <VStack gap={2}>
+                                        <Text color="white" fontWeight="black" fontSize="xl">Check your phone!</Text>
+                                        <Text color="gray.400" fontSize="sm">
+                                            Please enter your M-PESA PIN to authorize the payment of <b>KES {amount.toLocaleString()}</b>.
+                                        </Text>
+                                    </VStack>
+                                </VStack>
+                            )}
 
-                    {status === 'PENDING' && (
-                        <VStack py={10} gap={4} textAlign="center">
-                            <Spinner size="xl" color="green.400" />
-                            <Text color="white" fontWeight="bold">Check your phone!</Text>
-                            <Text color="gray.400" fontSize="sm">
-                                Please enter your M-PESA PIN to authorize the payment of <b>KES {amount}</b>.
-                            </Text>
+                            {status === 'SUCCESS' && (
+                                <VStack py={4} gap={6} textAlign="center">
+                                    <Box bg="green.500" p={5} borderRadius="full" shadow="0 0 30px rgba(72, 187, 120, 0.4)">
+                                        <Icon as={LuShieldCheck} color="white" boxSize={12} />
+                                    </Box>
+                                    <VStack gap={2}>
+                                        <Text color="white" fontSize="2xl" fontWeight="black">Payment Successful!</Text>
+                                        <Text color="gray.400" fontSize="sm">
+                                            Your transaction has been processed. Your workspace is now updated.
+                                        </Text>
+                                    </VStack>
+                                    <Button w="full" bg="indigo.500" color="white" h={14} mt={4} onClick={onClose} rounded="2xl" fontWeight="black">
+                                        Continue to Workspace
+                                    </Button>
+                                </VStack>
+                            )}
                         </VStack>
-                    )}
-
-                    {status === 'SUCCESS' && (
-                        <VStack py={10} gap={4} textAlign="center">
-                            <Box bg="green.500" p={4} borderRadius="full">
-                                <Icon as={LuShieldCheck} color="white" boxSize={10} />
-                            </Box>
-                            <Text color="white" fontSize="xl" fontWeight="bold">Payment Successful!</Text>
-                            <Text color="gray.400" fontSize="sm">
-                                Your placement has been finalized. You can now access your logbook and company materials.
-                            </Text>
-                            <Button w="full" colorPalette="indigo" mt={4} onClick={onClose} rounded="xl">
-                                Continue to Workspace
-                            </Button>
-                        </VStack>
-                    )}
-                </VStack>
-            </Box>
-        </Box>
+                    </DialogBody>
+                </DialogContent>
+            </DialogPositioner>
+        </DialogRoot>
     );
 };
 
-// Internal IconButton component for consistency if not exported from UI
-const IconButton: React.FC<any> = ({ children, ...props }) => (
-    <Button variant="ghost" p={0} minW="40px" h="40px" {...props}>
-        {children}
-    </Button>
-);
+export default MpesaPaymentModal;
 
 export default MpesaPaymentModal;

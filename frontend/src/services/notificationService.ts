@@ -4,7 +4,7 @@ export interface Notification {
     id: string;
     title: string;
     message: string;
-    type: 'INFO' | 'SUCCESS' | 'WARNING' | 'ERROR';
+    type: 'INFO' | 'SUCCESS' | 'WARNING' | 'ERROR' | 'ai_match';
     is_read: boolean;
     created_at: string;
     ai_metadata?: any;

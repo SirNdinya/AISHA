@@ -202,7 +202,7 @@ const StudentDashboard: React.FC = () => {
         progressColor = "indigo.400";
     } else if ((academicRecords || []).length > 0 && (matchIntelligence || []).length > 0) {
         progress = 100;
-        progressText = "Dashboard Ready";
+        progressText = "MATCH FOUND";
         progressColor = "green.400";
     } else if ((academicRecords || []).length > 0) {
         progress = 85;
