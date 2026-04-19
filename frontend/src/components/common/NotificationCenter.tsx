@@ -150,8 +150,8 @@ const NotificationCenter: React.FC = () => {
                     ref={dropDownRef}
                     position="absolute"
                     top="120%"
-                    right={0}
-                    w={{ base: "90vw", sm: "400px" }}
+                    right={{ base: "-10px", sm: 0 }}
+                    w={{ base: "calc(100vw - 20px)", sm: "400px" }}
                     maxH="600px"
                     bg="rgba(13, 17, 23, 0.95)"
                     backdropFilter="blur(20px) saturate(180%)"
@@ -256,6 +256,7 @@ const NotificationCenter: React.FC = () => {
                                                 onClick={() => {
                                                     dispatch(markNotificationsRead(n.id));
                                                     setSelectedNotification(n);
+                                                    setIsOpen(false);
                                                 }}
                                             >
                                                 <Flex gap={3} align="start">

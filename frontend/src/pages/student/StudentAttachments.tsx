@@ -212,12 +212,15 @@ const RedesignedPlacement: React.FC = () => {
         try {
             newTab.document.write(`
                 <html>
-                    <head><title>Loading Acceptance Letter...</title></head>
-                    <body style="background: #0f172a; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif; margin: 0;">
-                        <div style="text-align: center;">
-                            <div style="border: 4px solid rgba(255,255,255,0.1); border-left-color: #6366f1; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
-                            <p style="font-weight: bold; font-size: 1.1rem; letter-spacing: 0.05em;">AISHA IS GENERATING YOUR LETTER...</p>
-                            <p style="color: #94a3b8; font-size: 0.9rem;">Please wait while we secure your document.</p>
+                    <head>
+                        <title>Loading Acceptance Letter...</title>
+                        <meta name="viewport" content="width=device-width, initial-scale=1">
+                    </head>
+                    <body style="background: #020617; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; width: 100%; font-family: sans-serif; margin: 0; padding: 20px; box-sizing: border-box;">
+                        <div style="text-align: center; max-width: 400px; width: 100%;">
+                            <div style="border: 4px solid rgba(255,255,255,0.05); border-left-color: #6366f1; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 30px; box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);"></div>
+                            <h1 style="font-weight: 900; font-size: 1.2rem; letter-spacing: 0.1em; margin-bottom: 12px; color: #f8fafc;">AISHA IS GENERATING YOUR LETTER...</h1>
+                            <p style="color: #94a3b8; font-size: 0.9rem; font-weight: 500;">Please wait while we secure your document.</p>
                         </div>
                         <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
                     </body>

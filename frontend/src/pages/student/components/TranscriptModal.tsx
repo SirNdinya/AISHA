@@ -90,7 +90,7 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
         <DialogRoot open={isOpen} onOpenChange={onClose} size="xl" scrollBehavior="inside">
             <DialogPositioner>
                 <DialogContent 
-                    bg="rgb(15, 23, 42)" 
+                    bg="#020617" 
                     color="white" 
                     border="1px solid" 
                     borderColor="rgba(255, 255, 255, 0.1)" 
@@ -253,7 +253,7 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                                                     </TableHeader>
                                                     <TableBody>
                                                         {groupedRecords[period].map((record: any, idx: number) => (
-                                                            <TableRow key={idx} _hover={{ bg: "whiteAlpha.50" }} transition="all 0.2s" borderBottom="1px solid" borderColor="whiteAlpha.05">
+                                                            <TableRow key={idx} _hover={{ bg: "whiteAlpha.100" }} transition="all 0.2s" borderBottom="1px solid" borderColor="whiteAlpha.100" bg="whiteAlpha.50">
                                                                 <TableCell color="brand.400" fontWeight="black" fontSize="9px" whiteSpace="nowrap" py={2}>{record.unit_code}</TableCell>
                                                                 <TableCell color="white" fontSize={{ base: "10px", md: "sm" }} fontWeight="bold" py={2}>
                                                                     {record.unit_name}

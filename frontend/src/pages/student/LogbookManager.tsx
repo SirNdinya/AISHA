@@ -7,7 +7,7 @@ import {
 } from '@chakra-ui/react';
 import {
     LuCheck, LuArrowLeft, LuDownload,
-    LuSave
+    LuSave, LuChevronDown
 } from 'react-icons/lu';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -31,6 +31,9 @@ const LogbookManager: React.FC = () => {
     
     // Export State
     const [isExporting, setIsExporting] = useState(false);
+    const [isExportOpen, setIsExportOpen] = useState(false);
+    const exportMenuRef = useRef<HTMLDivElement>(null);
+    const exportButtonRef = useRef<HTMLButtonElement>(null);
     
     // Current Draft State
     const [entry, setEntry] = useState<any>({
@@ -140,6 +143,24 @@ const LogbookManager: React.FC = () => {
         }
     };
 
+    // Click outside listener for export menu
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                isExportOpen &&
+                exportMenuRef.current && 
+                !exportMenuRef.current.contains(event.target as Node) &&
+                exportButtonRef.current &&
+                !exportButtonRef.current.contains(event.target as Node)
+            ) {
+                setIsExportOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [isExportOpen]);
+
     const handleFieldChange = (field: string, value: string) => {
         const newEntry = { ...entry, [field]: value };
         setEntry(newEntry);
@@ -211,77 +232,133 @@ const LogbookManager: React.FC = () => {
             {/* Top Ribbon / Header */}
             <Box bg="var(--terminal-card)" borderBottom="1px solid" borderColor="var(--terminal-border)" position="sticky" top={0} zIndex={100} py={3} boxShadow="sm">
                 <Container maxW="container.lg">
-                    <Flex justify="space-between" align="center">
-                        <HStack gap={4}>
+                    <Flex 
+                        justify="space-between" 
+                        align={{ base: "flex-start", md: "center" }}
+                        direction={{ base: "column", md: "row" }}
+                        gap={{ base: 4, md: 0 }}
+                    >
+                        <HStack gap={{ base: 3, md: 4 }} w={{ base: "full", md: "auto" }}>
                             <Button
                                 variant="ghost"
                                 color="#F8FAFC"
                                 _hover={{ bg: "whiteAlpha.100" }}
                                 size="sm"
                                 onClick={() => navigate(-1)}
+                                minW="auto"
+                                px={{ base: 2, md: 3 }}
                             >
-                                <LuArrowLeft /> Back
+                                <LuArrowLeft /> <Text display={{ base: "none", sm: "inline" }}>Back</Text>
                             </Button>
-                            <VStack align="start" gap={0}>
-                                <Heading size="md" color="#F8FAFC" fontWeight="black">Logbook Manager</Heading>
-                                <HStack>
-                                    <Text fontSize="xs" color="var(--terminal-accent)">Record your weekly attachment progress</Text>
+                            <VStack align="start" gap={0} flex={1}>
+                                <Heading size={{ base: "sm", md: "md" }} color="#F8FAFC" fontWeight="black" lineClamp={1}>Logbook Manager</Heading>
+                                <HStack wrap="wrap">
+                                    <Text fontSize={{ base: "10px", md: "xs" }} color="var(--terminal-accent)" display={{ base: "none", sm: "block" }}>Record your weekly attachment progress</Text>
                                     <Badge colorPalette={entry.status === 'ARCHIVED' ? 'green' : entry.status === 'DRAFT' ? 'gray' : 'orange'} size="xs" variant="solid" px={2} borderRadius="full">
                                         {entry.status === 'ARCHIVED' ? 'VERIFIED ARCHIVE' : entry.status}
                                     </Badge>
                                 </HStack>
                             </VStack>
                         </HStack>
+                        
                         <Flex 
-                            gap={3} 
+                            gap={{ base: 2, md: 3 }} 
                             wrap="wrap" 
-                            justify={{ base: "space-between", md: "flex-end" }} 
-                            mt={{ base: 4, md: 0 }}
+                            justify={{ base: "flex-start", md: "flex-end" }} 
                             w={{ base: "full", md: "auto" }}
                         >
-                            <HStack gap={2} w={{ base: "full", sm: "auto" }} justify={{ base: "center", sm: "flex-start" }}>
-                                <Button size="sm" variant="outline" color="whiteAlpha.700" borderColor="var(--terminal-border)" _hover={{ bg: "whiteAlpha.100" }} onClick={() => handleSave(false)} loading={isSaving} disabled={isReadOnly} flex={{ base: 1, sm: "initial" }}>
+                            <HStack gap={2} w={{ base: "full", sm: "auto" }}>
+                                <Button size="sm" variant="outline" color="whiteAlpha.700" borderColor="var(--terminal-border)" _hover={{ bg: "whiteAlpha.100" }} onClick={() => handleSave(false)} loading={isSaving} disabled={isReadOnly} flex={1}>
                                     <LuSave /> <Text display={{ base: "inline", sm: "inline" }}>Save</Text>
                                 </Button>
-                                <Button size="sm" bg="var(--terminal-accent)" color="black" fontWeight="bold" onClick={() => handleSave(true)} loading={isSaving} disabled={isReadOnly} flex={{ base: 1, sm: "initial" }}>
+                                <Button size="sm" bg="var(--terminal-accent)" color="black" fontWeight="bold" onClick={() => handleSave(true)} loading={isSaving} disabled={isReadOnly} flex={1}>
                                     <LuCheck /> <Text display={{ base: "inline", sm: "inline" }}>Confirm</Text>
                                 </Button>
                             </HStack>
-                            <HStack gap={1} bg="whiteAlpha.50" p={1} borderRadius="md" border="1px solid" borderColor="var(--terminal-border)" wrap="wrap" justify="center" w={{ base: "full", sm: "auto" }}>
+
+                            <Box position="relative" w={{ base: "full", sm: "auto" }}>
                                 <Button 
-                                    size="xs" 
-                                    variant="subtle" 
-                                    colorPalette="cyan" 
-                                    onClick={() => handleDownloadPDF('current')}
-                                    disabled={isExporting || entry.status === 'DRAFT'}
+                                    ref={exportButtonRef}
+                                    size="sm" 
+                                    bg="whiteAlpha.50" 
+                                    color="whiteAlpha.900" 
+                                    border="1px solid" 
+                                    borderColor="var(--terminal-border)"
+                                    _hover={{ bg: "whiteAlpha.100" }}
+                                    onClick={() => setIsExportOpen(!isExportOpen)}
+                                    w="full"
+                                    fontWeight="black"
                                 >
-                                    <LuDownload /> Week {selectedWeekNum}
+                                    <LuDownload /> EXPORT <LuChevronDown style={{ marginLeft: '4px', transform: isExportOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
                                 </Button>
-                                <Button 
-                                    size="xs" 
-                                    variant="subtle" 
-                                    colorPalette="purple" 
-                                    onClick={() => {
-                                        const r = window.prompt("Enter range (e.g. 1-4):");
-                                        if (r && r.includes('-')) {
-                                            const [s, e] = r.split('-').map(Number);
-                                            handleDownloadPDF('range', s, e);
-                                        }
-                                    }}
-                                    disabled={isExporting || allWeeks.length === 0}
-                                >
-                                    <LuDownload /> Range
-                                </Button>
-                                <Button 
-                                    size="xs" 
-                                    variant="subtle" 
-                                    colorPalette="green" 
-                                    onClick={() => handleDownloadPDF('all')}
-                                    disabled={isExporting || allWeeks.length === 0}
-                                >
-                                    <LuDownload /> Full
-                                </Button>
-                            </HStack>
+
+                                {isExportOpen && (
+                                    <Box
+                                        ref={exportMenuRef}
+                                        position="absolute"
+                                        top="110%"
+                                        right={0}
+                                        w="200px"
+                                        bg="var(--terminal-card)"
+                                        border="1px solid"
+                                        borderColor="var(--terminal-border)"
+                                        borderRadius="md"
+                                        shadow="2xl"
+                                        zIndex={1000}
+                                        overflow="hidden"
+                                        animation="fade-in 0.2s ease-out"
+                                    >
+                                        <VStack align="stretch" gap={0}>
+                                            <Button 
+                                                variant="ghost" 
+                                                justifyContent="start" 
+                                                rounded="none" 
+                                                size="sm" 
+                                                color="white"
+                                                onClick={() => { handleDownloadPDF('current'); setIsExportOpen(false); }}
+                                                disabled={isExporting || entry.status === 'DRAFT'}
+                                                _hover={{ bg: "cyan.900/40", color: "cyan.400" }}
+                                                py={4}
+                                            >
+                                                <LuDownload style={{ marginRight: '8px' }} /> Week {selectedWeekNum}
+                                            </Button>
+                                            <Button 
+                                                variant="ghost" 
+                                                justifyContent="start" 
+                                                rounded="none" 
+                                                size="sm" 
+                                                color="white"
+                                                onClick={() => {
+                                                    setIsExportOpen(false);
+                                                    const r = window.prompt("Enter range (e.g. 1-4):");
+                                                    if (r && r.includes('-')) {
+                                                        const [s, e] = r.split('-').map(Number);
+                                                        handleDownloadPDF('range', s, e);
+                                                    }
+                                                }}
+                                                disabled={isExporting || allWeeks.length === 0}
+                                                _hover={{ bg: "purple.900/40", color: "purple.400" }}
+                                                py={4}
+                                            >
+                                                <LuDownload style={{ marginRight: '8px' }} /> Range Archive
+                                            </Button>
+                                            <Button 
+                                                variant="ghost" 
+                                                justifyContent="start" 
+                                                rounded="none" 
+                                                size="sm" 
+                                                color="white"
+                                                onClick={() => { handleDownloadPDF('all'); setIsExportOpen(false); }}
+                                                disabled={isExporting || allWeeks.length === 0}
+                                                _hover={{ bg: "green.900/40", color: "green.400" }}
+                                                py={4}
+                                            >
+                                                <LuDownload style={{ marginRight: '8px' }} /> Full Logbook
+                                            </Button>
+                                        </VStack>
+                                    </Box>
+                                )}
+                            </Box>
                         </Flex>
                     </Flex>
                 </Container>

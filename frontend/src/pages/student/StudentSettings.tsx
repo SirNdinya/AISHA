@@ -14,7 +14,7 @@ import {
 
 import { useSelector, useDispatch } from 'react-redux';
 import type { RootState, AppDispatch } from '../../store';
-import { updateStudentProfile, fetchStudentProfile, clearInstitutionalData, clearMatchData, fetchMyApplications } from '../../store/studentSlice';
+import { updateStudentProfile, fetchStudentProfile, clearInstitutionalData, clearMatchData, fetchMyApplications, fetchMatchIntelligence } from '../../store/studentSlice';
 import { logout } from '../../store/authSlice';
 import StudentService from '../../services/studentService';
 import { Toaster, toaster } from '../../components/ui/toaster';
@@ -436,7 +436,7 @@ const StudentSettings: React.FC = () => {
                                     {!settings.career_path ? (
                                         <Text fontSize="xs" color="var(--terminal-accent)" fontWeight="black">Please select a Target Career Path first.</Text>
                                     ) : (
-                                        <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} gap={4}>
+                                        <SimpleGrid columns={{ base: 2, md: 2, xl: 3 }} gap={4}>
                                             {Array.from(new Set([...availableInterests, ...settings.fields_of_interest])).map((interest: string) => {
                                                 const isSelected = settings.fields_of_interest.includes(interest);
                                                 return (
@@ -522,7 +522,7 @@ const StudentSettings: React.FC = () => {
                                     {!settings.career_path ? (
                                         <Text fontSize="xs" color="var(--terminal-accent)" fontWeight="black">Please select a Target Career Path first.</Text>
                                     ) : (
-                                        <SimpleGrid columns={{ base: 1, md: 2, xl: 3 }} gap={4}>
+                                        <SimpleGrid columns={{ base: 2, md: 2, xl: 3 }} gap={4}>
                                             {Array.from(new Set([...availableSkills, ...settings.skills])).map((skill: string) => {
                                                 const isSelected = settings.skills.includes(skill);
                                                 return (
