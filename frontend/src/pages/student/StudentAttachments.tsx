@@ -11,7 +11,7 @@ import {
     LuActivity, LuMapPin, LuCpu, LuShieldCheck,
     LuBuilding2, LuDownload, LuCalendar,
     LuChevronLeft, LuSparkles, LuFileText, LuWallet,
-    LuZap, LuEye, LuClock, LuDollarSign
+    LuZap, LuEye, LuClock, LuDollarSign, LuSmartphone
 } from "react-icons/lu";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMyApplications, fetchDashboardData } from '../../store/studentSlice';
@@ -592,10 +592,11 @@ const RedesignedPlacement: React.FC = () => {
                                             <Text color="#F8FAFC" fontWeight="black" fontSize="md">KES {targetApp.student_payment_amount?.toLocaleString()}</Text>
                                         </Flex>
                                         <Button
-                                            w="full" colorPalette="orange" size="sm"
+                                            w="full" colorPalette="green" size="sm"
                                             onClick={() => setIsPaymentModalOpen(true)} fontWeight="black" borderRadius="lg"
+                                            bg="#4FB13C" _hover={{ bg: "#43a032" }}
                                         >
-                                            <Icon as={LuZap} /> PAY VIA M-PESA
+                                            <Icon as={LuSmartphone} /> PAY VIA M-PESA
                                         </Button>
                                     </VStack>
                                 )

@@ -121,8 +121,8 @@ const AdminPortalLayout: React.FC = () => {
                             p={3}
                             borderRadius="12px"
                             cursor="pointer"
-                            color="gray.400"
-                            _hover={{ bg: "rgba(239, 68, 68, 0.1)", color: "red.400" }}
+                            color="red.400"
+                            _hover={{ bg: "rgba(239, 68, 68, 0.1)", color: "red.300" }}
                             onClick={handleLogout}
                         >
                             <Icon as={LogOut} boxSize={5} mr={isSidebarOpen ? 4 : 0} />

@@ -26,6 +26,7 @@ interface TranscriptModalProps {
 
 const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) => {
     const [loading, setLoading] = useState(true);
+    const [isDownloading, setIsDownloading] = useState(false);
     const [data, setData] = useState<{ student?: any, records: any[], analysis: any } | null>(null);
 
     useEffect(() => {
@@ -73,10 +74,13 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
     };
 
     const handleDownload = async () => {
+        setIsDownloading(true);
         try {
             await StudentService.downloadTranscriptReport();
         } catch (error) {
             console.error('Download failed:', error);
+        } finally {
+            setIsDownloading(false);
         }
     };
 
@@ -317,6 +321,7 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                                 _hover={{ bg: "brand.600", transform: "translateY(-1px)" }}
                                 size={{ base: "sm", md: "md" }} 
                                 onClick={handleDownload} 
+                                loading={isDownloading}
                                 disabled={!data || data.records?.length === 0} 
                                 borderRadius="xl" 
                                 px={{ base: 4, md: 8 }} 
@@ -324,7 +329,7 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                                 w={{ base: "full", sm: "auto" }}
                                 boxShadow="0 4px 15px rgba(0, 136, 204, 0.3)"
                             >
-                                <LuDownload /> GENERATE PDF
+                                GENERATE PDF
                             </Button>
                         </Flex>
                     </DialogFooter>

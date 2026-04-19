@@ -123,9 +123,11 @@ const MpesaPaymentModal: React.FC<MpesaPaymentModalProps> = ({ isOpen, onClose, 
                                 colorPalette="green" size="lg" rounded="xl" h={14}
                                 onClick={handlePayment}
                                 disabled={isLoading}
+                                bg="#4FB13C"
+                                _hover={{ bg: "#43a032" }}
                                 boxShadow="0 0 20px rgba(72, 187, 120, 0.3)"
                             >
-                                {isLoading ? <Spinner size="sm" mr={3} /> : <LuZap style={{ marginRight: '8px' }} />}
+                                {isLoading ? <Spinner size="sm" mr={3} /> : <LuSmartphone style={{ marginRight: '8px' }} />}
                                 {isLoading ? 'Processing...' : 'Pay with M-PESA'}
                             </Button>
                         </>

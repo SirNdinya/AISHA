@@ -1,9 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Box, Button, Text, VStack, Flex, IconButton, Spinner, HStack, Heading } from '@chakra-ui/react';
+import { 
+    Box, Button, Text, VStack, Flex, IconButton, Spinner, HStack, Heading,
+    DialogRoot, DialogContent, DialogHeader, DialogTitle, DialogBody,
+    DialogFooter, DialogBackdrop, DialogPositioner, DialogCloseTrigger
+} from '@chakra-ui/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchNotifications, markNotificationsRead, deleteNotifications } from '../../store/notificationSlice';
 import type { AppDispatch, RootState } from '../../store';
-import { LuBell, LuBellRing, LuCheck, LuInfo, LuCircleCheck, LuTriangleAlert, LuCircleX, LuZap, LuX, LuTrash2 } from "react-icons/lu";
+import { LuBell, LuBellRing, LuCheck, LuInfo, LuCircleCheck, LuTriangleAlert, LuCircleX, LuZap, LuX, LuTrash2, LuSmartphone } from "react-icons/lu";
 import { useSocket } from '../../context/SocketContext';
 import { type Notification as AppNotification } from '../../services/notificationService';
 import MpesaPaymentModal from './MpesaPaymentModal';
@@ -150,8 +154,8 @@ const NotificationCenter: React.FC = () => {
                     ref={dropDownRef}
                     position="absolute"
                     top="120%"
-                    right={{ base: "calc(-100vw + 100% + 20px)", sm: 0 }}
-                    w={{ base: "calc(100vw - 40px)", sm: "400px" }}
+                    right={{ base: "-4vw", sm: 0 }}
+                    w={{ base: "90vw", sm: "400px" }}
                     maxH="600px"
                     bg="rgba(13, 17, 23, 0.95)"
                     backdropFilter="blur(20px) saturate(180%)"
@@ -282,6 +286,8 @@ const NotificationCenter: React.FC = () => {
                                                                 colorPalette="green"
                                                                 mt={3}
                                                                 rounded="lg"
+                                                                bg="#4FB13C"
+                                                                _hover={{ bg: "#43a032" }}
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
                                                                     setPaymentModal({
@@ -291,7 +297,7 @@ const NotificationCenter: React.FC = () => {
                                                                     });
                                                                 }}
                                                             >
-                                                                <LuZap style={{ marginRight: '4px' }} /> Pay KES {n.ai_metadata.amount}
+                                                                <LuSmartphone style={{ marginRight: '4px' }} /> Pay KES {n.ai_metadata.amount}
                                                             </Button>
                                                         )}
                                                     </Box>
@@ -318,62 +324,59 @@ const NotificationCenter: React.FC = () => {
                 </Box>
             )}
 
-            {/* Notification Detail Modal - Centered */}
-            {selectedNotification && (
-                <Box
-                    position="fixed"
-                    inset={0}
-                    zIndex={9999}
-                    bg="rgba(0,0,0,0.85)"
-                    backdropFilter="blur(16px)"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    onClick={() => setSelectedNotification(null)}
-                >
-                    <Box
-                        bg="#0d1117"
-                        p={{ base: 4, md: 8 }}
+            {/* Notification Detail Dialog - Centered */}
+            <DialogRoot 
+                open={!!selectedNotification} 
+                onOpenChange={(details) => !details.open && setSelectedNotification(null)}
+                size="md"
+                placement="center"
+            >
+                <DialogBackdrop backdropFilter="blur(12px)" bg="rgba(0,0,0,0.6)" />
+                <DialogPositioner>
+                    <DialogContent 
+                        bg="#0d1117" 
                         borderRadius={{ base: "2xl", md: "3xl" }}
-                        maxW={{ base: "95vw", md: "550px" }}
-                        w="full"
-                        mx="auto"
                         border="1px solid rgba(255,255,255,0.1)"
-                        onClick={(e) => e.stopPropagation()}
-                        animation="slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1)"
                         boxShadow="0 25px 50px -12px rgba(0, 0, 0, 0.5)"
                     >
-                        <Flex justify="space-between" align="start" mb={6}>
+                        <DialogHeader pb={0}>
                             <HStack gap={4}>
                                 <Box p={3} borderRadius="2xl" bg="whiteAlpha.50">
-                                    {getIcon(selectedNotification.type)}
+                                    {selectedNotification && getIcon(selectedNotification.type)}
                                 </Box>
                                 <VStack align="start" gap={0}>
-                                    <Heading size="md" color="white" fontWeight="black">{selectedNotification.title}</Heading>
+                                    <DialogTitle color="white" fontWeight="black">
+                                        {selectedNotification?.title}
+                                    </DialogTitle>
                                     <Text fontSize="xs" color="gray.500" mt={1}>
-                                        {new Date(selectedNotification.created_at).toLocaleString([], { dateStyle: 'long', timeStyle: 'short' })}
+                                        {selectedNotification && new Date(selectedNotification.created_at).toLocaleString([], { dateStyle: 'long', timeStyle: 'short' })}
                                     </Text>
                                 </VStack>
                             </HStack>
-                            <IconButton
-                                aria-label="Close"
-                                variant="ghost"
-                                size="sm"
-                                borderRadius="full"
-                                onClick={() => setSelectedNotification(null)}
-                                _hover={{ bg: "whiteAlpha.100" }}
-                            >
-                                <LuX size={18} />
-                            </IconButton>
-                        </Flex>
+                            <DialogCloseTrigger asChild>
+                                <IconButton
+                                    aria-label="Close"
+                                    variant="ghost"
+                                    size="sm"
+                                    borderRadius="full"
+                                    onClick={() => setSelectedNotification(null)}
+                                    position="absolute"
+                                    top={4}
+                                    right={4}
+                                    _hover={{ bg: "whiteAlpha.100" }}
+                                >
+                                    <LuX size={18} />
+                                </IconButton>
+                            </DialogCloseTrigger>
+                        </DialogHeader>
                         
-                        <Box py={4}>
+                        <DialogBody py={8}>
                             <Text color="gray.200" fontSize="lg" lineHeight="relaxed">
-                                {selectedNotification.message}
+                                {selectedNotification?.message}
                             </Text>
-                        </Box>
+                        </DialogBody>
                         
-                        <Flex justify="flex-end" mt={8} gap={4}>
+                        <DialogFooter gap={4}>
                             <Button
                                 variant="outline"
                                 border="1px solid"
@@ -381,8 +384,10 @@ const NotificationCenter: React.FC = () => {
                                 color="white"
                                 _hover={{ bg: "whiteAlpha.100" }}
                                 onClick={(e) => {
-                                    handleDeleteSingle(e, selectedNotification.id);
-                                    setSelectedNotification(null);
+                                    if (selectedNotification) {
+                                        handleDeleteSingle(e, selectedNotification.id);
+                                        setSelectedNotification(null);
+                                    }
                                 }}
                             >
                                 <LuTrash2 style={{ marginRight: '8px' }} /> Delete
@@ -395,10 +400,10 @@ const NotificationCenter: React.FC = () => {
                             >
                                 Got it
                             </Button>
-                        </Flex>
-                    </Box>
-                </Box>
-            )}
+                        </DialogFooter>
+                    </DialogContent>
+                </DialogPositioner>
+            </DialogRoot>
 
             <MpesaPaymentModal
                 isOpen={paymentModal.open}

@@ -121,12 +121,12 @@ const StudentHeader: React.FC<StudentHeaderProps> = ({ onMenuClick }) => {
                                 </IconButton>
                                 <Button 
                                     variant="outline" 
-                                    colorPalette="indigo" 
+                                    colorPalette="red" 
                                     size="xs" 
                                     onClick={handleLogout} 
                                     border="1px solid" 
-                                    borderColor="indigo.900" 
-                                    _hover={{ bg: "indigo.900", color: "white" }}
+                                    borderColor="red.500/30" 
+                                    _hover={{ bg: "red.600", color: "white" }}
                                     display={{ base: "flex", lg: "none" }}
                                     px={3}
                                 >
