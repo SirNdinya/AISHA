@@ -5,7 +5,8 @@ import {
 } from '@chakra-ui/react';
 import {
     DialogRoot, DialogContent, DialogHeader, DialogTitle, DialogBody,
-    DialogFooter, DialogActionTrigger, DialogPositioner, DialogCloseTrigger
+    DialogFooter, DialogActionTrigger, DialogPositioner, DialogCloseTrigger,
+    DialogBackdrop
 } from '@chakra-ui/react';
 import {
     TableRoot, TableHeader, TableRow, TableColumnHeader,
@@ -88,6 +89,7 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
 
     return (
         <DialogRoot open={isOpen} onOpenChange={onClose} size="xl" scrollBehavior="inside">
+            <DialogBackdrop backdropFilter="blur(8px)" bg="rgba(0,0,0,0.4)" />
             <DialogPositioner>
                 <DialogContent 
                     bg="#020617" 

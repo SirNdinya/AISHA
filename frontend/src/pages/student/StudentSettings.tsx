@@ -436,7 +436,7 @@ const StudentSettings: React.FC = () => {
                                     {!settings.career_path ? (
                                         <Text fontSize="xs" color="var(--terminal-accent)" fontWeight="black">Please select a Target Career Path first.</Text>
                                     ) : (
-                                        <SimpleGrid columns={{ base: 2, md: 2, xl: 3 }} gap={4}>
+                                        <SimpleGrid columns={{ base: 1, sm: 2, xl: 3 }} gap={4}>
                                             {Array.from(new Set([...availableInterests, ...settings.fields_of_interest])).map((interest: string) => {
                                                 const isSelected = settings.fields_of_interest.includes(interest);
                                                 return (
@@ -463,7 +463,7 @@ const StudentSettings: React.FC = () => {
                                                                 setSettings({ ...settings, fields_of_interest: newInterests });
                                                             }}
                                                         >
-                                                            <Text fontSize="xs" color="white" fontWeight={isSelected ? "black" : "bold"}>
+                                                            <Text fontSize="xs" color="white" fontWeight={isSelected ? "black" : "bold"} whiteSpace="normal" wordBreak="break-word">
                                                                 {interest}
                                                             </Text>
                                                         </Checkbox>
@@ -522,7 +522,7 @@ const StudentSettings: React.FC = () => {
                                     {!settings.career_path ? (
                                         <Text fontSize="xs" color="var(--terminal-accent)" fontWeight="black">Please select a Target Career Path first.</Text>
                                     ) : (
-                                        <SimpleGrid columns={{ base: 2, md: 2, xl: 3 }} gap={4}>
+                                        <SimpleGrid columns={{ base: 1, sm: 2, xl: 3 }} gap={4}>
                                             {Array.from(new Set([...availableSkills, ...settings.skills])).map((skill: string) => {
                                                 const isSelected = settings.skills.includes(skill);
                                                 return (
@@ -549,7 +549,7 @@ const StudentSettings: React.FC = () => {
                                                                 setSettings({ ...settings, skills: newSkills });
                                                             }}
                                                         >
-                                                            <Text fontSize="xs" color="white" fontWeight={isSelected ? "black" : "bold"}>
+                                                            <Text fontSize="xs" color="white" fontWeight={isSelected ? "black" : "bold"} whiteSpace="normal" wordBreak="break-word">
                                                                 {skill}
                                                             </Text>
                                                         </Checkbox>

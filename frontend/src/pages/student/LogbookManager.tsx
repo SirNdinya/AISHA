@@ -24,6 +24,8 @@ const LogbookManager: React.FC = () => {
     const [isSaving, setIsSaving] = useState(false);
     const [isAutoSaving, setIsAutoSaving] = useState(false);
     const autoSaveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const [showHeader, setShowHeader] = useState(true);
+    const lastScrollY = useRef(0);
     
     // Logbook State
     const [allWeeks, setAllWeeks] = useState<any[]>([]);
@@ -223,6 +225,21 @@ const LogbookManager: React.FC = () => {
         return isToday ? `${dateStr} (Today)` : dateStr;
     };
 
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+            if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+                setShowHeader(false);
+            } else {
+                setShowHeader(true);
+            }
+            lastScrollY.current = currentScrollY;
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     if (isLoading) return <Flex h="60vh" align="center" justify="center"><Spinner color="indigo.400" /></Flex>;
 
     const isReadOnly = entry.status !== 'DRAFT';
@@ -230,7 +247,18 @@ const LogbookManager: React.FC = () => {
     return (
         <Box bg="var(--terminal-bg)" minH="101vh" pb={12}>
             {/* Top Ribbon / Header */}
-            <Box bg="var(--terminal-card)" borderBottom="1px solid" borderColor="var(--terminal-border)" position="sticky" top={0} zIndex={100} py={3} boxShadow="sm">
+            <Box 
+                bg="var(--terminal-card)" 
+                borderBottom="1px solid" 
+                borderColor="var(--terminal-border)" 
+                position="sticky" 
+                top={0} 
+                zIndex={100} 
+                py={3} 
+                boxShadow="sm"
+                transition="transform 0.3s ease-in-out"
+                transform={showHeader ? "translateY(0)" : "translateY(-100%)"}
+            >
                 <Container maxW="container.lg">
                     <Flex 
                         justify="space-between" 
