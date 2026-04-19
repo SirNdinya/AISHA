@@ -5,7 +5,7 @@ import {
 } from '@chakra-ui/react';
 import {
     DialogRoot, DialogContent, DialogHeader, DialogTitle, DialogBody,
-    DialogFooter, DialogActionTrigger, DialogPositioner
+    DialogFooter, DialogActionTrigger, DialogPositioner, DialogCloseTrigger
 } from '@chakra-ui/react';
 import {
     TableRoot, TableHeader, TableRow, TableColumnHeader,
