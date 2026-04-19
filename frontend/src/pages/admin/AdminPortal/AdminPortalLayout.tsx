@@ -13,11 +13,13 @@ import {
     Briefcase,
     Settings,
     LogOut,
-    Megaphone
+    Megaphone,
+    Home
 } from 'lucide-react';
 import { LuPanelLeftClose, LuPanelLeftOpen } from 'react-icons/lu';
 
 const navItems = [
+    { name: 'Home Hub', path: '/', icon: Home },
     { name: 'Institutional Overview', path: '/institution/dashboard', icon: LayoutDashboard, roles: ['INSTITUTION'] },
     { name: 'Departments', path: '/institution/departments', icon: Users, roles: ['INSTITUTION'] },
     { name: 'Dashboard', deptPath: '/department/dashboard', icon: LayoutDashboard, roles: ['DEPARTMENT_ADMIN'] },

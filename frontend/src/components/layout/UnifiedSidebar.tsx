@@ -5,7 +5,8 @@ import { NavLink } from 'react-router-dom';
 import {
     LuPanelLeftOpen,
     LuPanelLeftClose,
-    LuActivity
+    LuActivity,
+    LuGlobe
 } from 'react-icons/lu';
 
 export interface NavItem {
@@ -85,6 +86,35 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
 
             {/* Navigation Items */}
             <VStack align="stretch" gap={2} flex="1" overflowY="auto" className="hide-scrollbar">
+                <NavLink
+                    to="/"
+                    style={({ isActive }) => ({
+                        textDecoration: 'none',
+                        background: isActive ? `rgba(${accentColor === 'cyan' ? '0, 184, 212' : accentColor === 'orange' ? '255, 107, 0' : '167, 139, 250'}, 0.1)` : 'transparent',
+                        borderRadius: '12px',
+                        transition: '0.2s'
+                    })}
+                    title={isCollapsed && !isMobile ? "Home Hub" : undefined}
+                >
+                    <HStack
+                        px={(isCollapsed && !isMobile) ? 0 : 4}
+                        py={3}
+                        gap={3}
+                        color="whiteAlpha.800"
+                        opacity={0.8}
+                        _hover={{ opacity: 1, bg: 'whiteAlpha.100', color: 'white' }}
+                        borderRadius="12px"
+                        justify={(isCollapsed && !isMobile) ? 'center' : 'flex-start'}
+                    >
+                        <Icon as={LuGlobe} boxSize={5} flexShrink={0} />
+                        {(!isCollapsed || isMobile) && (
+                            <Text fontWeight="medium" fontSize="md" whiteSpace="nowrap">Home Hub</Text>
+                        )}
+                    </HStack>
+                </NavLink>
+
+                <Separator opacity={0.1} mb={2} />
+
                 {navItems.map((item) => (
                     <NavLink
                         key={item.name}

@@ -31,6 +31,7 @@ const AdminLayout: React.FC = () => {
                 <Flex justify="space-between" align="center">
                     <Heading size="md">SAPS Admin</Heading>
                     <HStack gap={6}>
+                        <Link to="/">Home Hub</Link>
                         <Link to="/admin/dashboard">Dashboard</Link>
                         <ThemeToggle />
                         <HStack>

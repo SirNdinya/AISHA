@@ -11,7 +11,8 @@ import {
     LuPanelLeftClose,
     LuPanelLeftOpen,
     LuCreditCard,
-    LuActivity
+    LuActivity,
+    LuGlobe
 } from 'react-icons/lu';
 
 const navItems = [
@@ -89,6 +90,35 @@ const CompanySidebar: React.FC<CompanySidebarProps> = ({ isCollapsed, onToggle, 
 
                 {/* Navigation Items */}
                 <VStack align="stretch" gap={2} flex="1">
+                    <NavLink
+                        to="/"
+                        style={({ isActive }) => ({
+                            textDecoration: 'none',
+                            background: isActive ? 'rgba(56, 189, 248, 0.1)' : 'transparent',
+                            borderRadius: '12px',
+                            transition: '0.2s'
+                        })}
+                        title={isCollapsed ? "Home Hub" : undefined}
+                    >
+                        <HStack
+                            px={isCollapsed ? 0 : 4}
+                            py={3}
+                            gap={3}
+                            color="whiteAlpha.900"
+                            opacity={0.8}
+                            _hover={{ opacity: 1, bg: 'whiteAlpha.100' }}
+                            borderRadius="12px"
+                            justify={isCollapsed ? 'center' : 'flex-start'}
+                        >
+                            <Icon as={LuGlobe} boxSize={5} flexShrink={0} />
+                            {!isCollapsed && (
+                                <Text fontWeight="medium" fontSize="sm" whiteSpace="nowrap">Home Hub</Text>
+                            )}
+                        </HStack>
+                    </NavLink>
+
+                    <Separator opacity={0.1} mb={2} />
+
                     {navItems.map((item) => (
                         <NavLink
                             key={item.name}
