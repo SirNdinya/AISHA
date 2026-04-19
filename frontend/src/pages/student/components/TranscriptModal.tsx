@@ -90,16 +90,15 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
         <DialogRoot open={isOpen} onOpenChange={onClose} size="xl" scrollBehavior="inside">
             <DialogPositioner>
                 <DialogContent 
-                    bg="rgba(10, 15, 25, 0.95)" 
+                    bg="rgb(15, 23, 42)" 
                     color="white" 
-                    backdropFilter="blur(20px)"
                     border="1px solid" 
                     borderColor="rgba(255, 255, 255, 0.1)" 
                     boxShadow="0 0 100px rgba(0, 0, 0, 0.5)"
-                    borderRadius="3xl"
+                    borderRadius="2xl"
                     overflow="hidden"
                 >
-                    <DialogHeader bg="rgba(255, 255, 255, 0.03)" borderBottom="1px solid" borderColor="rgba(255, 255, 255, 0.05)" p={6}>
+                    <DialogHeader bg="rgba(0,0,0,0.3)" borderBottom="1px solid" borderColor="rgba(255, 255, 255, 0.1)" p={6}>
                         <HStack justify="space-between" w="full">
                             <HStack gap={4}>
                                 <Flex 
@@ -111,8 +110,8 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                                     <Icon as={LuBookOpen} color="white" boxSize={5} />
                                 </Flex>
                                 <VStack align="start" gap={0}>
-                                    <DialogTitle fontSize="xl" fontWeight="black" letterSpacing="widest" textTransform="uppercase">
-                                        Official Academic Transcript
+                                    <DialogTitle fontSize={{ base: "md", md: "xl" }} color="white" fontWeight="black" letterSpacing="widest" textTransform="uppercase">
+                                        Academic Transcript
                                     </DialogTitle>
                                 </VStack>
                             </HStack>
@@ -240,10 +239,10 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                                                     {groupedRecords[period].length} VERIFIED ENTRIES
                                                 </Badge>
                                             </Flex>
-                                            <Box borderRadius="2xl" overflow="hidden" border="1px solid" borderColor="whiteAlpha.100" bg="whiteAlpha.05">
+                                            <Box borderRadius="xl" overflow="hidden" border="1px solid" borderColor="rgba(255,255,255,0.1)" bg="rgba(0,0,0,0.2)">
                                                 <TableRoot size="sm" variant="line">
-                                                    <TableHeader bg="whiteAlpha.100">
-                                                        <TableRow borderBottom="1px solid" borderColor="whiteAlpha.200">
+                                                    <TableHeader bg="rgba(255,255,255,0.05)">
+                                                        <TableRow borderBottom="1px solid" borderColor="rgba(255,255,255,0.1)">
                                                             <TableColumnHeader color="indigo.400" py={4} fontWeight="black" fontSize="10px">CODE</TableColumnHeader>
                                                             <TableColumnHeader color="indigo.400" py={4} fontWeight="black" fontSize="10px">UNIT NAME</TableColumnHeader>
                                                             <TableColumnHeader color="indigo.400" py={4} fontWeight="black" fontSize="10px" textAlign="center">SCORE</TableColumnHeader>
@@ -252,19 +251,25 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                                                     </TableHeader>
                                                     <TableBody>
                                                         {groupedRecords[period].map((record: any, idx: number) => (
-                                                            <TableRow key={idx} _hover={{ bg: "whiteAlpha.100" }} transition="all 0.2s" borderBottom="1px solid" borderColor="whiteAlpha.05">
-                                                                <TableCell color="brand.400" fontWeight="black" fontSize="xs">{record.unit_code}</TableCell>
-                                                                <TableCell color="white" fontSize="sm" fontWeight="bold">{record.unit_name}</TableCell>
+                                                            <TableRow key={idx} _hover={{ bg: "whiteAlpha.50" }} transition="all 0.2s" borderBottom="1px solid" borderColor="whiteAlpha.05">
+                                                                <TableCell color="brand.400" fontWeight="black" fontSize="xs" whiteSpace="nowrap">{record.unit_code}</TableCell>
+                                                                <TableCell color="white" fontSize={{ base: "xs", md: "sm" }} fontWeight="bold" minW={{ base: "120px", md: "auto" }}>
+                                                                    {record.unit_name}
+                                                                </TableCell>
                                                                 <TableCell textAlign="center" color="white" fontWeight="black">
                                                                     {record.mark !== null && record.mark !== undefined ? `${record.mark}%` : '--'}
                                                                 </TableCell>
                                                                 <TableCell textAlign="center">
                                                                     <Badge 
-                                                                        bg={record.grade?.startsWith('A') ? "rgba(72, 187, 120, 0.2)" : "rgba(237, 137, 54, 0.2)"} 
-                                                                        color={record.grade?.startsWith('A') ? "green.400" : "orange.400"}
+                                                                        bg={record.grade?.startsWith('A') ? "rgba(72, 187, 120, 0.2)" : (record.grade === 'Incomplete' || record.grade === 'I') ? "rgba(239, 68, 68, 0.2)" : "rgba(237, 137, 54, 0.2)"} 
+                                                                        color={record.grade?.startsWith('A') ? "green.400" : (record.grade === 'Incomplete' || record.grade === 'I') ? "red.400" : "orange.400"}
                                                                         border="1px solid"
-                                                                        borderColor={record.grade?.startsWith('A') ? "green.400" : "orange.400"}
-                                                                        borderRadius="lg" px={3}
+                                                                        borderColor={record.grade?.startsWith('A') ? "green.400" : (record.grade === 'Incomplete' || record.grade === 'I') ? "red.400" : "orange.400"}
+                                                                        borderRadius="md" px={2}
+                                                                        fontSize="10px"
+                                                                        maxW="80px"
+                                                                        overflow="hidden"
+                                                                        textOverflow="ellipsis"
                                                                     >
                                                                         {record.grade || 'N/A'}
                                                                     </Badge>

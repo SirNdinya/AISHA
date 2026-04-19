@@ -15,7 +15,7 @@ const AishaAssistant: React.FC = () => {
             right={{ base: "20px", md: "30px" }}
             zIndex={1000}
         >
-            <Flex direction="column" align="center" gap={2}>
+            <Flex direction="column" align="center" gap={1}>
                 <MotionBox
                     initial={{ opacity: 0, scale: 0.5, y: 20 }}
                     animate={{
@@ -33,7 +33,7 @@ const AishaAssistant: React.FC = () => {
                     cursor="pointer"
                     borderRadius="full"
                     className="glass-card"
-                    p={1.5}
+                    p={{ base: 1, md: 1.5 }}
                     border="2px solid rgba(167, 139, 250, 0.3)"
                     overflow="hidden"
                     boxShadow="0 10px 30px rgba(0,0,0,0.5)"
@@ -64,7 +64,7 @@ const AishaAssistant: React.FC = () => {
                     <Image
                         src={aishaBot}
                         alt="AISHA Assistant"
-                        boxSize={{ base: "50px", md: "65px" }}
+                        boxSize={{ base: "32px", md: "65px" }}
                         borderRadius="full"
                         objectFit="cover"
                     />
@@ -73,6 +73,7 @@ const AishaAssistant: React.FC = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 1 }}
+                    display={{ base: "none", md: "block" }}
                 >
                     <Text
                         className="gradient-text"

@@ -235,17 +235,19 @@ const LogbookManager: React.FC = () => {
                         <Flex 
                             gap={3} 
                             wrap="wrap" 
-                            justify={{ base: "center", md: "flex-end" }} 
+                            justify={{ base: "space-between", md: "flex-end" }} 
                             mt={{ base: 4, md: 0 }}
                             w={{ base: "full", md: "auto" }}
                         >
-                            <Button size="sm" variant="outline" color="whiteAlpha.700" borderColor="var(--terminal-border)" _hover={{ bg: "whiteAlpha.100" }} onClick={() => handleSave(false)} loading={isSaving} disabled={isReadOnly}>
-                                <LuSave /> <Text display={{ base: "none", sm: "inline" }}>Save Draft</Text>
-                            </Button>
-                            <Button size="sm" bg="var(--terminal-accent)" color="black" fontWeight="bold" onClick={() => handleSave(true)} loading={isSaving} disabled={isReadOnly}>
-                                <LuCheck /> <Text display={{ base: "none", sm: "inline" }}>Confirm & Send</Text>
-                            </Button>
-                            <HStack gap={1} bg="whiteAlpha.50" p={1} borderRadius="md" border="1px solid" borderColor="var(--terminal-border)" wrap="wrap" justify="center">
+                            <HStack gap={2} w={{ base: "full", sm: "auto" }} justify={{ base: "center", sm: "flex-start" }}>
+                                <Button size="sm" variant="outline" color="whiteAlpha.700" borderColor="var(--terminal-border)" _hover={{ bg: "whiteAlpha.100" }} onClick={() => handleSave(false)} loading={isSaving} disabled={isReadOnly} flex={{ base: 1, sm: "initial" }}>
+                                    <LuSave /> <Text display={{ base: "inline", sm: "inline" }}>Save</Text>
+                                </Button>
+                                <Button size="sm" bg="var(--terminal-accent)" color="black" fontWeight="bold" onClick={() => handleSave(true)} loading={isSaving} disabled={isReadOnly} flex={{ base: 1, sm: "initial" }}>
+                                    <LuCheck /> <Text display={{ base: "inline", sm: "inline" }}>Confirm</Text>
+                                </Button>
+                            </HStack>
+                            <HStack gap={1} bg="whiteAlpha.50" p={1} borderRadius="md" border="1px solid" borderColor="var(--terminal-border)" wrap="wrap" justify="center" w={{ base: "full", sm: "auto" }}>
                                 <Button 
                                     size="xs" 
                                     variant="subtle" 
@@ -277,7 +279,7 @@ const LogbookManager: React.FC = () => {
                                     onClick={() => handleDownloadPDF('all')}
                                     disabled={isExporting || allWeeks.length === 0}
                                 >
-                                    <LuDownload /> Full Archive
+                                    <LuDownload /> Full
                                 </Button>
                             </HStack>
                         </Flex>
@@ -331,14 +333,20 @@ const LogbookManager: React.FC = () => {
                             </Box>
                             
                             <Box p={6}>
-                                <Flex justify="space-between" mb={6}>
-                                    <HStack>
-                                        <Text fontWeight="bold" color="black">DATE: From:</Text>
-                                        <Input type="date" size="sm" w="150px" bg="gray.50" color="#0F172A" borderColor="gray.200" value={entry.start_date} onChange={e => handleFieldChange('start_date', e.target.value)} disabled={isReadOnly} />
-                                        <Text fontWeight="bold" color="black">To:</Text>
-                                        <Input type="date" size="sm" w="150px" bg="white" color="#0F172A" value={entry.end_date} onChange={e => handleFieldChange('end_date', e.target.value)} disabled={isReadOnly} />
-                                    </HStack>
-                                    <Heading size="sm" color="var(--terminal-accent)" fontWeight="black">WEEK {entry.week_number}</Heading>
+                                <Flex 
+                                    justify="space-between" 
+                                    mb={6} 
+                                    direction={{ base: "column", sm: "row" }} 
+                                    gap={4}
+                                    align={{ base: "stretch", sm: "center" }}
+                                >
+                                    <Flex gap={2} wrap="wrap" align="center">
+                                        <Text fontWeight="bold" color="black" whiteSpace="nowrap">DATE: From:</Text>
+                                        <Input type="date" size="sm" w={{ base: "full", sm: "150px" }} bg="gray.50" color="#0F172A" borderColor="gray.200" value={entry.start_date} onChange={e => handleFieldChange('start_date', e.target.value)} disabled={isReadOnly} />
+                                        <Text fontWeight="bold" color="black" whiteSpace="nowrap">To:</Text>
+                                        <Input type="date" size="sm" w={{ base: "full", sm: "150px" }} bg="white" color="#0F172A" value={entry.end_date} onChange={e => handleFieldChange('end_date', e.target.value)} disabled={isReadOnly} />
+                                    </Flex>
+                                    <Heading size="sm" color="var(--terminal-accent)" fontWeight="black" textAlign={{ base: "center", sm: "right" }}>WEEK {entry.week_number}</Heading>
                                 </Flex>
 
                                 <Box bg="white" border="1px solid" borderColor="gray.300" borderRadius="md" overflow="hidden" boxShadow="sm">

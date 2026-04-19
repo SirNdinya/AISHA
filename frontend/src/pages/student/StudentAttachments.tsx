@@ -4,14 +4,14 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
     Box, Flex, Heading, Text, Badge, Button,
     Container, VStack, HStack, Icon, Grid,
-    Circle, Image, Stack
+    Circle, Image
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import {
     LuActivity, LuMapPin, LuCpu, LuShieldCheck,
-    LuBuilding2, LuDownload, LuCalendar, LuGlobe,
+    LuBuilding2, LuDownload, LuCalendar,
     LuChevronLeft, LuSparkles, LuFileText, LuWallet,
-    LuZap, LuEye, LuBriefcase, LuClock, LuDollarSign
+    LuZap, LuEye, LuClock, LuDollarSign
 } from "react-icons/lu";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchMyApplications, fetchDashboardData } from '../../store/studentSlice';
@@ -28,7 +28,6 @@ const RedesignedPlacement: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const { applications, profile, isLoading, isMatchingLoading, dashboardStats, error } = useSelector((state: RootState) => state.student);
-    const { user } = useSelector((state: RootState) => state.auth);
     const [searchParams] = useSearchParams();
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
     const [isViewing, setIsViewing] = useState(false);
