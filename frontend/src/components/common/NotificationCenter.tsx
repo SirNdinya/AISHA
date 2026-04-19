@@ -155,7 +155,7 @@ const NotificationCenter: React.FC = () => {
                 onOpenChange={(details) => !details.open && setIsOpen(false)}
                 placement="top"
             >
-                <DialogBackdrop backdropFilter="blur(12px)" bg="rgba(0,0,0,0.4)" />
+                <DialogBackdrop backdropFilter="blur(16px)" bg="rgba(0,0,0,0.4)" />
                 <DialogPositioner>
                     <DialogContent 
                         ref={dropDownRef}
@@ -165,8 +165,7 @@ const NotificationCenter: React.FC = () => {
                         right={{ base: "10px", sm: 0 }}
                         w={{ base: "auto", sm: "400px" }}
                         maxH={{ base: "80vh", sm: "600px" }}
-                        bg="rgba(13, 17, 23, 0.95)"
-                        backdropFilter="blur(20px) saturate(180%)"
+                        bg="rgba(13, 17, 23, 0.98)"
                         border="1px solid rgba(255, 255, 255, 0.1)"
                         shadow="dark-lg"
                         borderRadius="2xl"
@@ -303,7 +302,7 @@ const NotificationCenter: React.FC = () => {
                 size="md"
                 placement="center"
             >
-                <DialogBackdrop backdropFilter="blur(12px)" bg="rgba(0,0,0,0.6)" />
+                <DialogBackdrop backdropFilter="blur(16px)" bg="rgba(0,0,0,0.6)" />
                 <DialogPositioner>
                     <DialogContent 
                         bg="#0d1117" 

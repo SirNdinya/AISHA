@@ -69,7 +69,7 @@ const MpesaPaymentModal: React.FC<MpesaPaymentModalProps> = ({ isOpen, onClose, 
             size="md"
             placement="center"
         >
-            <DialogBackdrop backdropFilter="blur(12px)" bg="rgba(0,0,0,0.4)" />
+            <DialogBackdrop backdropFilter="blur(16px)" bg="rgba(0,0,0,0.4)" />
             <DialogPositioner>
                 <DialogContent 
                     bg="#0d1117" 
@@ -163,7 +163,7 @@ const MpesaPaymentModal: React.FC<MpesaPaymentModalProps> = ({ isOpen, onClose, 
 
                             {status === 'PENDING' && (
                                 <VStack py={4} gap={6} textAlign="center">
-                                    <Spinner size="xl" thickness="4px" color="#4FB13C" />
+                                    <Spinner size="xl" borderWidth="4px" color="#4FB13C" />
                                     <VStack gap={2}>
                                         <Text color="white" fontWeight="black" fontSize="xl">Check your phone!</Text>
                                         <Text color="gray.400" fontSize="sm">

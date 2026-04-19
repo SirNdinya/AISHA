@@ -1,0 +1,11 @@
+src/components/common/MpesaPaymentModal.tsx(72,29): error TS2322: Type '{ backdropFilter: string; bg: string; }' is not assignable to type 'IntrinsicAttributes & DialogBackdropProps & RefAttributes<HTMLDivElement>'.
+  Property 'backdropFilter' does not exist on type 'IntrinsicAttributes & DialogBackdropProps & RefAttributes<HTMLDivElement>'.
+src/components/common/MpesaPaymentModal.tsx(73,14): error TS2559: Type '{ children: Element; }' has no properties in common with type 'IntrinsicAttributes & DialogPositionerProps & RefAttributes<HTMLDivElement>'.
+src/components/common/MpesaPaymentModal.tsx(74,18): error TS2322: Type '{ children: Element[]; bg: string; borderRadius: string; w: { base: string; sm: string; }; border: string; shadow: string; overflow: string; }' is not assignable to type 'IntrinsicAttributes & DialogContentProps & RefAttributes<HTMLDivElement>'.
+  Property 'children' does not exist on type 'IntrinsicAttributes & DialogContentProps & RefAttributes<HTMLDivElement>'.
+src/components/common/MpesaPaymentModal.tsx(88,26): error TS2322: Type '{ children: string; textAlign: string; color: string; mt: number; fontWeight: string; fontSize: string; }' is not assignable to type 'IntrinsicAttributes & DialogTitleProps & RefAttributes<HTMLDivElement>'.
+  Property 'children' does not exist on type 'IntrinsicAttributes & DialogTitleProps & RefAttributes<HTMLDivElement>'.
+src/components/common/MpesaPaymentModal.tsx(90,26): error TS2322: Type '{ children: Element; asChild: true; }' is not assignable to type 'IntrinsicAttributes & DialogCloseTriggerProps & RefAttributes<HTMLButtonElement>'.
+  Property 'children' does not exist on type 'IntrinsicAttributes & DialogCloseTriggerProps & RefAttributes<HTMLButtonElement>'.
+src/services/apiClient.ts(7,26): error TS2339: Property 'env' does not exist on type 'ImportMeta'.
+src/store/institutionSlice.ts(36,54): error TS2554: Expected 0 arguments, but got 1.

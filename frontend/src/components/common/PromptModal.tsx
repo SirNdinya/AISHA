@@ -52,7 +52,7 @@ const PromptModal: React.FC<PromptModalProps> = ({
             size="md"
             placement="center"
         >
-            <DialogBackdrop backdropFilter="blur(12px)" bg="rgba(0,0,0,0.4)" />
+            <DialogBackdrop backdropFilter="blur(16px)" bg="rgba(0,0,0,0.4)" />
             <DialogPositioner>
                 <DialogContent 
                     bg="#0d1117" 
