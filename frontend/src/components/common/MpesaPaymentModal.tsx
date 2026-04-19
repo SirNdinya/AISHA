@@ -198,5 +198,3 @@ const MpesaPaymentModal: React.FC<MpesaPaymentModalProps> = ({ isOpen, onClose, 
 };
 
 export default MpesaPaymentModal;
-
-export default MpesaPaymentModal;
