@@ -9,14 +9,15 @@ import AishaAssistant from '../../../components/common/AishaAssistant';
 import {
     LayoutDashboard,
     Users,
-    FileText,
     Briefcase,
     Settings,
     LogOut,
-    Megaphone,
     Home
 } from 'lucide-react';
-import { LuPanelLeftClose, LuPanelLeftOpen } from 'react-icons/lu';
+import { LuPanelLeftClose, LuPanelLeftOpen, LuMenu, LuX } from 'react-icons/lu';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const MotionBox = motion(Box);
 
 const navItems = [
     { name: 'Home Hub', path: '/', icon: Home },
@@ -29,6 +30,7 @@ const navItems = [
 
 const AdminPortalLayout: React.FC = () => {
     const [isSidebarOpen, setSidebarOpen] = useState(true);
+    const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -41,14 +43,16 @@ const AdminPortalLayout: React.FC = () => {
 
     return (
         <Flex minH="100vh" bg="var(--terminal-bg)" color="#F8FAFC" overflow="hidden">
-            {/* Sidebar */}
+            {/* Desktop Sidebar */}
             <Box
                 as="nav"
-                w={isSidebarOpen ? "260px" : "80px"}
+                w={isSidebarOpen ? '260px' : '80px'}
                 className="sidebar-glass"
                 transition="width 0.3s ease"
                 position="relative"
                 zIndex={20}
+                display={{ base: 'none', lg: 'block' }}
+                flexShrink={0}
             >
                 <VStack h="full" py={8} px={4} gap={8} align="stretch">
                     {/* Logo */}
@@ -134,6 +138,92 @@ const AdminPortalLayout: React.FC = () => {
                 </VStack>
             </Box>
 
+            {/* Mobile Drawer */}
+            <AnimatePresence>
+                {isMobileMenuOpen && (
+                    <>
+                        <MotionBox
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setMobileMenuOpen(false)}
+                            position="fixed"
+                            inset={0}
+                            bg="blackAlpha.700"
+                            backdropFilter="blur(4px)"
+                            zIndex={2000}
+                            display={{ base: 'block', lg: 'none' }}
+                        />
+                        <MotionBox
+                            initial={{ x: '-100%' }}
+                            animate={{ x: 0 }}
+                            exit={{ x: '-100%' }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                            position="fixed"
+                            left={0} top={0} bottom={0}
+                            w="260px"
+                            className="sidebar-glass"
+                            zIndex={2001}
+                            display={{ base: 'block', lg: 'none' }}
+                            boxShadow="2xl"
+                        >
+                            {/* Close Button */}
+                            <Box position="absolute" top={4} right={4} zIndex={2002}>
+                                <IconButton
+                                    aria-label="Close menu"
+                                    variant="ghost"
+                                    color="white"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    <LuX />
+                                </IconButton>
+                            </Box>
+                            {/* Drawer Nav — same content as sidebar */}
+                            <VStack h="full" py={8} px={4} gap={8} align="stretch">
+                                <Flex align="center" px={2} h="40px">
+                                    <Box w="40px" h="40px" borderRadius="10px" bg="linear-gradient(135deg, var(--terminal-accent) 0%, #2dd4bf 100%)" display="flex" alignItems="center" justifyContent="center" mr={3}>
+                                        <Box w="20px" h="20px" bg="white" borderRadius="4px" />
+                                    </Box>
+                                    <Heading size="md" className="gradient-text" fontWeight="bold">AISHA</Heading>
+                                </Flex>
+                                <VStack gap={2} align="stretch">
+                                    {navItems.filter(item => {
+                                        if (!item.roles) return true;
+                                        const userRole = (user?.role || '').toUpperCase();
+                                        return item.roles.some(r => r.toUpperCase() === userRole);
+                                    }).map((item) => {
+                                        const userRole = (user?.role || '').toUpperCase();
+                                        const targetPath = (userRole === 'DEPARTMENT_ADMIN' && item.deptPath ? item.deptPath : item.path) || '/';
+                                        const isActive = location.pathname === targetPath;
+                                        return (
+                                            <NavLink key={item.name} to={targetPath} onClick={() => setMobileMenuOpen(false)}>
+                                                <Flex align="center" p={3} borderRadius="12px" transition="all 0.2s"
+                                                    bg={isActive ? 'rgba(56, 189, 248, 0.15)' : 'transparent'}
+                                                    color={isActive ? 'var(--terminal-accent)' : 'gray.400'}
+                                                    _hover={{ bg: 'rgba(255,255,255,0.05)', color: 'white' }}
+                                                >
+                                                    <Icon as={item.icon} boxSize={5} mr={4} />
+                                                    <Text fontWeight="medium">{item.name}</Text>
+                                                </Flex>
+                                            </NavLink>
+                                        );
+                                    })}
+                                </VStack>
+                                <Box mt="auto" px={2}>
+                                    <Flex align="center" p={3} borderRadius="12px" cursor="pointer" color="red.400"
+                                        _hover={{ bg: 'rgba(239,68,68,0.1)', color: 'red.300' }}
+                                        onClick={() => { setMobileMenuOpen(false); handleLogout(); }}
+                                    >
+                                        <Icon as={LogOut} boxSize={5} mr={4} />
+                                        <Text fontWeight="medium">Sign Out</Text>
+                                    </Flex>
+                                </Box>
+                            </VStack>
+                        </MotionBox>
+                    </>
+                )}
+            </AnimatePresence>
+
             {/* Main Content */}
             <Box flex="1" h="100vh" overflowY="auto" position="relative">
                 {/* Top bar */}
@@ -141,14 +231,24 @@ const AdminPortalLayout: React.FC = () => {
                     h="70px"
                     align="center"
                     justify="space-between"
-                    px={8}
+                    px={{ base: 4, md: 8 }}
                     position="sticky"
                     top={0}
                     zIndex={1100}
                     className="sidebar-glass"
                     backdropFilter="blur(10px)"
                 >
-                    <Box></Box>
+                    {/* Mobile hamburger */}
+                    <IconButton
+                        aria-label="Open navigation"
+                        variant="ghost"
+                        color="white"
+                        display={{ base: 'flex', lg: 'none' }}
+                        onClick={() => setMobileMenuOpen(true)}
+                    >
+                        <LuMenu size={24} />
+                    </IconButton>
+                    <Box display={{ base: 'none', lg: 'block' }} />
 
                     <Flex align="center" gap={6}>
                         <NotificationCenter />
@@ -175,7 +275,7 @@ const AdminPortalLayout: React.FC = () => {
                 </Flex>
 
                 {/* Content Area */}
-                <Box p={8}>
+                <Box p={{ base: 4, md: 8 }}>
                     <Outlet />
                 </Box>
 
