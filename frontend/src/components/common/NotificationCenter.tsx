@@ -158,7 +158,7 @@ const NotificationCenter: React.FC = () => {
                 placement="center"
                 size="md"
             >
-                <DialogBackdrop backdropFilter="blur(12px)" bg="rgba(0,0,0,0.4)" />
+                <DialogBackdrop backdropFilter="blur(16px)" bg="rgba(0,0,0,0.5)" />
                 <DialogPositioner>
                     <DialogContent 
                         ref={dropDownRef}
@@ -300,7 +300,7 @@ const NotificationCenter: React.FC = () => {
                 size="md"
                 placement="center"
             >
-                <DialogBackdrop backdropFilter="blur(12px)" bg="rgba(0,0,0,0.6)" />
+                <DialogBackdrop backdropFilter="blur(16px)" bg="rgba(0,0,0,0.6)" />
                 <DialogPositioner>
                     <DialogContent 
                         bg="#0d1117" 
