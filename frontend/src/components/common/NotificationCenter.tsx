@@ -112,43 +112,45 @@ const NotificationCenter: React.FC = () => {
     };
 
     return (
-        <Box position="relative">
-            <IconButton
-                ref={buttonRef}
-                aria-label="Notifications"
-                variant="ghost"
-                onClick={toggleOpen}
-                position="relative"
-                borderRadius="full"
-                _hover={{ bg: "whiteAlpha.200" }}
-            >
-                {unreadCount > 0 ? (
-                    <LuBellRing size={20} color="#a78bfa" style={{ filter: 'drop-shadow(0 0 5px rgba(167, 139, 250, 0.5))' }} />
-                ) : (
-                    <LuBell size={20} color="white" />
-                )}
-                {unreadCount > 0 && (
-                    <Box
-                        position="absolute"
-                        top="-2px"
-                        right="-2px"
-                        bg="#a78bfa"
-                        color="white"
-                        borderRadius="full"
-                        minW="18px"
-                        h="18px"
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="center"
-                        fontSize="10px"
-                        fontWeight="bold"
-                        boxShadow="0 0 10px rgba(167, 139, 250, 0.6)"
-                        zIndex={2}
-                    >
-                        {unreadCount > 9 ? '9+' : unreadCount}
-                    </Box>
-                )}
-            </IconButton>
+        <>
+            <Box position="relative">
+                <IconButton
+                    ref={buttonRef}
+                    aria-label="Notifications"
+                    variant="ghost"
+                    onClick={toggleOpen}
+                    position="relative"
+                    borderRadius="full"
+                    _hover={{ bg: "whiteAlpha.200" }}
+                >
+                    {unreadCount > 0 ? (
+                        <LuBellRing size={20} color="#a78bfa" style={{ filter: 'drop-shadow(0 0 5px rgba(167, 139, 250, 0.5))' }} />
+                    ) : (
+                        <LuBell size={20} color="white" />
+                    )}
+                    {unreadCount > 0 && (
+                        <Box
+                            position="absolute"
+                            top="-2px"
+                            right="-2px"
+                            bg="#a78bfa"
+                            color="white"
+                            borderRadius="full"
+                            minW="18px"
+                            h="18px"
+                            display="flex"
+                            alignItems="center"
+                            justifyContent="center"
+                            fontSize="10px"
+                            fontWeight="bold"
+                            boxShadow="0 0 10px rgba(167, 139, 250, 0.6)"
+                            zIndex={2}
+                        >
+                            {unreadCount > 9 ? '9+' : unreadCount}
+                        </Box>
+                    )}
+                </IconButton>
+            </Box>
 
             <DialogRoot 
                 open={isOpen} 
@@ -162,11 +164,10 @@ const NotificationCenter: React.FC = () => {
                         ref={dropDownRef}
                         w={{ base: "95vw", sm: "500px" }}
                         maxH={{ base: "85vh", sm: "600px" }}
-                        bg="rgba(13, 17, 23, 0.98)"
+                        bg="#020617"
                         border="1px solid rgba(255, 255, 255, 0.1)"
-                        shadow="0 0 50px rgba(0, 0, 0, 0.5)"
+                        boxShadow="0 0 100px rgba(0, 0, 0, 0.5)"
                         borderRadius="2xl"
-                        zIndex={2000}
                         overflow="hidden"
                     >
                         <VStack align="stretch" gap={0} h="full">
@@ -379,7 +380,7 @@ const NotificationCenter: React.FC = () => {
                 amount={paymentModal.amount}
                 opportunityId={paymentModal.opportunityId}
             />
-        </Box>
+        </>
     );
 };
 
