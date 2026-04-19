@@ -14,7 +14,7 @@ import {
     AvatarRoot,
     AvatarFallback,
     Button,
-    Input,
+    Input
 } from '@chakra-ui/react';
 import {
     Search,
@@ -93,15 +93,15 @@ const PlacementTracker: React.FC = () => {
 
     return (
         <Box animation="fadeIn 0.5s ease-out">
-            <Flex direction={{ base: "column", md: "row" }} justify="space-between" align={{ base: "start", md: "center" }} gap={4} mb={8}>
+            <Flex justify="space-between" align="center" mb={8}>
                 <Box>
-                    <Heading size={{ base: "lg", md: "xl" }} fontWeight="bold" color="#F8FAFC">Placement Tracker</Heading>
-                    <Text color="var(--terminal-accent)" fontSize={{ base: "sm", md: "md" }}>Monitor your department's active student industrial attachments</Text>
+                    <Heading size="lg" fontWeight="bold" color="#F8FAFC">Placement Tracker</Heading>
+                    <Text color="var(--terminal-accent)">Monitor your department's active student industrial attachments</Text>
                 </Box>
             </Flex>
 
             {/* Quick Stats */}
-            <SimpleGrid columns={{ base: 1, md: 3 }} gap={6} mb={8}>
+            <SimpleGrid columns={[1, 3]} gap={6} mb={8}>
                 {[
                     { label: 'Total Assessed Placements', count: activeCount, icon: Briefcase, color: 'teal.400' },
                     { label: 'Completed Attachments', count: placements.filter(p => getDynamicStatus(p).label === 'Completed').length, icon: CheckCircle2, color: 'purple.400' },
@@ -121,18 +121,17 @@ const PlacementTracker: React.FC = () => {
 
             {/* Main Tracker Table */}
             <Box className="glass-card" bg="var(--terminal-card)" p={6} borderRadius="20px" border="1px solid" borderColor="var(--terminal-border)">
-                <Flex direction={{ base: "column", md: "row" }} justify="space-between" gap={4} mb={6}>
-                    <Box w={{ base: "full", md: "400px" }} position="relative" display="flex" alignItems="center">
+                <Flex justify="space-between" mb={6}>
+                    <Box maxW="400px" position="relative" display="flex" alignItems="center">
                         <Search color="gray" size={18} style={{ position: 'absolute', left: 12 }} />
                         <Input
                             pl={10}
-                            placeholder="Filter company or student..."
+                            placeholder="Filter by company or student..."
                             bg="whiteAlpha.50"
                             border="1px solid"
                             borderColor="var(--terminal-border)"
                             borderRadius="12px"
                             color="#F8FAFC"
-                            w="full"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -145,14 +144,14 @@ const PlacementTracker: React.FC = () => {
                     <Table.Root>
                         <Table.Header borderBottom="1px solid rgba(255,255,255,0.05)">
                             <Table.Row>
-                            <Table.ColumnHeader color="var(--terminal-accent)">STUDENT</Table.ColumnHeader>
-                            <Table.ColumnHeader color="var(--terminal-accent)" display={{ base: "none", md: "table-cell" }}>HOST COMPANY</Table.ColumnHeader>
-                            <Table.ColumnHeader color="var(--terminal-accent)" display={{ base: "none", lg: "table-cell" }}>PERIOD</Table.ColumnHeader>
-                            <Table.ColumnHeader color="var(--terminal-accent)" w={{ base: "100px", md: "150px" }} textTransform="uppercase">1st Assess</Table.ColumnHeader>
-                            <Table.ColumnHeader color="var(--terminal-accent)" w={{ base: "100px", md: "150px" }} textTransform="uppercase" display={{ base: "none", sm: "table-cell" }}>2nd Assess</Table.ColumnHeader>
-                            <Table.ColumnHeader color="var(--terminal-accent)" display={{ base: "none", sm: "table-cell" }}>STATUS</Table.ColumnHeader>
-                            <Table.ColumnHeader color="var(--terminal-accent)" textAlign="right">ACTION</Table.ColumnHeader>
-                        </Table.Row>
+                                <Table.ColumnHeader color="var(--terminal-accent)">STUDENT</Table.ColumnHeader>
+                                <Table.ColumnHeader color="var(--terminal-accent)">HOST COMPANY</Table.ColumnHeader>
+                                <Table.ColumnHeader color="var(--terminal-accent)">PERIOD</Table.ColumnHeader>
+                                <Table.ColumnHeader color="var(--terminal-accent)" w="150px" textTransform="uppercase">1st Assessment</Table.ColumnHeader>
+                                <Table.ColumnHeader color="var(--terminal-accent)" w="150px" textTransform="uppercase">2nd Assessment</Table.ColumnHeader>
+                                <Table.ColumnHeader color="var(--terminal-accent)">STATUS</Table.ColumnHeader>
+                                <Table.ColumnHeader color="var(--terminal-accent)" textAlign="right">ACTION</Table.ColumnHeader>
+                            </Table.Row>
                         </Table.Header>
                         <Table.Body>
                             {filteredPlacements.map((item, i) => {
@@ -167,15 +166,15 @@ const PlacementTracker: React.FC = () => {
                                                 <Text fontWeight="bold" color="#F8FAFC">{item.first_name} {item.last_name}</Text>
                                             </HStack>
                                         </Table.Cell>
-                                        <Table.Cell display={{ base: "none", md: "table-cell" }} color="gray.300">
+                                        <Table.Cell color="gray.300">
                                             <VStack align="start" gap={0}>
                                                 <Text color="#F8FAFC">{item.company_name}</Text>
                                                 <Text fontSize="xs" color="var(--terminal-accent)">{item.role}</Text>
                                             </VStack>
                                         </Table.Cell>
-                                        <Table.Cell display={{ base: "none", lg: "table-cell" }} color="whiteAlpha.800" fontSize="sm">
+                                        <Table.Cell color="whiteAlpha.800" fontSize="sm">
                                             <HStack gap={2} color="whiteAlpha.800" fontSize="sm">
-                                                <Icon as={Calendar} boxSize={3} />
+                                                <Icon as={Calendar} size={14} />
                                                 <Text>{item.start_date ? new Date(item.start_date).toLocaleDateString() : 'N/A'} - {item.end_date ? new Date(item.end_date).toLocaleDateString() : 'N/A'}</Text>
                                             </HStack>
                                         </Table.Cell>
@@ -191,7 +190,7 @@ const PlacementTracker: React.FC = () => {
                                                 onChange={(e) => handleSetDate(item.placement_id, 'first', e.target.value || null)}
                                             />
                                         </Table.Cell>
-                                        <Table.Cell display={{ base: "none", sm: "table-cell" }} color="slate.600" fontSize="sm">
+                                        <Table.Cell color="slate.600" fontSize="sm">
                                             <Input 
                                                 type="date" 
                                                 size="xs" 
@@ -207,7 +206,7 @@ const PlacementTracker: React.FC = () => {
                                                 onChange={(e) => handleSetDate(item.placement_id, 'second', e.target.value || null)}
                                             />
                                         </Table.Cell>
-                                        <Table.Cell display={{ base: "none", sm: "table-cell" }}>
+                                        <Table.Cell>
                                             <Badge
                                                 colorPalette={statusObj.color}
                                                 variant="subtle"

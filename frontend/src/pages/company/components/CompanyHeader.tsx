@@ -1,48 +1,32 @@
 
 import React from 'react';
-import { Box, Flex, HStack, Text, Avatar, Icon, Separator, VStack, IconButton } from '@chakra-ui/react';
-import { LuSearch, LuMenu } from 'react-icons/lu';
+import { Box, Flex, HStack, Text, Avatar, Icon, Separator, VStack } from '@chakra-ui/react';
+import { LuSearch } from 'react-icons/lu';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../../store';
 import ThemeToggle from '../../../components/common/ThemeToggle';
 import NotificationCenter from '../../../components/common/NotificationCenter';
 
-interface CompanyHeaderProps {
-    onMenuClick?: () => void;
-}
-
-const CompanyHeader: React.FC<CompanyHeaderProps> = ({ onMenuClick }) => {
+const CompanyHeader: React.FC = () => {
     const { user } = useSelector((state: RootState) => state.auth);
 
     return (
         <Box
             as="header"
             h="80px"
-            w={{ base: 'full', lg: 'auto' }}
-            px={{ base: 4, md: 8 }}
+            w="full"
+            px={8}
             display="flex"
             alignItems="center"
             className="glass-panel"
             mt={4}
             mx="auto"
-            borderRadius={{ base: '0', lg: '24px' }}
-            maxW={{ base: '100%', lg: 'calc(100% - 340px)' }}
-            ml={{ base: 0, lg: '300px' }}
+            borderRadius="24px"
+            maxW="calc(100% - 340px)"
+            ml="300px"
             zIndex={1100}
         >
             <Flex justify="space-between" align="center" w="full">
-                {/* Mobile hamburger */}
-                <IconButton
-                    aria-label="Open navigation"
-                    variant="ghost"
-                    color="white"
-                    display={{ base: 'flex', lg: 'none' }}
-                    onClick={onMenuClick}
-                    mr={2}
-                >
-                    <LuMenu size={24} />
-                </IconButton>
-
                 {/* Search Bar */}
                 <HStack
                     bg="gray.50"

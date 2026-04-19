@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
     Box, VStack, HStack, Text, Input, Button,
-    Table, Badge, IconButton, Spinner, Flex
+    Table, Badge, IconButton, Spinner
 } from '@chakra-ui/react';
 import { LuPlus, LuPower, LuPowerOff, LuMegaphone } from 'react-icons/lu';
 import apiClient from '../../../services/apiClient';
@@ -89,7 +89,7 @@ const BroadcastManager: React.FC = () => {
                         borderColor="whiteAlpha.200"
                         _focus={{ borderColor: 'purple.400' }}
                     />
-                    <Flex direction={{ base: "column", md: "row" }} gap={4} w="full">
+                    <HStack gap={4} w="full">
                         <Box flex={1}>
                             <Text fontSize="xs" color="slate.500" mb={1}>BROADCAST TYPE</Text>
                             <select
@@ -141,15 +141,14 @@ const BroadcastManager: React.FC = () => {
                             colorPalette="purple"
                             px={8}
                             h="40px"
-                            mt={{ base: 0, md: 5 }}
+                            mt={5}
                             onClick={handleCreate}
                             loading={isSaving}
                             gap={2}
-                            w={{ base: "full", md: "auto" }}
                         >
                             <LuPlus /> Broadcast
                         </Button>
-                    </Flex>
+                    </HStack>
                 </VStack>
             </Box>
 
@@ -159,9 +158,9 @@ const BroadcastManager: React.FC = () => {
                     <Table.Header bg="whiteAlpha.50">
                         <Table.Row>
                             <Table.ColumnHeader>Type</Table.ColumnHeader>
-                            <Table.ColumnHeader display={{ base: "none", sm: "table-cell" }}>Target</Table.ColumnHeader>
+                            <Table.ColumnHeader>Target</Table.ColumnHeader>
                             <Table.ColumnHeader>Message</Table.ColumnHeader>
-                            <Table.ColumnHeader display={{ base: "none", md: "table-cell" }}>Status</Table.ColumnHeader>
+                            <Table.ColumnHeader>Status</Table.ColumnHeader>
                             <Table.ColumnHeader textAlign="right">Actions</Table.ColumnHeader>
                         </Table.Row>
                     </Table.Header>
@@ -175,18 +174,18 @@ const BroadcastManager: React.FC = () => {
                         ) : broadcasts.map(b => (
                             <Table.Row key={b.id} _hover={{ bg: 'whiteAlpha.50' }}>
                                 <Table.Cell>
-                                    <Badge colorPalette={b.type === 'MAINTENANCE' ? 'orange' : b.type === 'UPDATE' ? 'orange' : 'gray'} size="xs">
+                                    <Badge colorPalette={b.type === 'MAINTENANCE' ? 'orange' : b.type === 'UPDATE' ? 'orange' : 'gray'}>
                                         {b.type}
                                     </Badge>
                                 </Table.Cell>
-                                <Table.Cell display={{ base: "none", sm: "table-cell" }}>
+                                <Table.Cell>
                                     <Text fontSize="xs" fontWeight="bold" color="gray.400">{b.target_system}</Text>
                                 </Table.Cell>
-                                <Table.Cell maxW={{ base: "150px", md: "400px" }}>
+                                <Table.Cell maxW="400px">
                                     <Text truncate fontSize="sm">{b.message}</Text>
                                 </Table.Cell>
-                                <Table.Cell display={{ base: "none", md: "table-cell" }}>
-                                    <Badge colorPalette={b.is_active ? 'green' : 'red'} variant="outline" size="xs">
+                                <Table.Cell>
+                                    <Badge colorPalette={b.is_active ? 'green' : 'red'} variant="outline">
                                         {b.is_active ? 'ACTIVE' : 'INACTIVE'}
                                     </Badge>
                                 </Table.Cell>

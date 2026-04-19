@@ -1,10 +1,8 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import {
+    Box, Heading, Text, VStack, HStack, Card, Badge,
     Button, Icon, Flex, Spinner,
-    Input, Textarea, SimpleGrid, IconButton, Table,
-    DialogRoot, DialogContent, DialogHeader, DialogTitle,
-    DialogBody, DialogFooter, DialogPositioner,
-    HStack, Box, Text, Badge, VStack,
+    Input, Textarea, SimpleGrid, IconButton, Table
 } from '@chakra-ui/react';
 import { Switch } from '../../components/ui/switch';
 import { useDispatch, useSelector } from 'react-redux';
@@ -208,12 +206,12 @@ const OpportunityManager: React.FC = () => {
 
     return (
         <Box animation="slideUp 0.5s ease-out">
-            <Flex direction={{ base: "column", md: "row" }} justify="space-between" align={{ base: "start", md: "center" }} gap={4} mb={10}>
+            <Flex justify="space-between" align="center" mb={10}>
                 <Box>
-                    <Text fontSize={{ base: "2xl", md: "4xl" }} fontWeight="extrabold" letterSpacing="tight" color="#F8FAFC">
+                    <Heading size="3xl" fontWeight="extrabold" letterSpacing="tight" className="glow-text-cyan" color="#F8FAFC">
                         Opportunities Nexus
-                    </Text>
-                    <Text color="var(--terminal-accent)" fontSize={{ base: "md", md: "lg" }} mt={2}>
+                    </Heading>
+                    <Text color="var(--terminal-accent)" fontSize="lg" mt={2}>
                         Synthesize and manage your organization's attachment requirements.
                     </Text>
                 </Box>
@@ -221,7 +219,6 @@ const OpportunityManager: React.FC = () => {
                     colorPalette="indigo"
                     size="lg"
                     rounded="xl"
-                    w={{ base: "full", md: "auto" }}
                     onClick={() => {
                         resetForm();
                         setIsOpen(true);
@@ -305,7 +302,7 @@ const OpportunityManager: React.FC = () => {
                             </select>
                         </Box>
                         <Box>
-                            <Text color="whiteAlpha.500" fontSize="10px" mb={1} textTransform="uppercase" letterSpacing="wider">Stipend</Text>
+                            <Text color="slate.600" fontSize="10px" mb={1} textTransform="uppercase" letterSpacing="wider">Stipend</Text>
                             <select
                                 style={{ width: '100%', padding: '8px', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'white', outline: 'none', fontSize: '13px' }}
                                 value={filterStipend}
@@ -317,7 +314,7 @@ const OpportunityManager: React.FC = () => {
                             </select>
                         </Box>
                         <Box>
-                            <Text color="whiteAlpha.500" fontSize="10px" mb={1} textTransform="uppercase" letterSpacing="wider">Student Fee</Text>
+                            <Text color="slate.600" fontSize="10px" mb={1} textTransform="uppercase" letterSpacing="wider">Student Fee</Text>
                             <select
                                 style={{ width: '100%', padding: '8px', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'white', outline: 'none', fontSize: '13px' }}
                                 value={filterStudentFee}
@@ -329,7 +326,7 @@ const OpportunityManager: React.FC = () => {
                             </select>
                         </Box>
                         <Box>
-                            <Text color="whiteAlpha.500" fontSize="10px" mb={1} textTransform="uppercase" letterSpacing="wider">Location</Text>
+                            <Text color="slate.600" fontSize="10px" mb={1} textTransform="uppercase" letterSpacing="wider">Location</Text>
                             <select
                                 style={{ width: '100%', padding: '8px', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'white', outline: 'none', fontSize: '13px' }}
                                 value={filterLocation}
@@ -342,7 +339,7 @@ const OpportunityManager: React.FC = () => {
                             </select>
                         </Box>
                         <Box>
-                            <Text color="whiteAlpha.500" fontSize="10px" mb={1} textTransform="uppercase" letterSpacing="wider">Status</Text>
+                            <Text color="slate.600" fontSize="10px" mb={1} textTransform="uppercase" letterSpacing="wider">Status</Text>
                             <select
                                 style={{ width: '100%', padding: '8px', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'white', outline: 'none', fontSize: '13px' }}
                                 value={filterStatus}
@@ -390,8 +387,8 @@ const OpportunityManager: React.FC = () => {
                         <Table.Header borderBottom="1px solid rgba(255,255,255,0.05)">
                             <Table.Row>
                                 <Table.ColumnHeader color="var(--terminal-accent)" fontSize="11px">DESIGNATION</Table.ColumnHeader>
-                                <Table.ColumnHeader color="var(--terminal-accent)" fontSize="11px" display={{ base: "none", md: "table-cell" }}>DETAILS</Table.ColumnHeader>
-                                <Table.ColumnHeader color="var(--terminal-accent)" fontSize="11px" display={{ base: "none", lg: "table-cell" }}>FINANCIALS</Table.ColumnHeader>
+                                <Table.ColumnHeader color="var(--terminal-accent)" fontSize="11px">DETAILS</Table.ColumnHeader>
+                                <Table.ColumnHeader color="var(--terminal-accent)" fontSize="11px">FINANCIALS</Table.ColumnHeader>
                                 <Table.ColumnHeader color="var(--terminal-accent)" fontSize="11px" textAlign="center">CAPACITY</Table.ColumnHeader>
                                 <Table.ColumnHeader color="var(--terminal-accent)" fontSize="11px" textAlign="right">ACTIONS</Table.ColumnHeader>
                             </Table.Row>
@@ -415,7 +412,7 @@ const OpportunityManager: React.FC = () => {
                                             </HStack>
                                         </VStack>
                                     </Table.Cell>
-                                    <Table.Cell color="whiteAlpha.700" display={{ base: "none", md: "table-cell" }}>
+                                    <Table.Cell color="whiteAlpha.700">
                                         <VStack align="start" gap={1}>
                                             <HStack>
                                                 <Icon as={LuMapPin} color="var(--terminal-accent)" />
@@ -427,7 +424,7 @@ const OpportunityManager: React.FC = () => {
                                             </HStack>
                                         </VStack>
                                     </Table.Cell>
-                                    <Table.Cell color="whiteAlpha.700" display={{ base: "none", lg: "table-cell" }}>
+                                    <Table.Cell color="whiteAlpha.700">
                                         <VStack align="start" gap={1}>
                                             <HStack>
                                                 <Icon as={LuCoins} color="yellow.400" />
@@ -537,233 +534,223 @@ const OpportunityManager: React.FC = () => {
                 </Box>
             )}
 
-            <DialogRoot open={isOpen} onOpenChange={(e) => setIsOpen(e.open)} size="xl">
-                <DialogBackdrop backdropFilter="blur(12px)" bg="rgba(0,0,0,0.6)" />
-                <DialogPositioner>
-                    <DialogContent
-                        bg="#020617"
-                        color="white"
-                        borderRadius="3xl"
-                        border="1px solid"
-                        borderColor="whiteAlpha.100"
-                        p={{ base: 4, md: 8 }}
-                        mx={{ base: 4, md: 0 }}
-                        boxShadow="0 25px 80px rgba(0,0,0,0.8)"
-                        maxH="90vh"
-                        overflowY="auto"
+            {/* Create Opportunity Modeless Overlay */}
+            {isOpen && (
+                <Box
+                    pos="fixed" top={0} left={0} w="full" h="full" bg="blackAlpha.800"
+                    display="flex" justifyContent="center" alignItems="center" zIndex={1000}
+                    backdropFilter="blur(10px)"
+                    p={4}
+                >
+                    <Box
+                        bg="var(--terminal-card)" p={8} borderRadius="3xl"
+                        w={{ base: "full", md: "800px" }} shadow="2xl" maxH="95vh"
+                        overflowY="auto" border="1px solid" borderColor="var(--terminal-border)"
                     >
-                        <DialogHeader>
-                            <DialogTitle fontSize="2xl" fontWeight="black" color="#F8FAFC">
-                                <HStack gap={3}>
+                        <Flex justify="space-between" align="center" mb={10}>
+                            <Box>
+                                <HStack>
                                     <Icon as={LuZap} color="var(--terminal-accent)" />
-                                    <Text>{isEditMode ? 'Update Requirement' : 'Post New Requirement'}</Text>
+                                    <Heading size="xl" color="#F8FAFC">{isEditMode ? 'Update Requirement' : 'Post New Requirement'}</Heading>
                                 </HStack>
-                            </DialogTitle>
-                            <Text color="whiteAlpha.600" mt={2} fontSize="sm">
-                                Define the specific parameters for your next student attachment.
-                            </Text>
-                        </DialogHeader>
-
-                        <DialogBody>
-                            <VStack gap={8} align="stretch" mt={6}>
-                                <Box>
-                                    <Text color="indigo.400" fontSize="xs" fontWeight="bold" mb={3} letterSpacing="widest">CORE CONFIGURATION</Text>
-                                    <SimpleGrid columns={{ base: 1, md: 2 }} gap={6}>
-                                        <Box>
-                                            <Text color="whiteAlpha.600" fontSize="xs" mb={2}>DESIGNATION</Text>
-                                            <Input
-                                                placeholder="e.g. Frontend Engineering Intern"
-                                                bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="#F8FAFC"
-                                                value={formData.title}
-                                                onChange={e => setFormData({ ...formData, title: e.target.value })}
-                                            />
-                                        </Box>
-                                        <Box>
-                                            <Text color="whiteAlpha.600" fontSize="xs" mb={2}>DEPARTMENT</Text>
-                                            <select
-                                                style={{ width: '100%', height: '40px', padding: '0 10px', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'white', outline: 'none' }}
-                                                value={formData.department_id}
-                                                onChange={e => setFormData({ ...formData, department_id: e.target.value })}
-                                            >
-                                                <option value="" style={{ background: '#1a202c' }}>Select Department</option>
-                                                {departments.map(dept => (
-                                                    <option key={dept.id} value={dept.id} style={{ background: '#1a202c' }}>
-                                                        {dept.name}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </Box>
-                                    </SimpleGrid>
-                                </Box>
-
-                                <Box>
-                                    <Text color="indigo.400" fontSize="xs" fontWeight="bold" mb={3} letterSpacing="widest">SPECIFICATIONS</Text>
-                                    <VStack gap={4} align="stretch">
-                                        <Box>
-                                            <Text color="whiteAlpha.600" fontSize="xs" mb={2}>ROLE DESCRIPTION</Text>
-                                            <Textarea
-                                                placeholder="Define responsibilities..."
-                                                rows={4} bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="#F8FAFC"
-                                                value={formData.description}
-                                                onChange={e => setFormData({ ...formData, description: e.target.value })}
-                                            />
-                                        </Box>
-                                        <Box>
-                                            <Text color="whiteAlpha.600" fontSize="xs" mb={2}>CORE REQUIREMENTS</Text>
-                                            <Textarea
-                                                placeholder="Defined skills/competencies..."
-                                                rows={2} bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="white"
-                                                value={formData.requirements}
-                                                onChange={e => setFormData({ ...formData, requirements: e.target.value })}
-                                                _placeholder={{ color: "whiteAlpha.400" }}
-                                            />
-                                        </Box>
-                                    </VStack>
-                                </Box>
-
-                                <Box>
-                                    <Text color="indigo.400" fontSize="xs" fontWeight="bold" mb={3} letterSpacing="widest">PARAMETERS</Text>
-                                    <SimpleGrid columns={{ base: 1, md: 2 }} gap={6}>
-                                        <Box>
-                                            <Text color="whiteAlpha.600" fontSize="xs" mb={2}>LOCATION</Text>
-                                            <select
-                                                style={{ width: '100%', height: '40px', padding: '0 10px', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'white', outline: 'none' }}
-                                                value={formData.location}
-                                                onChange={e => setFormData({ ...formData, location: e.target.value })}
-                                            >
-                                                <option value="" style={{ background: '#1a202c' }}>Select Location</option>
-                                                <option value="Nairobi" style={{ background: '#1a202c' }}>Nairobi</option>
-                                                <option value="Mombasa" style={{ background: '#1a202c' }}>Mombasa</option>
-                                                <option value="Kisumu" style={{ background: '#1a202c' }}>Kisumu</option>
-                                            </select>
-                                        </Box>
-                                        <Box>
-                                            <Text color="whiteAlpha.600" fontSize="xs" mb={2}>POSSIBLE START DATE</Text>
-                                            <Input
-                                                type="date" bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="white"
-                                                value={formData.start_date || ''}
-                                                onChange={e => setFormData({ ...formData, start_date: e.target.value })}
-                                            />
-                                        </Box>
-                                        <Box>
-                                            <Text color="whiteAlpha.600" fontSize="xs" mb={2}>DURATION</Text>
-                                            <Input
-                                                type="text" bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="white"
-                                                value="3 Months"
-                                                readOnly
-                                                disabled
-                                            />
-                                        </Box>
-                                        <Box>
-                                            <Text color="whiteAlpha.600" fontSize="xs" mb={2}>SLOTS AVAILABLE</Text>
-                                            <Input
-                                                type="number" bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="white"
-                                                value={formData.vacancies || ''}
-                                                onChange={e => setFormData({ ...formData, vacancies: parseInt(e.target.value) || 0 })}
-                                            />
-                                        </Box>
-                                        <Box>
-                                            <Text color="whiteAlpha.600" fontSize="xs" mb={2}>APPLICATION SCAN DEADLINE</Text>
-                                            <Input
-                                                type="date" bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="white"
-                                                value={formData.application_deadline}
-                                                onChange={e => setFormData({ ...formData, application_deadline: e.target.value })}
-                                            />
-                                        </Box>
-                                    </SimpleGrid>
-                                </Box>
-
-                                <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
-                                    <Box bg="whiteAlpha.50" p={6} borderRadius="2xl" border="1px solid" borderColor="var(--terminal-border)">
-                                        <Flex justify="space-between" align="center">
-                                            <Box>
-                                                <HStack>
-                                                    <Icon as={LuCoins} color="yellow.400" />
-                                                    <Text fontWeight="bold" color="#F8FAFC">Financial Stipend</Text>
-                                                </HStack>
-                                                <Text fontSize="xs" color="whiteAlpha.600" mt={1}>Provide a monthly allowance.</Text>
-                                            </Box>
-                                            <Switch
-                                                colorPalette="indigo"
-                                                checked={isPaid}
-                                                onCheckedChange={(details: { checked: boolean }) => setIsPaid(details.checked)}
-                                            />
-                                        </Flex>
-                                        {isPaid && (
-                                            <Box mt={4}>
-                                                <Text color="whiteAlpha.600" fontSize="xs" mb={2}>STIPEND AMOUNT (KES / Month)</Text>
-                                                <Input
-                                                    type="number" bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="white"
-                                                    value={formData.stipend_amount || ''}
-                                                    onChange={e => setFormData({ ...formData, stipend_amount: parseFloat(e.target.value) || 0 })}
-                                                />
-                                            </Box>
-                                        )}
-                                    </Box>
-
-                                    <Box bg="whiteAlpha.50" p={6} borderRadius="2xl" border="1px solid" borderColor="var(--terminal-border)">
-                                        <Flex justify="space-between" align="center">
-                                            <Box>
-                                                <HStack>
-                                                    <Icon as={LuShield} color="var(--terminal-accent)" />
-                                                    <Text fontWeight="bold" color="#F8FAFC">Student Fee</Text>
-                                                </HStack>
-                                                <Text fontSize="xs" color="whiteAlpha.600" mt={1}>Stipend/insurance fee.</Text>
-                                            </Box>
-                                            <Switch
-                                                colorPalette="indigo"
-                                                checked={formData.student_payment_required}
-                                                onCheckedChange={(details: { checked: boolean }) => setFormData({ ...formData, student_payment_required: details.checked })}
-                                            />
-                                        </Flex>
-                                        {formData.student_payment_required && (
-                                            <Box mt={4}>
-                                                <Text color="whiteAlpha.600" fontSize="xs" mb={2}>PAYMENT AMOUNT (KES)</Text>
-                                                <Input
-                                                    type="number" bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="#F8FAFC"
-                                                    value={formData.student_payment_amount || ''}
-                                                    onChange={e => setFormData({ ...formData, student_payment_amount: parseFloat(e.target.value) || 0 })}
-                                                />
-                                            </Box>
-                                        )}
-                                    </Box>
-                                </SimpleGrid>
-
-                                {createError && (
-                                    <Box p={3} bg="red.900" borderRadius="xl" border="1px solid" borderColor="red.700">
-                                        <Text color="red.300" fontSize="sm">{createError}</Text>
-                                    </Box>
-                                )}
-                            </VStack>
-                        </DialogBody>
-
-                        <DialogFooter gap={4} mt={8}>
-                            <Button variant="ghost" color="#F8FAFC" _hover={{ bg: "whiteAlpha.100" }} onClick={() => setIsOpen(false)}>Abort</Button>
-                            <Button
-                                flex={1} colorPalette="indigo" rounded="xl" h={12}
-                                onClick={handleCreateOrUpdate}
-                                disabled={!formData.title || !formData.description || !formData.location || !formData.department_id}
-                            >
-                                {isEditMode ? 'Save Updates' : 'Publish Posting'}
-                            </Button>
-                        </DialogFooter>
-                        <DialogCloseTrigger asChild>
+                                <Text color="whiteAlpha.600" mt={1}>Define the specific parameters for your next student attachment.</Text>
+                            </Box>
                             <IconButton
+                                aria-label="Close"
                                 variant="ghost"
-                                size="sm"
-                                position="absolute"
-                                top={4}
-                                right={4}
-                                color="whiteAlpha.400"
-                                _hover={{ color: "white" }}
+                                color="whiteAlpha.600"
+                                _hover={{ color: "white", bg: "whiteAlpha.100" }}
+                                rounded="full"
                                 onClick={() => setIsOpen(false)}
                             >
                                 <LuX />
                             </IconButton>
-                        </DialogCloseTrigger>
-                    </DialogContent>
-                </DialogPositioner>
-            </DialogRoot>
+                        </Flex>
+
+                        <VStack gap={8} align="stretch">
+                            <Box>
+                                <Text color="indigo.400" fontSize="xs" fontWeight="bold" mb={3} letterSpacing="widest">CORE CONFIGURATION</Text>
+                                <SimpleGrid columns={{ base: 1, md: 2 }} gap={6}>
+                                    <Box>
+                                        <Text color="whiteAlpha.600" fontSize="xs" mb={2}>DESIGNATION</Text>
+                                        <Input
+                                            placeholder="e.g. Frontend Engineering Intern"
+                                            bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="#F8FAFC"
+                                            value={formData.title}
+                                            onChange={e => setFormData({ ...formData, title: e.target.value })}
+                                        />
+                                    </Box>
+                                    <Box>
+                                        <Text color="whiteAlpha.600" fontSize="xs" mb={2}>DEPARTMENT</Text>
+                                        <select
+                                            style={{ width: '100%', padding: '10px', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'white', outline: 'none' }}
+                                            value={formData.department_id}
+                                            onChange={e => setFormData({ ...formData, department_id: e.target.value })}
+                                        >
+                                            <option value="" style={{ background: '#1a202c' }}>Select Department</option>
+                                            {departments.map(dept => (
+                                                <option key={dept.id} value={dept.id} style={{ background: '#1a202c' }}>
+                                                    {dept.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </Box>
+                                </SimpleGrid>
+                            </Box>
+
+                            <Box>
+                                <Text color="indigo.400" fontSize="xs" fontWeight="bold" mb={3} letterSpacing="widest">SPECIFICATIONS</Text>
+                                <VStack gap={4} align="stretch">
+                                    <Box>
+                                        <Text color="whiteAlpha.600" fontSize="xs" mb={2}>ROLE DESCRIPTION</Text>
+                                        <Textarea
+                                            placeholder="Define responsibilities..."
+                                            rows={4} bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="#F8FAFC"
+                                            value={formData.description}
+                                            onChange={e => setFormData({ ...formData, description: e.target.value })}
+                                        />
+                                    </Box>
+                                    <Box>
+                                        <Text color="whiteAlpha.600" fontSize="xs" mb={2}>CORE REQUIREMENTS</Text>
+                                        <Textarea
+                                            placeholder="Defined skills/competencies..."
+                                            rows={2} bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="white"
+                                            value={formData.requirements}
+                                            onChange={e => setFormData({ ...formData, requirements: e.target.value })}
+                                            _placeholder={{ color: "whiteAlpha.400" }}
+                                        />
+                                    </Box>
+                                </VStack>
+                            </Box>
+
+                            <Box>
+                                <Text color="indigo.400" fontSize="xs" fontWeight="bold" mb={3} letterSpacing="widest">PARAMETERS</Text>
+                                <SimpleGrid columns={{ base: 1, md: 2 }} gap={6}>
+                                    <Box>
+                                        <Text color="whiteAlpha.600" fontSize="xs" mb={2}>LOCATION</Text>
+                                        <select
+                                            style={{ width: '100%', padding: '10px', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'white', outline: 'none' }}
+                                            value={formData.location}
+                                            onChange={e => setFormData({ ...formData, location: e.target.value })}
+                                        >
+                                            <option value="" style={{ background: '#1a202c' }}>Select Location</option>
+                                            <option value="Nairobi" style={{ background: '#1a202c' }}>Nairobi</option>
+                                            <option value="Mombasa" style={{ background: '#1a202c' }}>Mombasa</option>
+                                            <option value="Kisumu" style={{ background: '#1a202c' }}>Kisumu</option>
+                                        </select>
+                                    </Box>
+                                    <Box>
+                                        <Text color="whiteAlpha.600" fontSize="xs" mb={2}>POSSIBLE START DATE</Text>
+                                        <Input
+                                            type="date" bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="white"
+                                            value={formData.start_date || ''}
+                                            onChange={e => setFormData({ ...formData, start_date: e.target.value })}
+                                        />
+                                    </Box>
+                                    <Box>
+                                        <Text color="whiteAlpha.600" fontSize="xs" mb={2}>DURATION</Text>
+                                        <Input
+                                            type="text" bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="white"
+                                            value="3 Months"
+                                            readOnly
+                                            cursor="not-allowed"
+                                        />
+                                    </Box>
+                                    <Box>
+                                        <Text color="whiteAlpha.600" fontSize="xs" mb={2}>SLOTS AVAILABLE</Text>
+                                        <Input
+                                            type="number" bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="white"
+                                            value={formData.vacancies || ''}
+                                            onChange={e => setFormData({ ...formData, vacancies: parseInt(e.target.value) || 0 })}
+                                        />
+                                    </Box>
+                                    <Box>
+                                        <Text color="whiteAlpha.600" fontSize="xs" mb={2}>APPLICATION SCAN DEADLINE</Text>
+                                        <Input
+                                            type="date" bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="white"
+                                            value={formData.application_deadline}
+                                            onChange={e => setFormData({ ...formData, application_deadline: e.target.value })}
+                                        />
+                                    </Box>
+                                </SimpleGrid>
+                            </Box>
+
+                             <SimpleGrid columns={{ base: 1, md: 2 }} gap={4}>
+                                <Box bg="whiteAlpha.50" p={6} borderRadius="2xl" border="1px solid" borderColor="var(--terminal-border)">
+                                    <Flex justify="space-between" align="center">
+                                        <Box>
+                                            <HStack>
+                                                <Icon as={LuCoins} color="yellow.400" />
+                                                <Text fontWeight="bold" color="#F8FAFC">Financial Stipend</Text>
+                                            </HStack>
+                                            <Text fontSize="xs" color="whiteAlpha.600" mt={1}>Provide a monthly allowance to the student.</Text>
+                                        </Box>
+                                        <Switch
+                                            colorPalette="indigo"
+                                            checked={isPaid}
+                                            onCheckedChange={(details: { checked: boolean }) => setIsPaid(details.checked)}
+                                        />
+                                    </Flex>
+                                    {isPaid && (
+                                        <Box mt={4}>
+                                            <Text color="whiteAlpha.600" fontSize="xs" mb={2}>STIPEND AMOUNT (KES / Month)</Text>
+                                            <Input
+                                                type="number" bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="white"
+                                                value={formData.stipend_amount || ''}
+                                                onChange={e => setFormData({ ...formData, stipend_amount: parseFloat(e.target.value) || 0 })}
+                                            />
+                                        </Box>
+                                    )}
+                                </Box>
+
+                                <Box bg="whiteAlpha.50" p={6} borderRadius="2xl" border="1px solid" borderColor="var(--terminal-border)">
+                                    <Flex justify="space-between" align="center">
+                                        <Box>
+                                            <HStack>
+                                                <Icon as={LuShield} color="var(--terminal-accent)" />
+                                                <Text fontWeight="bold" color="#F8FAFC">Student Fee</Text>
+                                            </HStack>
+                                            <Text fontSize="xs" color="whiteAlpha.600" mt={1}>Mandatory stipend/insurance fee for the student.</Text>
+                                        </Box>
+                                        <Switch
+                                            colorPalette="indigo"
+                                            checked={formData.student_payment_required}
+                                            onCheckedChange={(details: { checked: boolean }) => setFormData({ ...formData, student_payment_required: details.checked })}
+                                        />
+                                    </Flex>
+                                    {formData.student_payment_required && (
+                                        <Box mt={4}>
+                                            <Text color="whiteAlpha.600" fontSize="xs" mb={2}>PAYMENT AMOUNT (KES)</Text>
+                                            <Input
+                                                type="number" bg="whiteAlpha.50" borderColor="var(--terminal-border)" color="#F8FAFC"
+                                                value={formData.student_payment_amount || ''}
+                                                onChange={e => setFormData({ ...formData, student_payment_amount: parseFloat(e.target.value) || 0 })}
+                                            />
+                                        </Box>
+                                    )}
+                                </Box>
+                            </SimpleGrid>
+
+                            {createError && (
+                                <Box p={3} bg="red.900" borderRadius="xl" border="1px solid" borderColor="red.700">
+                                    <Text color="red.300" fontSize="sm">{createError}</Text>
+                                </Box>
+                            )}
+
+                            <Flex gap={4} pt={6}>
+                                <Button flex={1} variant="ghost" color="#F8FAFC" _hover={{ bg: "whiteAlpha.100" }} onClick={() => setIsOpen(false)}>Abort</Button>
+                                <Button
+                                    flex={2} colorPalette="indigo" rounded="xl" h={12}
+                                    onClick={handleCreateOrUpdate}
+                                    disabled={!formData.title || !formData.description || !formData.location || !formData.department_id}
+                                >
+                                    {isEditMode ? 'Save Updates' : 'Publish Posting'}
+                                </Button>
+                            </Flex>
+                        </VStack>
+                    </Box>
+                </Box>
+            )}
 
             <ConfirmModal
                 isOpen={isDeleteModalOpen}

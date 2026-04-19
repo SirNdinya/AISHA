@@ -6,12 +6,10 @@ import {
     DialogRoot, DialogContent, DialogHeader,
     DialogTitle, DialogBody, DialogFooter, DialogActionTrigger,
     DialogBackdrop, DialogPositioner,
-    Textarea, SimpleGrid,
-    AvatarRoot,
-    AvatarFallback,
-    Input,
+    Textarea, SimpleGrid
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
+import { AvatarRoot, AvatarFallback } from '@chakra-ui/react';
 import { toaster } from '../../components/ui/toaster';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchPlacements } from '../../store/companySlice';
@@ -104,17 +102,17 @@ const CompanyPlacementTracker: React.FC = () => {
 
     return (
         <Box animation="slideUp 0.5s ease-out">
-            <Flex direction={{ base: "column", md: "row" }} justify="space-between" align={{ base: "start", md: "center" }} gap={4} mb={10}>
+            <Flex justify="space-between" align="center" mb={10}>
                 <Box>
-                    <Heading size={{ base: "xl", md: "3xl" }} fontWeight="extrabold" letterSpacing="tight" color="#F8FAFC">
+                    <Heading size="3xl" fontWeight="extrabold" letterSpacing="tight" color="#F8FAFC">
                         Placement Management
                     </Heading>
-                    <Text color="var(--terminal-accent)" fontSize={{ base: "md", md: "lg" }} mt={2}>
+                    <Text color="var(--terminal-accent)" fontSize="lg" mt={2}>
                         Track active student attachments, verify logbooks, and record assessments.
                     </Text>
                 </Box>
-                <HStack gap={4} w={{ base: "full", md: "auto" }}>
-                    <Button variant="outline" borderColor="whiteAlpha.300" color="#F8FAFC" rounded="full" flex={{ base: 1, md: "initial" }}>
+                <HStack gap={4}>
+                    <Button variant="outline" borderColor="whiteAlpha.300" color="#F8FAFC" rounded="full">
                         <Icon as={LuFileText} mr={2} /> Export Report
                     </Button>
                 </HStack>
@@ -126,12 +124,12 @@ const CompanyPlacementTracker: React.FC = () => {
                     <Table.Header bg="var(--terminal-card)">
                         <Table.Row borderBottom="1px solid rgba(255,255,255,0.05)">
                             <Table.ColumnHeader color="var(--terminal-accent)">STUDENT / COURSE</Table.ColumnHeader>
-                            <Table.ColumnHeader color="var(--terminal-accent)" display={{ base: "none", md: "table-cell" }}>ASSIGNED ROLE</Table.ColumnHeader>
-                            <Table.ColumnHeader color="var(--terminal-accent)" display={{ base: "none", lg: "table-cell" }}>DEPARTMENT</Table.ColumnHeader>
-                            <Table.ColumnHeader color="var(--terminal-accent)" display={{ base: "none", xl: "table-cell" }}>AI SCORE</Table.ColumnHeader>
-                            <Table.ColumnHeader color="var(--terminal-accent)" display={{ base: "none", lg: "table-cell" }}>PERIOD</Table.ColumnHeader>
-                            <Table.ColumnHeader color="var(--terminal-accent)" w="130px" display={{ base: "none", md: "table-cell" }}>1ST ASSESSMENT</Table.ColumnHeader>
-                            <Table.ColumnHeader color="var(--terminal-accent)" w="130px" display={{ base: "none", md: "table-cell" }}>2ND ASSESSMENT</Table.ColumnHeader>
+                            <Table.ColumnHeader color="var(--terminal-accent)">ASSIGNED ROLE</Table.ColumnHeader>
+                            <Table.ColumnHeader color="var(--terminal-accent)">DEPARTMENT</Table.ColumnHeader>
+                            <Table.ColumnHeader color="var(--terminal-accent)">AI SCORE</Table.ColumnHeader>
+                            <Table.ColumnHeader color="var(--terminal-accent)">PERIOD</Table.ColumnHeader>
+                            <Table.ColumnHeader color="var(--terminal-accent)" w="130px">1ST ASSESSMENT</Table.ColumnHeader>
+                            <Table.ColumnHeader color="var(--terminal-accent)" w="130px">2ND ASSESSMENT</Table.ColumnHeader>
                             <Table.ColumnHeader color="var(--terminal-accent)">STATUS</Table.ColumnHeader>
                             <Table.ColumnHeader color="var(--terminal-accent)" textAlign="right">ACTIONS</Table.ColumnHeader>
                         </Table.Row>
@@ -150,13 +148,13 @@ const CompanyPlacementTracker: React.FC = () => {
                                         </Box>
                                     </HStack>
                                 </Table.Cell>
-                                <Table.Cell display={{ base: "none", md: "table-cell" }}>
+                                <Table.Cell>
                                     <Text fontWeight="medium" color="whiteAlpha.900">{p.job_title}</Text>
                                 </Table.Cell>
-                                <Table.Cell display={{ base: "none", lg: "table-cell" }}>
+                                <Table.Cell>
                                     <Text fontWeight="medium" color="whiteAlpha.900">{p.department_name || 'General'}</Text>
                                 </Table.Cell>
-                                <Table.Cell display={{ base: "none", xl: "table-cell" }}>
+                                <Table.Cell>
                                     {p.match_score ? (
                                         <VStack align="flex-start" gap={1}>
                                             <Text fontWeight="black" fontSize="lg" color="indigo.400" letterSpacing="tighter">{p.match_score}%</Text>
@@ -165,16 +163,16 @@ const CompanyPlacementTracker: React.FC = () => {
                                         <Text color="var(--terminal-accent)" fontSize="xs">N/A</Text>
                                     )}
                                 </Table.Cell>
-                                <Table.Cell display={{ base: "none", lg: "table-cell" }}>
+                                <Table.Cell>
                                     <HStack gap={2} color="var(--terminal-accent)" fontSize="sm">
                                         <Icon as={LuCalendar} />
                                         <Text>{new Date(p.start_date).toLocaleDateString()} - {new Date(p.end_date).toLocaleDateString()}</Text>
                                     </HStack>
                                 </Table.Cell>
-                                <Table.Cell color="var(--terminal-accent)" fontSize="xs" display={{ base: "none", md: "table-cell" }}>
+                                <Table.Cell color="var(--terminal-accent)" fontSize="xs">
                                     <Text>{p.first_assessment_date ? new Date(p.first_assessment_date).toLocaleDateString() : 'Not Set'}</Text>
                                 </Table.Cell>
-                                <Table.Cell color="var(--terminal-accent)" fontSize="xs" display={{ base: "none", md: "table-cell" }}>
+                                <Table.Cell color="var(--terminal-accent)" fontSize="xs">
                                     <Text>{p.second_assessment_date ? new Date(p.second_assessment_date).toLocaleDateString() : 'Not Set'}</Text>
                                 </Table.Cell>
                                 <Table.Cell>
@@ -221,7 +219,7 @@ const CompanyPlacementTracker: React.FC = () => {
                 onOpenChange={(e) => !e.open && setSelectedPlacement(null)}
                 size="md"
             >
-                <DialogBackdrop backdropFilter="blur(12px)" bg="rgba(0,0,0,0.6)" />
+                <DialogBackdrop />
                 <DialogPositioner>
                     <DialogContent className="glass-panel" color="#F8FAFC" borderRadius="2xl" bg="transparent" border="1px solid" borderColor="whiteAlpha.200">
                         <DialogHeader>

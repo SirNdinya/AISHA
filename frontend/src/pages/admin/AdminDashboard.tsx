@@ -26,26 +26,13 @@ const AdminDashboard: React.FC = () => {
     };
 
     return (
-        <Box minH="100vh" p={{ base: 4, md: 8 }}>
+        <Box minH="100vh" p={8}>
             <Toaster />
-            <Heading mb={2} color="#F8FAFC" size={{ base: "xl", md: "2xl" }}>Admin Portal</Heading>
-            <Text color="var(--terminal-accent)" mb={8} fontSize={{ base: "sm", md: "md" }}>System Oversight & Verification</Text>
+            <Heading mb={2} color="#F8FAFC">Admin Portal</Heading>
+            <Text color="var(--terminal-accent)" mb={8}>System Oversight & Verification</Text>
 
             <Tabs.Root defaultValue="verification" variant="enclosed" colorPalette="brand">
-                <Tabs.List
-                    bg="rgba(255, 255, 255, 0.05)"
-                    p={1}
-                    borderRadius="xl"
-                    border="1px solid"
-                    borderColor="var(--terminal-border)"
-                    mb={6}
-                    overflowX="auto"
-                    whiteSpace="nowrap"
-                    css={{
-                        "&::-webkit-scrollbar": { display: "none" },
-                        "scrollbarWidth": "none"
-                    }}
-                >
+                <Tabs.List bg="rgba(255, 255, 255, 0.05)" p={1} borderRadius="xl" border="1px solid" borderColor="var(--terminal-border)" mb={6}>
                     <Tabs.Trigger value="verification" gap={2}>
                         <LuShieldCheck size={18} />
                         Verification
@@ -83,19 +70,19 @@ const AdminDashboard: React.FC = () => {
                             <Table.Header>
                                 <Table.Row>
                                     <Table.ColumnHeader>Email</Table.ColumnHeader>
-                                    <Table.ColumnHeader display={{ base: "none", md: "table-cell" }}>Role</Table.ColumnHeader>
-                                    <Table.ColumnHeader display={{ base: "none", lg: "table-cell" }}>Registered</Table.ColumnHeader>
+                                    <Table.ColumnHeader>Role</Table.ColumnHeader>
+                                    <Table.ColumnHeader>Registered</Table.ColumnHeader>
                                     <Table.ColumnHeader textAlign="right">Action</Table.ColumnHeader>
                                 </Table.Row>
                             </Table.Header>
                             <Table.Body>
                                 {users.map(user => (
                                     <Table.Row key={user.id}>
-                                        <Table.Cell fontWeight="bold" fontSize="sm">{user.email}</Table.Cell>
-                                        <Table.Cell display={{ base: "none", md: "table-cell" }}>
+                                        <Table.Cell fontWeight="bold">{user.email}</Table.Cell>
+                                        <Table.Cell>
                                             <Badge colorPalette="brand">{user.role}</Badge>
                                         </Table.Cell>
-                                        <Table.Cell display={{ base: "none", lg: "table-cell" }}>{new Date(user.created_at).toLocaleDateString()}</Table.Cell>
+                                        <Table.Cell>{new Date(user.created_at).toLocaleDateString()}</Table.Cell>
                                         <Table.Cell textAlign="right">
                                             <Button size="sm" colorPalette="green" onClick={() => handleVerify(user.id)}>
                                                 Verify

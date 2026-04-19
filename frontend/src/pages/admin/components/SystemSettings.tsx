@@ -76,8 +76,8 @@ const SystemSettings: React.FC = () => {
                 <Table.Root variant="line">
                     <Table.Header>
                         <Table.Row>
-                            <Table.ColumnHeader>Configuration</Table.ColumnHeader>
-                            <Table.ColumnHeader display={{ base: "none", md: "table-cell" }}>Description</Table.ColumnHeader>
+                            <Table.ColumnHeader>Setting Configuration</Table.ColumnHeader>
+                            <Table.ColumnHeader>Description</Table.ColumnHeader>
                             <Table.ColumnHeader textAlign="right">State</Table.ColumnHeader>
                         </Table.Row>
                     </Table.Header>
@@ -89,12 +89,12 @@ const SystemSettings: React.FC = () => {
                                         <Text fontWeight="bold" fontSize="sm" color="purple.300">
                                             {setting.key.replace(/_/g, ' ')}
                                         </Text>
-                                        <Text fontSize="10px" color="slate.500" display={{ base: "none", sm: "block" }}>
+                                        <Text fontSize="10px" color="slate.500">
                                             Last Modified: {new Date(setting.updated_at).toLocaleString()}
                                         </Text>
                                     </VStack>
                                 </Table.Cell>
-                                <Table.Cell display={{ base: "none", md: "table-cell" }}>
+                                <Table.Cell>
                                     <Text fontSize="xs" color="gray.400">{setting.description}</Text>
                                 </Table.Cell>
                                 <Table.Cell textAlign="right">
