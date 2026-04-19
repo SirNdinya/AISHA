@@ -98,26 +98,28 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                     borderRadius="2xl"
                     overflow="hidden"
                 >
-                    <DialogHeader bg="rgba(0,0,0,0.3)" borderBottom="1px solid" borderColor="rgba(255, 255, 255, 0.1)" p={6}>
+                    <DialogHeader bg="rgba(0,0,0,0.3)" borderBottom="1px solid" borderColor="rgba(255, 255, 255, 0.1)" p={{ base: 3, md: 6 }}>
                         <HStack justify="space-between" w="full">
-                            <HStack gap={4}>
+                            <HStack gap={{ base: 2, md: 4 }}>
                                 <Flex 
                                     bg="brand.500" 
-                                    p={2.5} 
-                                    borderRadius="xl" 
+                                    p={{ base: 1.5, md: 2.5 }} 
+                                    borderRadius="lg" 
                                     boxShadow="0 0 20px rgba(0, 136, 204, 0.4)"
                                 >
-                                    <Icon as={LuBookOpen} color="white" boxSize={5} />
+                                    <Icon as={LuBookOpen} color="white" boxSize={{ base: 4, md: 5 }} />
                                 </Flex>
                                 <VStack align="start" gap={0}>
-                                    <DialogTitle fontSize={{ base: "md", md: "xl" }} color="white" fontWeight="black" letterSpacing="widest" textTransform="uppercase">
-                                        Academic Transcript
+                                    <DialogTitle fontSize={{ base: "xs", md: "xl" }} color="white" fontWeight="black" letterSpacing="widest" textTransform="uppercase">
+                                        Transcript
                                     </DialogTitle>
                                 </VStack>
                             </HStack>
-                            <DialogActionTrigger asChild>
-                                <Button variant="ghost" color="whiteAlpha.400" _hover={{ color: "brand.400", bg: "whiteAlpha.50" }} fontSize="xs" fontWeight="black">CLOSE</Button>
-                            </DialogActionTrigger>
+                            <DialogCloseTrigger asChild>
+                                <Button variant="ghost" size="xs" color="whiteAlpha.600" onClick={onClose}>
+                                    CLOSE
+                                </Button>
+                            </DialogCloseTrigger>
                         </HStack>
                     </DialogHeader>
 
@@ -243,31 +245,31 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                                                 <TableRoot size="sm" variant="line">
                                                     <TableHeader bg="rgba(255,255,255,0.05)">
                                                         <TableRow borderBottom="1px solid" borderColor="rgba(255,255,255,0.1)">
-                                                            <TableColumnHeader color="indigo.400" py={4} fontWeight="black" fontSize="10px">CODE</TableColumnHeader>
-                                                            <TableColumnHeader color="indigo.400" py={4} fontWeight="black" fontSize="10px">UNIT NAME</TableColumnHeader>
-                                                            <TableColumnHeader color="indigo.400" py={4} fontWeight="black" fontSize="10px" textAlign="center">SCORE</TableColumnHeader>
-                                                            <TableColumnHeader color="indigo.400" py={4} fontWeight="black" fontSize="10px" textAlign="center">GRADE</TableColumnHeader>
+                                                            <TableColumnHeader color="indigo.400" py={2} fontWeight="black" fontSize="9px" w="50px">CODE</TableColumnHeader>
+                                                            <TableColumnHeader color="indigo.400" py={2} fontWeight="black" fontSize="9px">UNIT NAME</TableColumnHeader>
+                                                            <TableColumnHeader color="indigo.400" py={2} fontWeight="black" fontSize="9px" textAlign="center" display={{ base: "none", sm: "table-cell" }}>SCORE</TableColumnHeader>
+                                                            <TableColumnHeader color="indigo.400" py={2} fontWeight="black" fontSize="9px" textAlign="center" w="60px">GRADE</TableColumnHeader>
                                                         </TableRow>
                                                     </TableHeader>
                                                     <TableBody>
                                                         {groupedRecords[period].map((record: any, idx: number) => (
                                                             <TableRow key={idx} _hover={{ bg: "whiteAlpha.50" }} transition="all 0.2s" borderBottom="1px solid" borderColor="whiteAlpha.05">
-                                                                <TableCell color="brand.400" fontWeight="black" fontSize="xs" whiteSpace="nowrap">{record.unit_code}</TableCell>
-                                                                <TableCell color="white" fontSize={{ base: "xs", md: "sm" }} fontWeight="bold" minW={{ base: "120px", md: "auto" }}>
+                                                                <TableCell color="brand.400" fontWeight="black" fontSize="9px" whiteSpace="nowrap" py={2}>{record.unit_code}</TableCell>
+                                                                <TableCell color="white" fontSize={{ base: "10px", md: "sm" }} fontWeight="bold" py={2}>
                                                                     {record.unit_name}
                                                                 </TableCell>
-                                                                <TableCell textAlign="center" color="white" fontWeight="black">
+                                                                <TableCell textAlign="center" color="white" fontWeight="black" display={{ base: "none", sm: "table-cell" }} py={2}>
                                                                     {record.mark !== null && record.mark !== undefined ? `${record.mark}%` : '--'}
                                                                 </TableCell>
-                                                                <TableCell textAlign="center">
+                                                                <TableCell textAlign="center" py={1}>
                                                                     <Badge 
                                                                         bg={record.grade?.startsWith('A') ? "rgba(72, 187, 120, 0.2)" : (record.grade === 'Incomplete' || record.grade === 'I') ? "rgba(239, 68, 68, 0.2)" : "rgba(237, 137, 54, 0.2)"} 
                                                                         color={record.grade?.startsWith('A') ? "green.400" : (record.grade === 'Incomplete' || record.grade === 'I') ? "red.400" : "orange.400"}
                                                                         border="1px solid"
                                                                         borderColor={record.grade?.startsWith('A') ? "green.400" : (record.grade === 'Incomplete' || record.grade === 'I') ? "red.400" : "orange.400"}
-                                                                        borderRadius="md" px={2}
-                                                                        fontSize="10px"
-                                                                        maxW="80px"
+                                                                        borderRadius="md" px={1}
+                                                                        fontSize="9px"
+                                                                        maxW="50px"
                                                                         overflow="hidden"
                                                                         textOverflow="ellipsis"
                                                                     >
@@ -297,26 +299,32 @@ const TranscriptModal: React.FC<TranscriptModalProps> = ({ isOpen, onClose }) =>
                         )}
                     </DialogBody>
 
-                    <DialogFooter bg="rgba(0,0,0,0.2)" borderTop="1px solid" borderColor="rgba(255, 255, 255, 0.05)" p={6}>
-                        <HStack justify="space-between" w="full">
-                            <Button variant="ghost" onClick={fetchData} size="sm" color="brand.400" fontWeight="black" letterSpacing="widest" _hover={{ bg: "brand.900" }}>
-                                <Icon as={LuZap} mr={2} /> REFRESH PORTAL
+                    <DialogFooter bg="rgba(0,0,0,0.2)" borderTop="1px solid" borderColor="rgba(255, 255, 255, 0.05)" p={{ base: 4, md: 6 }}>
+                        <Flex 
+                            direction={{ base: "column", sm: "row" }} 
+                            gap={4} 
+                            w="full" 
+                            align="center" 
+                            justify="space-between"
+                        >
+                            <Button variant="ghost" onClick={fetchData} size="sm" color="brand.400" fontWeight="black" letterSpacing="widest" _hover={{ bg: "brand.900" }} w={{ base: "full", sm: "auto" }}>
+                                <Icon as={LuZap} mr={2} /> REFRESH
                             </Button>
-                            <HStack gap={4}>
-                                <Button 
-                                    bg="brand.500" 
-                                    _hover={{ bg: "brand.600", transform: "translateY(-1px)" }}
-                                    size="md" 
-                                    onClick={handleDownload} 
-                                    disabled={!data || data.records?.length === 0} 
-                                    borderRadius="xl" px={8} 
-                                    fontWeight="black"
-                                    boxShadow="0 4px 15px rgba(0, 136, 204, 0.3)"
-                                >
-                                    <LuDownload /> GENERATE PDF REPORT
-                                </Button>
-                            </HStack>
-                        </HStack>
+                            <Button 
+                                bg="brand.500" 
+                                _hover={{ bg: "brand.600", transform: "translateY(-1px)" }}
+                                size={{ base: "sm", md: "md" }} 
+                                onClick={handleDownload} 
+                                disabled={!data || data.records?.length === 0} 
+                                borderRadius="xl" 
+                                px={{ base: 4, md: 8 }} 
+                                fontWeight="black"
+                                w={{ base: "full", sm: "auto" }}
+                                boxShadow="0 4px 15px rgba(0, 136, 204, 0.3)"
+                            >
+                                <LuDownload /> GENERATE PDF
+                            </Button>
+                        </Flex>
                     </DialogFooter>
                 </DialogContent>
             </DialogPositioner>

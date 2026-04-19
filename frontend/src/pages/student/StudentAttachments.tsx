@@ -463,13 +463,26 @@ const RedesignedPlacement: React.FC = () => {
                             {/* Requirements Tags */}
                             <Box w="full">
                                 <Text fontSize="10px" fontWeight="black" letterSpacing="wider" color="var(--terminal-accent)" mb={2}>REQUIREMENTS</Text>
-                                <HStack wrap="wrap" gap={2}>
+                                <Flex wrap="wrap" gap={2}>
                                     {(typeof targetApp.requirements === 'string' ? targetApp.requirements.split(',') : (targetApp.requirements || ["Technical Proficiency", "Collaboration", "System Design"])).map((req: string, i: number) => (
-                                        <Badge key={i} size="sm" variant="solid" colorPalette="brand" textTransform="none" borderRadius="lg" px={2.5} py={0.5} fontWeight="black">
+                                        <Badge 
+                                            key={i} 
+                                            size="sm" 
+                                            variant="solid" 
+                                            colorPalette="brand" 
+                                            textTransform="none" 
+                                            borderRadius="lg" 
+                                            px={2.5} 
+                                            py={0.5} 
+                                            fontWeight="black"
+                                            whiteSpace="normal"
+                                            textAlign="left"
+                                            maxW="full"
+                                        >
                                             {req.trim()}
                                         </Badge>
                                     ))}
-                                </HStack>
+                                </Flex>
                             </Box>
                         </VStack>
                     </MotionBox>

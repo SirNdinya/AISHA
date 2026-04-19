@@ -146,7 +146,7 @@ const StudentLayout: React.FC = () => {
                     overflow="hidden"
                 >
                     <StudentHeader onMenuClick={() => setIsMobileMenuOpen(true)} />
-                    <Box as="main" p={{ base: 2, lg: 4 }} pt={0} flex={1} overflowY="auto" className="custom-scrollbar">
+                    <Box as="main" p={{ base: 1, sm: 2, lg: 4 }} pt={0} flex={1} overflowY="auto" className="custom-scrollbar">
                         <Outlet />
                     </Box>
                 </Box>

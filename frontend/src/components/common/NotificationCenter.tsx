@@ -332,11 +332,11 @@ const NotificationCenter: React.FC = () => {
                 >
                     <Box
                         bg="#0d1117"
-                        p={8}
-                        borderRadius="3xl"
-                        maxW="550px"
+                        p={{ base: 4, md: 8 }}
+                        borderRadius={{ base: "2xl", md: "3xl" }}
+                        maxW={{ base: "95vw", md: "550px" }}
                         w="full"
-                        mx={4}
+                        mx="auto"
                         border="1px solid rgba(255,255,255,0.1)"
                         onClick={(e) => e.stopPropagation()}
                         animation="slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1)"
