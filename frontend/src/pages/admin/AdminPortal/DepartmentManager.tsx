@@ -14,8 +14,16 @@ import {
     IconButton,
     Spinner,
     HStack,
-    useDisclosure,
     Separator,
+    DialogRoot,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogBody,
+    DialogFooter,
+    DialogPositioner,
+    DialogCloseTrigger,
+    DialogBackdrop,
 } from '@chakra-ui/react';
 import {
     Plus,
@@ -150,10 +158,10 @@ const DepartmentManager: React.FC = () => {
 
     return (
         <Box animation="fadeIn 0.5s ease-out">
-            <Flex justify="space-between" align="center" mb={10}>
+            <Flex direction={{ base: "column", md: "row" }} justify="space-between" align={{ base: "start", md: "center" }} gap={4} mb={10}>
                 <Box>
-                    <Heading size="xl" fontWeight="black" letterSpacing="tight" color="#F8FAFC">Departmental Infrastructure</Heading>
-                    <Text color="var(--terminal-accent)" fontSize="md" fontWeight="bold">Manage administrative authority for pre-existing institutional nodes</Text>
+                    <Heading size={{ base: "lg", md: "xl" }} fontWeight="black" letterSpacing="tight" color="#F8FAFC">Departmental Infrastructure</Heading>
+                    <Text color="var(--terminal-accent)" fontSize={{ base: "sm", md: "md" }} fontWeight="bold">Manage administrative authority for pre-existing institutional nodes</Text>
                 </Box>
                 <Button
                     bg="var(--terminal-accent)"
@@ -161,6 +169,7 @@ const DepartmentManager: React.FC = () => {
                     borderRadius="xl"
                     px={6}
                     h={12}
+                    w={{ base: "full", md: "auto" }}
                     _hover={{ opacity: 0.9, transform: "translateY(-2px)" }}
                     transition="all 0.2s"
                     onClick={() => {
@@ -212,14 +221,14 @@ const DepartmentManager: React.FC = () => {
 
             {/* List Table */}
             <Box className="glass-card" bg="var(--terminal-card)" border="1px solid" borderColor="var(--terminal-border)" p={8} borderRadius="30px">
-                <Flex justify="space-between" align="center" mb={8}>
+                <Flex direction={{ base: "column", md: "row" }} justify="space-between" align={{ base: "start", md: "center" }} gap={4} mb={8}>
                     <HStack gap={4}>
                         <Heading size="md" color="#F8FAFC">Institutional Master List</Heading>
-                        <Badge variant="subtle" colorPalette="cyan" px={3} borderRadius="full" bg="whiteAlpha.100" color="var(--terminal-accent)">
+                        <Badge variant="subtle" colorPalette="cyan" px={3} borderRadius="full" bg="whiteAlpha.100" color="var(--terminal-accent)" display={{ base: "none", sm: "inline-flex" }}>
                             EXISTING RECORDS
                         </Badge>
                     </HStack>
-                    <Box position="relative" w="300px">
+                    <Box position="relative" w={{ base: "full", md: "300px" }}>
                         <Input
                             placeholder="Find department..."
                             bg="whiteAlpha.50"
@@ -241,9 +250,9 @@ const DepartmentManager: React.FC = () => {
                     <Table.Header borderBottom="1px solid" borderColor="gray.100">
                         <Table.Row>
                             <Table.ColumnHeader color="var(--terminal-accent)">DEPARTMENT</Table.ColumnHeader>
-                            <Table.ColumnHeader color="var(--terminal-accent)">STUDENT DATA</Table.ColumnHeader>
-                            <Table.ColumnHeader color="var(--terminal-accent)">ADMINISTRATIVE ACCOUNT</Table.ColumnHeader>
-                            <Table.ColumnHeader color="var(--terminal-accent)">PORTAL STATUS</Table.ColumnHeader>
+                            <Table.ColumnHeader color="var(--terminal-accent)" display={{ base: "none", md: "table-cell" }}>STUDENT DATA</Table.ColumnHeader>
+                            <Table.ColumnHeader color="var(--terminal-accent)" display={{ base: "none", lg: "table-cell" }}>ADMINISTRATIVE ACCOUNT</Table.ColumnHeader>
+                            <Table.ColumnHeader color="var(--terminal-accent)" display={{ base: "none", sm: "table-cell" }}>PORTAL STATUS</Table.ColumnHeader>
                             <Table.ColumnHeader color="var(--terminal-accent)" textAlign="right">ACTIONS</Table.ColumnHeader>
                         </Table.Row>
                     </Table.Header>
@@ -266,15 +275,15 @@ const DepartmentManager: React.FC = () => {
                                             </VStack>
                                         </HStack>
                                     </Table.Cell>
-                                    <Table.Cell>
+                                    <Table.Cell display={{ base: "none", md: "table-cell" }}>
                                         <VStack align="start" gap={1}>
                                             <Badge colorPalette="gray" variant="subtle">
                                                 {dept.student_count} / {dept.total_institutional_students ?? '?'} Students
                                             </Badge>
-                                            <Badge colorPalette="teal" variant="subtle">{dept.placed_count} Placed</Badge>
+                                            <Badge colorPalette="teal" variant="subtle" display={{ base: "none", lg: "inline-flex" }}>{dept.placed_count} Placed</Badge>
                                         </VStack>
                                     </Table.Cell>
-                                    <Table.Cell>
+                                    <Table.Cell display={{ base: "none", lg: "table-cell" }}>
                                         {dept.user_id ? (
                                             <VStack align="start" gap={1}>
                                                 <HStack gap={2}>
@@ -290,7 +299,7 @@ const DepartmentManager: React.FC = () => {
                                             <Text fontSize="xs" color="whiteAlpha.500" fontStyle="italic">No Admin Assigned</Text>
                                         )}
                                     </Table.Cell>
-                                    <Table.Cell>
+                                    <Table.Cell display={{ base: "none", sm: "table-cell" }}>
                                         {dept.user_id && (
                                             <HStack gap={4}>
                                                 <Switch
@@ -303,6 +312,7 @@ const DepartmentManager: React.FC = () => {
                                                     variant="outline"
                                                     borderRadius="full"
                                                     px={3}
+                                                    display={{ base: "none", lg: "inline-flex" }}
                                                 >
                                                     {dept.is_active ? "ACTIVE" : "DISABLED"}
                                                 </Badge>
@@ -330,167 +340,174 @@ const DepartmentManager: React.FC = () => {
                 </Table.Root>
             </Box>
 
-            {/* Assignment Modal - Fixed centered floating popup */}
-            {isModalOpen && (
-                <Box
-                    position="fixed"
-                    inset={0}
-                    zIndex={1000}
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    bg="blackAlpha.700"
-                    backdropFilter="blur(8px)"
-                    onClick={(e) => { if (e.target === e.currentTarget) setIsModalOpen(false); }}
-                >
-                    <Box
-                        bg="var(--terminal-bg)"
-                        maxW="500px"
-                        w="90%"
-                        p={10}
-                        borderRadius="40px"
+            <DialogRoot open={isModalOpen} onOpenChange={(e) => setIsModalOpen(e.open)} size="md">
+                <DialogBackdrop backdropFilter="blur(12px)" bg="rgba(0,0,0,0.6)" />
+                <DialogPositioner>
+                    <DialogContent
+                        bg="#020617"
+                        color="white"
+                        borderRadius="3xl"
                         border="1px solid"
-                        borderColor="var(--terminal-border)"
+                        borderColor="whiteAlpha.100"
+                        p={{ base: 4, md: 8 }}
+                        mx={{ base: 4, md: 0 }}
                         boxShadow="0 25px 80px rgba(0,0,0,0.8)"
-                        onClick={(e) => e.stopPropagation()}
                     >
-                        <VStack gap={6} align="stretch">
-                            <Box>
-                                <Heading size="lg" mb={2} color="#F8FAFC">Authorize Administrator</Heading>
-                                <Text color="var(--terminal-accent)" fontSize="sm">Linking a new administrator to <b>{selectedDept?.name || 'a department'}</b>.</Text>
-                            </Box>
+                        <DialogHeader>
+                            <DialogTitle fontSize="2xl" fontWeight="black" color="#F8FAFC">
+                                Authorize Administrator
+                            </DialogTitle>
+                            <Text color="var(--terminal-accent)" fontSize="sm" mt={2}>
+                                Linking a new administrator to <b>{selectedDept?.name || 'a department'}</b>.
+                            </Text>
+                        </DialogHeader>
 
-                            <Separator opacity={0.1} />
-
-                            {isGlobalModal && (
-                                <Box>
-                                    <Text fontSize="xs" color="slate.600" mb={2} fontWeight="bold" letterSpacing="widest">SELECT DEPARTMENT</Text>
-                                    <Box position="relative">
-                                        <select
-                                            style={{
-                                                width: '100%',
-                                                height: '56px',
-                                                backgroundColor: 'var(--terminal-card)',
-                                                border: '1px solid var(--terminal-border)',
-                                                borderRadius: '16px',
-                                                color: '#F8FAFC',
-                                                padding: '0 48px 0 16px',
-                                                outline: 'none',
-                                                appearance: 'none',
-                                                cursor: 'pointer'
-                                            }}
-                                            value={selectedDept?.id || ''}
-                                            onChange={(e) => {
-                                                const dept = departments.find(d => d.id === e.target.value);
-                                                setSelectedDept(dept || null);
-                                                if (dept && dept.code) {
-                                                    const defaultEmail = generateEmail(dept.code);
-                                                    setFormData(prev => ({ ...prev, email: defaultEmail }));
-                                                }
-                                            }}
-                                        >
-                                            <option value="" disabled style={{ color: '#000' }}>Choose a department node...</option>
-                                            {departments.map(d => (
-                                                <option 
-                                                    key={d.id} 
-                                                    value={d.id} 
-                                                    style={{ color: d.user_id ? '#999' : '#000' }}
-                                                    disabled={!!d.user_id}
-                                                >
-                                                    {d.name} {d.user_id ? '(ADMIN ASSIGNED)' : '(AVAILABLE)'}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        <Icon as={Building2} position="absolute" right={4} top="50%" transform="translateY(-50%)" color="whiteAlpha.400" pointerEvents="none" />
+                        <DialogBody>
+                            <VStack gap={6} align="stretch" mt={4}>
+                                {isGlobalModal && (
+                                    <Box>
+                                        <Text fontSize="xs" color="whiteAlpha.600" mb={2} fontWeight="bold" letterSpacing="widest">SELECT DEPARTMENT</Text>
+                                        <Box position="relative">
+                                            <select
+                                                style={{
+                                                    width: '100%',
+                                                    height: '56px',
+                                                    backgroundColor: 'rgba(255,255,255,0.05)',
+                                                    border: '1px solid var(--terminal-border)',
+                                                    borderRadius: '16px',
+                                                    color: '#F8FAFC',
+                                                    padding: '0 48px 0 16px',
+                                                    outline: 'none',
+                                                    appearance: 'none',
+                                                    cursor: 'pointer'
+                                                }}
+                                                value={selectedDept?.id || ''}
+                                                onChange={(e) => {
+                                                    const dept = departments.find(d => d.id === e.target.value);
+                                                    setSelectedDept(dept || null);
+                                                    if (dept && dept.code) {
+                                                        const defaultEmail = generateEmail(dept.code);
+                                                        setFormData(prev => ({ ...prev, email: defaultEmail }));
+                                                    }
+                                                }}
+                                            >
+                                                <option value="" disabled style={{ color: '#000' }}>Choose a department node...</option>
+                                                {departments.map(d => (
+                                                    <option 
+                                                        key={d.id} 
+                                                        value={d.id} 
+                                                        style={{ color: d.user_id ? '#999' : '#000' }}
+                                                        disabled={!!d.user_id}
+                                                    >
+                                                        {d.name} {d.user_id ? '(ADMIN ASSIGNED)' : '(AVAILABLE)'}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <Icon as={Building2} position="absolute" right={4} top="50%" transform="translateY(-50%)" color="whiteAlpha.400" pointerEvents="none" />
+                                        </Box>
                                     </Box>
+                                )}
+
+                                <Box>
+                                    <Text fontSize="xs" color="whiteAlpha.600" mb={2} fontWeight="bold" letterSpacing="widest">ADMINISTRATOR EMAIL</Text>
+                                    <Flex position="relative">
+                                        <Input
+                                            placeholder="admin@aisha.com"
+                                            bg="rgba(255,255,255,0.05)"
+                                            border="1px solid"
+                                            borderColor="var(--terminal-border)"
+                                            color="#F8FAFC"
+                                            h={14}
+                                            pl={12}
+                                            borderRadius="2xl"
+                                            _focus={{ borderColor: "purple.400" }}
+                                            value={formData.email}
+                                            readOnly
+                                        />
+                                        <Icon as={Mail} position="absolute" left={4} top="50%" transform="translateY(-50%)" color="whiteAlpha.400" />
+                                    </Flex>
+                                    <Text fontSize="10px" mt={2} color="whiteAlpha.500">System generated based on department code for security.</Text>
                                 </Box>
-                            )}
 
-                            <Box>
-                                <Text fontSize="xs" color="slate.600" mb={2} fontWeight="bold" letterSpacing="widest">ADMINISTRATOR EMAIL</Text>
-                                <Flex position="relative">
-                                    <Input
-                                        placeholder="admin@aisha.com"
-                                        bg="var(--terminal-card)"
-                                        border="1px solid"
-                                        borderColor="var(--terminal-border)"
-                                        color="#F8FAFC"
-                                        h={14}
-                                        pl={12}
-                                        borderRadius="2xl"
-                                        _focus={{ borderColor: "purple.400" }}
-                                        value={formData.email}
-                                        readOnly
-                                    />
-                                    <Icon as={Mail} position="absolute" left={4} top="50%" transform="translateY(-50%)" color="whiteAlpha.400" />
-                                </Flex>
-                                <Text fontSize="10px" mt={2} color="whiteAlpha.500">System generated based on department code for security.</Text>
-                            </Box>
+                                <Box>
+                                    <Text fontSize="xs" color="whiteAlpha.600" mb={2} fontWeight="bold" letterSpacing="widest">DEFAULT ACCESS KEY</Text>
+                                    <Flex position="relative">
+                                        <Input
+                                            type={showPassword ? "text" : "password"}
+                                            bg="rgba(255,255,255,0.05)"
+                                            border="1px solid"
+                                            borderColor="var(--terminal-border)"
+                                            color="#F8FAFC"
+                                            h={14}
+                                            pl={12}
+                                            pr={12}
+                                            borderRadius="2xl"
+                                            _focus={{ borderColor: "var(--terminal-accent)" }}
+                                            value={formData.password}
+                                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                        />
+                                        <Icon as={Lock} position="absolute" left={4} top="50%" transform="translateY(-50%)" color="whiteAlpha.400" />
+                                        <IconButton
+                                            aria-label={showPassword ? "Hide password" : "Show password"}
+                                            variant="ghost"
+                                            size="sm"
+                                            position="absolute"
+                                            right={2}
+                                            top="50%"
+                                            transform="translateY(-50%)"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                            color="whiteAlpha.400"
+                                            _hover={{ color: "var(--terminal-accent)" }}
+                                        >
+                                            <Icon as={showPassword ? EyeOff : Eye} />
+                                        </IconButton>
+                                    </Flex>
+                                </Box>
+                            </VStack>
+                        </DialogBody>
 
-                            <Box>
-                                <Text fontSize="xs" color="slate.600" mb={2} fontWeight="bold" letterSpacing="widest">DEFAULT ACCESS KEY</Text>
-                                <Flex position="relative">
-                                    <Input
-                                        type={showPassword ? "text" : "password"}
-                                        bg="var(--terminal-card)"
-                                        border="1px solid"
-                                        borderColor="var(--terminal-border)"
-                                        color="#F8FAFC"
-                                        h={14}
-                                        pl={12}
-                                        pr={12}
-                                        borderRadius="2xl"
-                                        _focus={{ borderColor: "var(--terminal-accent)" }}
-                                        value={formData.password}
-                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                                    />
-                                    <Icon as={Lock} position="absolute" left={4} top="50%" transform="translateY(-50%)" color="whiteAlpha.400" />
-                                    <IconButton
-                                        aria-label={showPassword ? "Hide password" : "Show password"}
-                                        variant="ghost"
-                                        size="sm"
-                                        position="absolute"
-                                        right={2}
-                                        top="50%"
-                                        transform="translateY(-50%)"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        color="whiteAlpha.400"
-                                        _hover={{ color: "var(--terminal-accent)" }}
-                                    >
-                                        <Icon as={showPassword ? EyeOff : Eye} />
-                                    </IconButton>
-                                </Flex>
-                            </Box>
-
-                            <Flex gap={4} mt={4}>
-                                <Button
-                                    flex={1}
-                                    variant="ghost"
-                                    h={12}
-                                    borderRadius="xl"
-                                    color="whiteAlpha.600"
-                                    _hover={{ bg: "whiteAlpha.100" }}
-                                    onClick={() => setIsModalOpen(false)}
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    flex={1}
-                                    bg="var(--terminal-accent)"
-                                    color="black"
-                                    h={12}
-                                    borderRadius="xl"
-                                    _hover={{ opacity: 0.9 }}
-                                    onClick={handleAssignAdmin}
-                                    loading={isAssigning}
-                                >
-                                    Confirm Assignment
-                                </Button>
-                            </Flex>
-                        </VStack>
-                    </Box>
-                </Box>
-            )}
+                        <DialogFooter gap={4} mt={6}>
+                            <Button
+                                flex={1}
+                                variant="ghost"
+                                h={12}
+                                borderRadius="xl"
+                                color="whiteAlpha.600"
+                                _hover={{ bg: "whiteAlpha.100" }}
+                                onClick={() => setIsModalOpen(false)}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                flex={1}
+                                bg="var(--terminal-accent)"
+                                color="black"
+                                h={12}
+                                borderRadius="xl"
+                                _hover={{ opacity: 0.9 }}
+                                onClick={handleAssignAdmin}
+                                loading={isAssigning}
+                            >
+                                Confirm Assignment
+                            </Button>
+                        </DialogFooter>
+                        <DialogCloseTrigger asChild>
+                            <IconButton
+                                variant="ghost"
+                                size="sm"
+                                position="absolute"
+                                top={4}
+                                right={4}
+                                color="whiteAlpha.400"
+                                _hover={{ color: "white" }}
+                                onClick={() => setIsModalOpen(false)}
+                            >
+                                < LuX />
+                            </IconButton>
+                        </DialogCloseTrigger>
+                    </DialogContent>
+                </DialogPositioner>
+            </DialogRoot>
         </Box>
     );
 };

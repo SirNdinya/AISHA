@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import {
     Box, Grid, Heading, Text, VStack, Card, Badge,
@@ -9,7 +8,7 @@ import { fetchCompanyProfile, fetchCompanyOpportunities, fetchCompanyAnalytics }
 import type { AppDispatch, RootState } from '../../store';
 import { useNavigate } from 'react-router-dom';
 import {
-    LuActivity, LuUsers, LuBriefcase,
+    LuActivity, LuBriefcase,
     LuShield, LuZap, LuBrainCircuit,
     LuCalendar, LuCheck, LuX
 } from 'react-icons/lu';
@@ -54,17 +53,16 @@ const CompanyDashboard: React.FC = () => {
     }
 
     const activeOpps = opportunities.filter(o => o.status === 'OPEN');
-    const totalApplicants = opportunities.reduce((acc, o) => acc + (o.applicant_count || 0), 0);
 
     return (
         <Box animation="fadeIn 0.8s ease-out">
-            <Flex justify="space-between" align="center" mb={10}>
+            <Flex direction={{ base: "column", md: "row" }} justify="space-between" align={{ base: "start", md: "center" }} gap={4} mb={10}>
                 <Box>
-                    <Heading size="3xl" fontWeight="black" letterSpacing="tight" color="#F8FAFC">
+                    <Heading size={{ base: "xl", md: "3xl" }} fontWeight="black" letterSpacing="tight" color="#F8FAFC">
                         {profile ? profile.name : 'Corporate Hub'}
                     </Heading>
                     <HStack mt={2}>
-                        <Text color="var(--terminal-accent)" fontSize="lg" fontWeight="bold">Welcome back, {user?.firstName}. Operating from {profile?.address || 'Headquarters'}.</Text>
+                        <Text color="var(--terminal-accent)" fontSize={{ base: "md", md: "lg" }} fontWeight="bold">Welcome back, {user?.firstName}. Operating from {profile?.address || 'Headquarters'}.</Text>
                     </HStack>
                 </Box>
                 <HStack gap={4}>
@@ -101,15 +99,15 @@ const CompanyDashboard: React.FC = () => {
                 ))}
             </Grid>
 
-            <Grid templateColumns={{ base: "1fr", lg: "2fr 1fr" }} gap={10}>
+            <Grid templateColumns={{ base: "1fr", lg: "2fr 1fr" }} gap={{ base: 6, lg: 10 }}>
                 {/* Operational Insights Section */}
                 <VStack align="stretch" gap={8}>
                     <Card.Root className="terminal-card" bg="var(--terminal-card)" borderColor="var(--terminal-border)">
                         <Card.Body p={8}>
-                            <Flex justify="space-between" align="center" mb={6}>
+                            <Flex direction={{ base: "row", sm: "row" }} justify="space-between" align="center" mb={6}>
                                 <Box>
-                                    <Heading size="lg" color="#F8FAFC">Recent Activity</Heading>
-                                    <Text fontSize="sm" color="var(--terminal-accent)">Summary of latest system interactions</Text>
+                                    <Heading size={{ base: "md", md: "lg" }} color="#F8FAFC">Recent Activity</Heading>
+                                    <Text fontSize="xs" color="var(--terminal-accent)">Summary of latest system interactions</Text>
                                 </Box>
                                 <Icon as={LuActivity} color="var(--terminal-accent)" boxSize={6} />
                             </Flex>
@@ -131,7 +129,7 @@ const CompanyDashboard: React.FC = () => {
                     <Card.Root className="terminal-card" bg="var(--terminal-card)" borderColor="var(--terminal-border)">
                         <Card.Body p={8}>
                             <Flex justify="space-between" align="center" mb={6}>
-                                <Heading size="lg" color="#F8FAFC">Assessment Coordination</Heading>
+                                <Heading size={{ base: "md", md: "lg" }} color="#F8FAFC">Assessment Coordination</Heading>
                                 <Icon as={LuCalendar} color="var(--terminal-accent)" boxSize={6} />
                             </Flex>
                             <VStack align="stretch" gap={4}>

@@ -11,8 +11,7 @@ import {
     Table,
     Spinner,
     Button,
-    HStack,
-    Separator
+    HStack
 } from '@chakra-ui/react';
 import {
     Users,
@@ -53,16 +52,17 @@ const AnalyticsOverview: React.FC = () => {
 
     return (
         <Box animation="fadeIn 0.5s ease-out">
-            <Flex justify="space-between" align="center" mb={10}>
+            <Flex direction={{ base: "column", md: "row" }} justify="space-between" align={{ base: "start", md: "center" }} gap={4} mb={10}>
                 <Box>
-                    <Heading size="xl" fontWeight="black" letterSpacing="tight" color="#F8FAFC">Institutional Overview</Heading>
-                    <Text color="var(--terminal-accent)" fontSize="md">Monitoring departmental nodes and database student populations.</Text>
+                    <Heading size={{ base: "lg", md: "xl" }} fontWeight="black" letterSpacing="tight" color="#F8FAFC">Institutional Overview</Heading>
+                    <Text color="var(--terminal-accent)" fontSize={{ base: "sm", md: "md" }}>Monitoring departmental nodes and database student populations.</Text>
                 </Box>
                 <Button
                     bg="var(--terminal-accent)"
                     color="black"
                     px={6}
                     h={12}
+                    w={{ base: "full", md: "auto" }}
                     borderRadius="xl"
                     _hover={{ transform: "translateY(-2px)", shadow: "lg", bg: "var(--terminal-accent)", opacity: 0.9 }}
                     transition="all 0.2s"
@@ -76,7 +76,7 @@ const AnalyticsOverview: React.FC = () => {
             </Flex>
 
             {/* Core Infrastructure Stats */}
-            <SimpleGrid columns={[1, 1, 3]} gap={8} mb={10}>
+            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={8} mb={10}>
                 <Box className="glass-card" p={8} borderRadius="30px">
                     <Flex justify="space-between" align="center" mb={4}>
                         <Box p={3} borderRadius="15px" bg="whiteAlpha.100">
@@ -125,8 +125,8 @@ const AnalyticsOverview: React.FC = () => {
                     <Table.Header borderBottom="1px solid" borderColor="var(--terminal-border)">
                         <Table.Row>
                             <Table.ColumnHeader color="var(--terminal-accent)">NODE NAME</Table.ColumnHeader>
-                            <Table.ColumnHeader color="var(--terminal-accent)">DATABASE PIN</Table.ColumnHeader>
-                            <Table.ColumnHeader color="var(--terminal-accent)" textAlign="center">STUDENT POPULATION</Table.ColumnHeader>
+                            <Table.ColumnHeader color="var(--terminal-accent)" display={{ base: "none", md: "table-cell" }}>DATABASE PIN</Table.ColumnHeader>
+                            <Table.ColumnHeader color="var(--terminal-accent)" textAlign="center" display={{ base: "none", sm: "table-cell" }}>POPULATION</Table.ColumnHeader>
                             <Table.ColumnHeader color="var(--terminal-accent)" textAlign="right">MANAGEMENT</Table.ColumnHeader>
                         </Table.Row>
                     </Table.Header>
@@ -134,17 +134,17 @@ const AnalyticsOverview: React.FC = () => {
                         {departments.map((dept: any, i: number) => (
                             <Table.Row key={i} _hover={{ bg: "whiteAlpha.50" }} transition="0.2s">
                                 <Table.Cell py={6}>
-                                    <HStack gap={4}>
-                                        <Box p={2} borderRadius="10px" bg="whiteAlpha.100">
+                                    <HStack gap={{ base: 2, md: 4 }}>
+                                        <Box p={2} borderRadius="10px" bg="whiteAlpha.100" display={{ base: "none", sm: "block" }}>
                                             <Icon as={Building2} boxSize={4} color="var(--terminal-accent)" />
                                         </Box>
-                                        <Text fontWeight="bold" fontSize="md" color="#F8FAFC">{dept.name}</Text>
+                                        <Text fontWeight="bold" fontSize={{ base: "sm", md: "md" }} color="#F8FAFC">{dept.name}</Text>
                                     </HStack>
                                 </Table.Cell>
-                                <Table.Cell>
+                                <Table.Cell display={{ base: "none", md: "table-cell" }}>
                                     <Badge colorPalette="gray" variant="outline" borderColor="whiteAlpha.200" color="whiteAlpha.700" letterSpacing="tighter">{dept.code}</Badge>
                                 </Table.Cell>
-                                <Table.Cell textAlign="center">
+                                <Table.Cell textAlign="center" display={{ base: "none", sm: "table-cell" }}>
                                     <Text fontWeight="black" fontSize="lg" color="#F8FAFC">{dept.student_count}</Text>
                                     <Text fontSize="10px" color="whiteAlpha.600" mt={-1}>ENROLLED</Text>
                                 </Table.Cell>

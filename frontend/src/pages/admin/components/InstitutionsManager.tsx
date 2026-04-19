@@ -98,13 +98,13 @@ const InstitutionsManager: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
         >
-            <Flex align="center" gap={3} mb={5}>
+            <Flex direction={{ base: "column", sm: "row" }} align={{ base: "start", sm: "center" }} gap={3} mb={5}>
                 <LuBuilding2 size={22} />
-                <Heading size="md">Registered Institutions</Heading>
+                <Heading size={{ base: "sm", md: "md" }}>Registered Institutions</Heading>
             </Flex>
 
             {/* Filter Buttons */}
-            <HStack mb={5} gap={2}>
+            <HStack mb={5} gap={2} overflowX="auto" pb={1} css={{ "&::-webkit-scrollbar": { display: "none" }, "scrollbarWidth": "none" }}>
                 <For each={FILTER_OPTIONS}>
                     {(opt) => (
                         <Button
@@ -113,6 +113,7 @@ const InstitutionsManager: React.FC = () => {
                             variant={filter === opt.value ? 'solid' : 'ghost'}
                             colorPalette={filter === opt.value ? 'purple' : 'gray'}
                             onClick={() => setFilter(opt.value)}
+                            whiteSpace="nowrap"
                         >
                             {opt.label}
                         </Button>
@@ -132,29 +133,29 @@ const InstitutionsManager: React.FC = () => {
                         <Table.Header>
                             <Table.Row>
                                 <Table.ColumnHeader>Institution</Table.ColumnHeader>
-                                <Table.ColumnHeader>Code</Table.ColumnHeader>
-                                <Table.ColumnHeader>Email</Table.ColumnHeader>
-                                <Table.ColumnHeader>Email</Table.ColumnHeader>
-                                <Table.ColumnHeader>Status</Table.ColumnHeader>
-                                <Table.ColumnHeader>Registered</Table.ColumnHeader>
+                                <Table.ColumnHeader display={{ base: "none", md: "table-cell" }}>Code</Table.ColumnHeader>
+                                <Table.ColumnHeader display={{ base: "none", lg: "table-cell" }}>Email</Table.ColumnHeader>
+                                <Table.ColumnHeader display={{ base: "none", md: "table-cell" }}>Email Status</Table.ColumnHeader>
+                                <Table.ColumnHeader>System Status</Table.ColumnHeader>
+                                <Table.ColumnHeader display={{ base: "none", xl: "table-cell" }}>Registered</Table.ColumnHeader>
                                 <Table.ColumnHeader textAlign="right">Action</Table.ColumnHeader>
                             </Table.Row>
                         </Table.Header>
                         <Table.Body>
                             {institutions.map(inst => (
                                 <Table.Row key={inst.id}>
-                                    <Table.Cell fontWeight="bold">{inst.name}</Table.Cell>
-                                    <Table.Cell>
+                                    <Table.Cell fontWeight="bold" fontSize="sm">{inst.name}</Table.Cell>
+                                    <Table.Cell display={{ base: "none", md: "table-cell" }}>
                                         <Badge variant="outline" colorPalette="indigo">{inst.code}</Badge>
                                     </Table.Cell>
-                                    <Table.Cell fontSize="sm" color="gray.400">{inst.email}</Table.Cell>
-                                    <Table.Cell>
+                                    <Table.Cell fontSize="sm" color="gray.400" display={{ base: "none", lg: "table-cell" }}>{inst.email}</Table.Cell>
+                                    <Table.Cell display={{ base: "none", md: "table-cell" }}>
                                         {inst.email_verified
-                                            ? <Badge colorPalette="green" gap={1}><LuMailCheck /> Verified</Badge>
-                                            : <Badge colorPalette="red" gap={1}><LuMailX /> Unverified</Badge>}
+                                            ? <Badge colorPalette="green" gap={1} size="xs"><LuMailCheck /> Verified</Badge>
+                                            : <Badge colorPalette="red" gap={1} size="xs"><LuMailX /> Unverified</Badge>}
                                     </Table.Cell>
                                     <Table.Cell>{getStatusBadge(inst)}</Table.Cell>
-                                    <Table.Cell fontSize="sm" color="slate.500">
+                                    <Table.Cell fontSize="sm" color="slate.500" display={{ base: "none", xl: "table-cell" }}>
                                         {new Date(inst.created_at).toLocaleDateString()}
                                     </Table.Cell>
                                     <Table.Cell textAlign="right">
