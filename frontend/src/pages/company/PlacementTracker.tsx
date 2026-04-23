@@ -10,7 +10,7 @@ import {
     DialogTitle, DialogBody, DialogFooter, DialogActionTrigger,
     DialogBackdrop, DialogPositioner
 } from '../../components/ui/dialog';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AvatarRoot, AvatarFallback } from '@chakra-ui/react';
 import { toaster } from '../../components/ui/toaster';
 import { useDispatch, useSelector } from 'react-redux';
@@ -31,6 +31,8 @@ import {
 const CompanyPlacementTracker: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const searchQuery = searchParams.get('search') || '';
     const { placements, isLoading } = useSelector((state: RootState) => state.company);
     const [selectedPlacement, setSelectedPlacement] = useState<any>(null);
     const [assessment, setAssessment] = useState({
@@ -93,7 +95,18 @@ const CompanyPlacementTracker: React.FC = () => {
             uniquePlacementsMap.set(p.student_id, p);
         }
     });
-    const uniquePlacements = Array.from(uniquePlacementsMap.values());
+    let uniquePlacements = Array.from(uniquePlacementsMap.values());
+
+    if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        uniquePlacements = uniquePlacements.filter(p => 
+            p.first_name?.toLowerCase().includes(query) ||
+            p.last_name?.toLowerCase().includes(query) ||
+            p.course_of_study?.toLowerCase().includes(query) ||
+            p.job_title?.toLowerCase().includes(query) ||
+            p.department_name?.toLowerCase().includes(query)
+        );
+    }
 
     const getStatusText = (startDateStr: string) => {
         const today = new Date();

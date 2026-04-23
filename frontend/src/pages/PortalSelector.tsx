@@ -1,7 +1,9 @@
-import { Box, Heading, Text, Button, VStack, HStack, Card, Icon, Container, SimpleGrid, Link, Input, Textarea, Image } from '@chakra-ui/react';
+import React, { useState } from 'react';
+import { Box, Heading, Text, Button, VStack, HStack, Card, Icon, Container, SimpleGrid, Link, Input, Textarea, Image, Spinner } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaGraduationCap, FaBuilding, FaUniversity, FaUserShield, FaLinkedin, FaTwitter, FaGithub, FaEnvelope, FaMapMarkerAlt, FaPhone } from 'react-icons/fa';
+import { FaGraduationCap, FaBuilding, FaUniversity, FaUserShield, FaWhatsapp, FaEnvelope, FaMapMarkerAlt, FaPhone, FaPaperPlane } from 'react-icons/fa';
+import axios from 'axios';
 
 interface PortalOption {
     title: string;
@@ -44,14 +46,38 @@ const portals: PortalOption[] = [
 
 const PortalSelector: React.FC = () => {
     const navigate = useNavigate();
+    
+    // Contact form state
+    const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
+    const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+    const [errorMessage, setErrorMessage] = useState('');
 
     const scrollToPortals = () => {
         const element = document.getElementById('portals');
         element?.scrollIntoView({ behavior: 'smooth' });
     };
 
+    const handleFormSubmit = async () => {
+        if (!formData.name || !formData.email || !formData.subject || !formData.message) {
+            setErrorMessage('All fields are required.');
+            setStatus('error');
+            return;
+        }
+
+        setStatus('loading');
+        try {
+            await axios.post('/api/v1/public/contact', formData);
+            setStatus('success');
+            setFormData({ name: '', email: '', subject: '', message: '' });
+        } catch (error: any) {
+            console.error('Contact submit error', error);
+            setStatus('error');
+            setErrorMessage(error.response?.data?.error || 'Failed to send message. Please try again.');
+        }
+    };
+
     return (
-        <Box bg="gray.900" color="white" minH="100vh">
+        <Box bg="#0B0F19" color="white" minH="100vh">
             {/* Sticky Navigation Bar */}
             <Box
                 as="nav"
@@ -59,32 +85,43 @@ const PortalSelector: React.FC = () => {
                 top={0}
                 w="full"
                 zIndex={100}
-                backdropFilter="blur(16px)"
-                bg="rgba(15, 23, 42, 0.6)"
+                backdropFilter="blur(24px) saturate(180%)"
+                backgroundColor="rgba(11, 15, 25, 0.75)"
                 borderBottom="1px solid"
                 borderColor="whiteAlpha.100"
+                transition="all 0.3s ease"
             >
                 <Container maxW="container.xl" py={4}>
                     <HStack justify="space-between">
-                        <HStack gap={2}>
-                            <Box boxSize="40px" bgGradient="to-br" gradientFrom="indigo.500" gradientTo="blue.600" borderRadius="xl" display="flex" alignItems="center" justifyContent="center">
-                                <Text fontWeight="black" fontSize="xl">A</Text>
-                            </Box>
-                            <Heading size="lg" fontWeight="black" letterSpacing="tighter">AISHA</Heading>
+                        <HStack gap={3}>
+                            <Image 
+                                src="/aisha-logo.png" 
+                                alt="AISHA Logo" 
+                                boxSize="45px" 
+                                borderRadius="xl"
+                                objectFit="cover"
+                                boxShadow="0 0 15px rgba(99, 102, 241, 0.4)"
+                            />
+                            <Heading size="lg" fontWeight="900" letterSpacing="tight" bgGradient="to-r" gradientFrom="white" gradientTo="whiteAlpha.700" bgClip="text">
+                                AISHA
+                            </Heading>
                         </HStack>
                         <HStack gap={8} display={{ base: 'none', md: 'flex' }}>
-                            <Link href="#hero" fontWeight="bold" fontSize="sm" _hover={{ color: 'indigo.400' }}>Home</Link>
-                            <Link href="#about" fontWeight="bold" fontSize="sm" _hover={{ color: 'indigo.400' }}>About</Link>
-                            <Link href="#portals" fontWeight="bold" fontSize="sm" _hover={{ color: 'indigo.400' }}>Portals</Link>
-                            <Link href="#contact" fontWeight="bold" fontSize="sm" _hover={{ color: 'indigo.400' }}>Contact</Link>
+                            <Link href="#hero" fontWeight="600" fontSize="sm" color="whiteAlpha.800" _hover={{ color: 'indigo.400' }}>Home</Link>
+                            <Link href="#about" fontWeight="600" fontSize="sm" color="whiteAlpha.800" _hover={{ color: 'indigo.400' }}>About</Link>
+                            <Link href="#portals" fontWeight="600" fontSize="sm" color="whiteAlpha.800" _hover={{ color: 'indigo.400' }}>Portals</Link>
+                            <Link href="#contact" fontWeight="600" fontSize="sm" color="whiteAlpha.800" _hover={{ color: 'indigo.400' }}>Contact</Link>
                         </HStack>
                         <Button
                             colorPalette="indigo"
-                            size="sm"
+                            size="md"
                             borderRadius="full"
                             px={6}
                             fontWeight="bold"
                             onClick={scrollToPortals}
+                            boxShadow="0 4px 14px 0 rgba(79, 70, 229, 0.39)"
+                            _hover={{ transform: 'translateY(-2px)', boxShadow: "0 6px 20px rgba(79, 70, 229, 0.5)" }}
+                            transition="all 0.2s"
                         >
                             Get Started
                         </Button>
@@ -93,70 +130,97 @@ const PortalSelector: React.FC = () => {
             </Box>
 
             {/* Hero Section */}
-            <Box id="hero" pt={32} pb={20} position="relative" overflow="hidden">
+            <Box id="hero" pt={40} pb={24} position="relative" overflow="hidden">
                 <Box
                     position="absolute"
-                    top={0}
-                    left={0}
-                    right={0}
-                    bottom={0}
-                    backgroundImage="url('/landing-bg.png')"
-                    backgroundSize="cover"
-                    backgroundPosition="center"
-                    zIndex={-1}
-                    _after={{
-                        content: '""',
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        bg: 'linear-gradient(to bottom, rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.95))',
-                        backdropFilter: 'blur(4px)'
-                    }}
+                    top="-20%"
+                    left="-10%"
+                    w="50%"
+                    h="50%"
+                    bgGradient="radial(circle, rgba(79, 70, 229, 0.2) 0%, transparent 70%)"
+                    zIndex={0}
+                    filter="blur(80px)"
+                />
+                <Box
+                    position="absolute"
+                    bottom="-20%"
+                    right="-10%"
+                    w="50%"
+                    h="50%"
+                    bgGradient="radial(circle, rgba(147, 51, 234, 0.2) 0%, transparent 70%)"
+                    zIndex={0}
+                    filter="blur(80px)"
                 />
                 
-                <Container maxW="container.lg" textAlign="center">
+                <Container maxW="container.lg" textAlign="center" position="relative" zIndex={1}>
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
                     >
-                        <VStack gap={6}>
+                        <VStack gap={8}>
                             <Box 
-                                px={4} 
-                                py={1.5} 
+                                px={5} 
+                                py={2} 
                                 borderRadius="full" 
-                                bg="whiteAlpha.100" 
+                                bg="whiteAlpha.50" 
                                 border="1px solid" 
-                                borderColor="whiteAlpha.300"
+                                borderColor="whiteAlpha.200"
+                                backdropFilter="blur(10px)"
+                                display="inline-block"
                             >
-                                <Text fontSize="xs" fontWeight="black" letterSpacing="widest" textTransform="uppercase" color="indigo.300">
-                                    Next-Gen Attachment Ecosystem
-                                </Text>
+                                <HStack gap={2}>
+                                    <Box boxSize="6px" borderRadius="full" bg="indigo.400" />
+                                    <Text fontSize="xs" fontWeight="bold" letterSpacing="widest" textTransform="uppercase" color="indigo.200">
+                                        The Intelligent Ecosystem
+                                    </Text>
+                                </HStack>
                             </Box>
                             <Heading 
                                 size="4xl" 
-                                fontSize={{ base: '4xl', md: '6xl' }}
-                                fontWeight="black" 
+                                fontSize={{ base: '5xl', md: '7xl' }}
+                                fontWeight="900" 
                                 letterSpacing="tighter"
-                                lineHeight="shorter"
+                                lineHeight="1.1"
                             >
-                                Bridging Talent and <br />
-                                <Text as="span" bgGradient="to-r" gradientFrom="indigo.400" gradientTo="blue.300" bgClip="text">
-                                    Industry Opportunities
-                                </Text>
+                                Connect Talent With <br />
+                                <Box as="span" position="relative" display="inline-block">
+                                    <Text as="span" bgGradient="to-r" gradientFrom="indigo.400" gradientVia="purple.400" gradientTo="blue.300" bgClip="text">
+                                        Limitless Potential
+                                    </Text>
+                                    <Box 
+                                        position="absolute" 
+                                        bottom="-2" 
+                                        left="0" 
+                                        w="full" 
+                                        h="4px" 
+                                        bgGradient="to-r" 
+                                        gradientFrom="indigo.500" 
+                                        gradientTo="blue.500" 
+                                        borderRadius="full"
+                                        opacity="0.5"
+                                        filter="blur(2px)"
+                                    />
+                                </Box>
                             </Heading>
-                            <Text fontSize={{ base: 'md', md: 'xl' }} color="whiteAlpha.800" maxW="2xl">
-                                AISHA is the unified platform connecting students, institutions, and companies. 
-                                Streamlining attachments with AI-driven matching and secure verification.
+                            <Text fontSize={{ base: 'lg', md: '2xl' }} color="whiteAlpha.700" maxW="3xl" lineHeight="1.6" fontWeight="400">
+                                AISHA is an AI-powered platform designed to seamlessly bridge the gap between ambitious students, top-tier institutions, and industry-leading companies.
                             </Text>
-                            <HStack gap={4} pt={4}>
-                                <Button size="lg" colorPalette="indigo" px={10} borderRadius="full" fontWeight="black" onClick={scrollToPortals}>
+                            <HStack gap={6} pt={6}>
+                                <Button 
+                                    size="xl" 
+                                    colorPalette="indigo" 
+                                    px={12} 
+                                    py={7}
+                                    borderRadius="full" 
+                                    fontWeight="bold" 
+                                    fontSize="lg"
+                                    onClick={scrollToPortals}
+                                    boxShadow="0 0 30px rgba(79, 70, 229, 0.4)"
+                                    _hover={{ transform: 'scale(1.05)', boxShadow: "0 0 40px rgba(79, 70, 229, 0.6)" }}
+                                    transition="all 0.3s"
+                                >
                                     Explore Portals
-                                </Button>
-                                <Button size="lg" variant="outline" borderColor="whiteAlpha.400" _hover={{ bg: 'whiteAlpha.100' }} px={10} borderRadius="full" fontWeight="black">
-                                    Learn More
                                 </Button>
                             </HStack>
                         </VStack>
@@ -165,128 +229,145 @@ const PortalSelector: React.FC = () => {
             </Box>
 
             {/* About Section */}
-            <Box id="about" py={24} bg="rgba(15, 23, 42, 0.5)">
-                <Container maxW="container.xl">
+            <Box id="about" py={24} bg="whiteAlpha.50" position="relative" overflow="hidden">
+                <Container maxW="container.xl" position="relative" zIndex={1}>
                     <SimpleGrid columns={{ base: 1, md: 2 }} gap={20} alignItems="center">
-                        <VStack align="start" gap={6}>
-                            <Heading size="2xl" fontWeight="black">What is AISHA?</Heading>
-                            <Text fontSize="lg" color="whiteAlpha.700">
-                                AISHA stands for Advanced Intelligent Student-Industry Hub & Accelerator. 
-                                Our mission is to modernize the internship and attachment lifecycle through a 
-                                centralized digital ecosystem that ensures transparency, efficiency, and growth for all parties.
-                            </Text>
-                            <VStack align="start" gap={4}>
-                                <HStack gap={4}>
-                                    <Box p={2} borderRadius="lg" bg="indigo.500"><Icon as={FaGraduationCap} /></Box>
-                                    <Text fontWeight="bold">Empowering Students with global visibility</Text>
-                                </HStack>
-                                <HStack gap={4}>
-                                    <Box p={2} borderRadius="lg" bg="green.500"><Icon as={FaBuilding} /></Box>
-                                    <Text fontWeight="bold">Connecting Companies with top-tier talent</Text>
-                                </HStack>
-                                <HStack gap={4}>
-                                    <Box p={2} borderRadius="lg" bg="purple.500"><Icon as={FaUniversity} /></Box>
-                                    <Text fontWeight="bold">Assisting Institutions in success tracking</Text>
-                                </HStack>
-                            </VStack>
-                        </VStack>
-                        <Box position="relative">
-                            <Box
-                                boxSize={{ base: '300px', lg: '450px' }}
-                                bgGradient="to-br"
-                                gradientFrom="indigo.500"
-                                gradientTo="purple.600"
-                                borderRadius="3xl"
-                                transform="rotate(6deg)"
-                                opacity={0.2}
-                                position="absolute"
-                                top={0}
-                                right={0}
-                            />
-                            <Box
-                                p={8}
-                                bg="whiteAlpha.100"
-                                backdropFilter="blur(20px)"
-                                border="1px solid"
-                                borderColor="whiteAlpha.200"
-                                borderRadius="3xl"
-                                position="relative"
-                                zIndex={1}
-                            >
-                                <VStack align="start" gap={4}>
-                                    <Box p={3} borderRadius="2xl" bg="indigo.600" boxShadow="xl">
-                                        <Icon as={FaUserShield} fontSize="3xl" />
+                        <motion.div initial={{ opacity: 0, x: -50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+                            <VStack align="start" gap={8}>
+                                <Heading size="3xl" fontWeight="900" letterSpacing="tight">Redefining Growth</Heading>
+                                <Text fontSize="xl" color="whiteAlpha.700" lineHeight="1.8">
+                                    Our mission is to modernize the internship and attachment lifecycle through a 
+                                    centralized digital ecosystem that ensures transparency, efficiency, and profound opportunities for all parties involved.
+                                </Text>
+                                <VStack align="start" gap={6} w="full">
+                                    <Box bg="whiteAlpha.50" p={4} borderRadius="2xl" border="1px solid" borderColor="whiteAlpha.100" w="full" _hover={{ bg: "whiteAlpha.100", borderColor: "indigo.500" }} transition="all 0.3s">
+                                        <HStack gap={4}>
+                                            <Box p={3} borderRadius="xl" bgGradient="to-br" gradientFrom="indigo.500" gradientTo="blue.600" boxShadow="lg"><Icon as={FaGraduationCap} color="white" fontSize="xl" /></Box>
+                                            <VStack align="start" gap={0}>
+                                                <Text fontWeight="bold" fontSize="lg">Empowering Students</Text>
+                                                <Text color="whiteAlpha.600" fontSize="sm">Global visibility & intelligent matching</Text>
+                                            </VStack>
+                                        </HStack>
                                     </Box>
-                                    <Heading size="lg" fontWeight="black">Secure & Verified</Heading>
-                                    <Text color="whiteAlpha.800">
-                                        Every profile, institution, and company on AISHA is manually verified and monitored 
-                                        to ensure the highest standards of data integrity and professional conduct.
-                                    </Text>
+                                    <Box bg="whiteAlpha.50" p={4} borderRadius="2xl" border="1px solid" borderColor="whiteAlpha.100" w="full" _hover={{ bg: "whiteAlpha.100", borderColor: "green.500" }} transition="all 0.3s">
+                                        <HStack gap={4}>
+                                            <Box p={3} borderRadius="xl" bgGradient="to-br" gradientFrom="green.400" gradientTo="teal.500" boxShadow="lg"><Icon as={FaBuilding} color="white" fontSize="xl" /></Box>
+                                            <VStack align="start" gap={0}>
+                                                <Text fontWeight="bold" fontSize="lg">Connecting Companies</Text>
+                                                <Text color="whiteAlpha.600" fontSize="sm">Streamlined hiring & top-tier talent</Text>
+                                            </VStack>
+                                        </HStack>
+                                    </Box>
                                 </VStack>
+                            </VStack>
+                        </motion.div>
+                        <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+                            <Box position="relative">
+                                <Box
+                                    boxSize={{ base: '300px', lg: '450px' }}
+                                    bgGradient="to-br"
+                                    gradientFrom="indigo.500"
+                                    gradientTo="purple.600"
+                                    borderRadius="3xl"
+                                    transform="rotate(6deg)"
+                                    opacity={0.15}
+                                    position="absolute"
+                                    top={0}
+                                    right={0}
+                                    filter="blur(20px)"
+                                />
+                                <Box
+                                    p={10}
+                                    bg="rgba(15, 23, 42, 0.6)"
+                                    backdropFilter="blur(20px)"
+                                    border="1px solid"
+                                    borderColor="whiteAlpha.300"
+                                    borderRadius="3xl"
+                                    position="relative"
+                                    zIndex={1}
+                                    boxShadow="2xl"
+                                >
+                                    <VStack align="start" gap={6}>
+                                        <Box p={4} borderRadius="2xl" bgGradient="to-br" gradientFrom="indigo.500" gradientTo="purple.500" boxShadow="0 10px 20px rgba(99, 102, 241, 0.4)">
+                                            <Icon as={FaUserShield} fontSize="4xl" color="white" />
+                                        </Box>
+                                        <VStack align="start" gap={3}>
+                                            <Heading size="xl" fontWeight="900">Secure & Verified</Heading>
+                                            <Text color="whiteAlpha.800" fontSize="lg" lineHeight="1.7">
+                                                Security is in our DNA. Every profile, institution, and company on AISHA is manually verified and monitored 
+                                                to ensure the highest standards of data integrity and professional conduct. We use modern encryption to keep your data safe.
+                                            </Text>
+                                        </VStack>
+                                    </VStack>
+                                </Box>
                             </Box>
-                        </Box>
+                        </motion.div>
                     </SimpleGrid>
                 </Container>
             </Box>
 
-            {/* Portals Section (Redesigned Cards) */}
-            <Box id="portals" py={24} position="relative">
-                <Container maxW="container.xl">
-                    <VStack gap={12}>
-                        <VStack gap={4} textAlign="center">
-                            <Heading size="2xl" fontWeight="black">Choose Your Gateway</Heading>
-                            <Text color="whiteAlpha.600" fontSize="lg" maxW="2xl">
-                                Access specialized tools and dashboards tailored to your role in the ecosystem.
+            {/* Portals Section */}
+            <Box id="portals" py={32} position="relative">
+                <Box position="absolute" top="10%" left="50%" transform="translateX(-50%)" w="80%" h="60%" bg="indigo.900" opacity={0.1} filter="blur(120px)" borderRadius="full" zIndex={0} />
+                <Container maxW="container.xl" position="relative" zIndex={1}>
+                    <VStack gap={16}>
+                        <VStack gap={5} textAlign="center">
+                            <Heading size="3xl" fontWeight="900" letterSpacing="tight">Choose Your Gateway</Heading>
+                            <Text color="whiteAlpha.600" fontSize="xl" maxW="2xl">
+                                Access specialized tools and dashboards tailored exclusively to your role in the ecosystem.
                             </Text>
                         </VStack>
 
-                        <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap={6} w="full">
-                            {portals.map((portal) => (
-                                <Card.Root
-                                    key={portal.title}
-                                    p={6}
-                                    cursor="pointer"
-                                    bg="whiteAlpha.50"
-                                    backdropFilter="blur(16px)"
-                                    border="1px solid"
-                                    borderColor="whiteAlpha.100"
-                                    transition="all 0.3s"
-                                    _hover={{
-                                        transform: 'translateY(-10px)',
-                                        bg: 'whiteAlpha.100',
-                                        borderColor: portal.color,
-                                        boxShadow: `0 15px 30px -10px var(--chakra-colors-${portal.color.split('.')[0]}-900)`
-                                    }}
-                                    onClick={() => navigate(portal.path)}
+                        <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} gap={8} w="full">
+                            {portals.map((portal, index) => (
+                                <motion.div 
+                                    key={portal.title} 
+                                    initial={{ opacity: 0, y: 20 }} 
+                                    whileInView={{ opacity: 1, y: 0 }} 
+                                    viewport={{ once: true }} 
+                                    transition={{ duration: 0.5, delay: index * 0.1 }}
                                 >
-                                    <Card.Body>
-                                        <VStack align="start" gap={5}>
-                                            <Box
-                                                p={4}
-                                                borderRadius="2xl"
-                                                bg={`${portal.color.split('.')[0]}.500`}
-                                                boxShadow={`0 8px 16px -4px var(--chakra-colors-${portal.color.split('.')[0]}-500)`}
-                                            >
-                                                <Icon fontSize="3xl" color="white">
-                                                    <portal.icon />
-                                                </Icon>
-                                            </Box>
-                                            <VStack align="start" gap={1}>
-                                                <Heading size="md" color="white" fontWeight="black">{portal.title}</Heading>
-                                                <Text fontSize="sm" color="whiteAlpha.600" fontWeight="medium">{portal.description}</Text>
+                                    <Card.Root
+                                        p={8}
+                                        cursor="pointer"
+                                        bg="rgba(15, 23, 42, 0.4)"
+                                        backdropFilter="blur(20px)"
+                                        border="1px solid"
+                                        borderColor="whiteAlpha.100"
+                                        borderRadius="3xl"
+                                        transition="all 0.4s cubic-bezier(0.4, 0, 0.2, 1)"
+                                        h="full"
+                                        _hover={{
+                                            transform: 'translateY(-12px)',
+                                            bg: 'rgba(30, 41, 59, 0.7)',
+                                            borderColor: portal.color,
+                                            boxShadow: `0 25px 50px -12px var(--chakra-colors-${portal.color.split('.')[0]}-900)`
+                                        }}
+                                        onClick={() => navigate(portal.path)}
+                                    >
+                                        <Card.Body h="full" display="flex" flexDirection="column">
+                                            <VStack align="start" gap={6} flex="1">
+                                                <Box
+                                                    p={5}
+                                                    borderRadius="2xl"
+                                                    bg={`${portal.color.split('.')[0]}.500`}
+                                                    bgGradient={`to-br`}
+                                                    gradientFrom={`${portal.color.split('.')[0]}.400`}
+                                                    gradientTo={`${portal.color.split('.')[0]}.600`}
+                                                    boxShadow={`0 10px 20px -5px var(--chakra-colors-${portal.color.split('.')[0]}-500)`}
+                                                >
+                                                    <Icon fontSize="3xl" color="white">
+                                                        <portal.icon />
+                                                    </Icon>
+                                                </Box>
+                                                <VStack align="start" gap={3} flex="1">
+                                                    <Heading size="lg" color="white" fontWeight="900">{portal.title}</Heading>
+                                                    <Text fontSize="md" color="whiteAlpha.600" lineHeight="1.6">{portal.description}</Text>
+                                                </VStack>
                                             </VStack>
-                                            <Button
-                                                variant="subtle"
-                                                colorPalette={portal.color.split('.')[0]}
-                                                w="full"
-                                                borderRadius="xl"
-                                                fontWeight="bold"
-                                            >
-                                                Enter Portal
-                                            </Button>
-                                        </VStack>
-                                    </Card.Body>
-                                </Card.Root>
+                                        </Card.Body>
+                                    </Card.Root>
+                                </motion.div>
                             ))}
                         </SimpleGrid>
                     </VStack>
@@ -294,61 +375,151 @@ const PortalSelector: React.FC = () => {
             </Box>
 
             {/* Contact Section */}
-            <Box id="contact" py={24} bg="gray.800">
+            <Box id="contact" py={32} bg="blackAlpha.600" borderTop="1px solid" borderColor="whiteAlpha.100">
                 <Container maxW="container.xl">
-                    <SimpleGrid columns={{ base: 1, md: 2 }} gap={20}>
-                        <VStack align="start" gap={8}>
-                            <VStack align="start" gap={4}>
-                                <Heading size="2xl" fontWeight="black">Get in Touch</Heading>
-                                <Text color="whiteAlpha.700" fontSize="lg">
-                                    Have questions about the AISHA platform? We're here to help you get integrated.
+                    <SimpleGrid columns={{ base: 1, lg: 2 }} gap={20}>
+                        <VStack align="start" gap={10}>
+                            <VStack align="start" gap={5}>
+                                <Heading size="3xl" fontWeight="900" letterSpacing="tight">Get in Touch</Heading>
+                                <Text color="whiteAlpha.700" fontSize="xl" lineHeight="1.6">
+                                    Have questions about the AISHA platform? We're here to help you get integrated seamlessly.
                                 </Text>
                             </VStack>
                             
-                            <VStack align="start" gap={6} w="full">
+                            <VStack align="start" gap={8} w="full">
                                 <HStack gap={6}>
-                                    <Box boxSize="50px" borderRadius="full" bg="whiteAlpha.100" display="flex" alignItems="center" justifyContent="center">
-                                        <Icon as={FaEnvelope} color="indigo.400" />
+                                    <Box boxSize="60px" borderRadius="2xl" bg="whiteAlpha.100" border="1px solid" borderColor="whiteAlpha.200" display="flex" alignItems="center" justifyContent="center">
+                                        <Icon as={FaEnvelope} color="indigo.400" fontSize="2xl" />
                                     </Box>
-                                    <VStack align="start" gap={0}>
-                                        <Text fontWeight="bold">Email Us</Text>
-                                        <Text color="whiteAlpha.600">contact@aisha.io</Text>
+                                    <VStack align="start" gap={1}>
+                                        <Text fontWeight="bold" fontSize="lg">Email Us</Text>
+                                        <Text color="whiteAlpha.600" fontSize="md">contact@aisha.io</Text>
                                     </VStack>
                                 </HStack>
                                 <HStack gap={6}>
-                                    <Box boxSize="50px" borderRadius="full" bg="whiteAlpha.100" display="flex" alignItems="center" justifyContent="center">
-                                        <Icon as={FaMapMarkerAlt} color="indigo.400" />
+                                    <Box boxSize="60px" borderRadius="2xl" bg="whiteAlpha.100" border="1px solid" borderColor="whiteAlpha.200" display="flex" alignItems="center" justifyContent="center">
+                                        <Icon as={FaMapMarkerAlt} color="indigo.400" fontSize="2xl" />
                                     </Box>
-                                    <VStack align="start" gap={0}>
-                                        <Text fontWeight="bold">Our Headquarters</Text>
-                                        <Text color="whiteAlpha.600">Innovation Hub, Nairobi</Text>
+                                    <VStack align="start" gap={1}>
+                                        <Text fontWeight="bold" fontSize="lg">Our Headquarters</Text>
+                                        <Text color="whiteAlpha.600" fontSize="md">Innovation Hub, Nairobi</Text>
                                     </VStack>
                                 </HStack>
                                 <HStack gap={6}>
-                                    <Box boxSize="50px" borderRadius="full" bg="whiteAlpha.100" display="flex" alignItems="center" justifyContent="center">
-                                        <Icon as={FaPhone} color="indigo.400" />
+                                    <Box boxSize="60px" borderRadius="2xl" bg="whiteAlpha.100" border="1px solid" borderColor="whiteAlpha.200" display="flex" alignItems="center" justifyContent="center">
+                                        <Icon as={FaPhone} color="indigo.400" fontSize="2xl" />
                                     </Box>
-                                    <VStack align="start" gap={0}>
-                                        <Text fontWeight="bold">Call Support</Text>
-                                        <Text color="whiteAlpha.600">+254 700 000 000</Text>
+                                    <VStack align="start" gap={1}>
+                                        <Text fontWeight="bold" fontSize="lg">Call Support</Text>
+                                        <Text color="whiteAlpha.600" fontSize="md">+254 700 000 000</Text>
                                     </VStack>
                                 </HStack>
                             </VStack>
 
-                            <HStack gap={4}>
-                                <Button boxSize="50px" borderRadius="full" variant="subtle"><Icon as={FaLinkedin} /></Button>
-                                <Button boxSize="50px" borderRadius="full" variant="subtle"><Icon as={FaTwitter} /></Button>
-                                <Button boxSize="50px" borderRadius="full" variant="subtle"><Icon as={FaGithub} /></Button>
-                            </HStack>
+                            <VStack align="start" gap={3} w="full" pt={6}>
+                                <Text fontWeight="bold" color="whiteAlpha.800" textTransform="uppercase" letterSpacing="widest" fontSize="sm">Chat directly</Text>
+                                <HStack>
+                                    <Button 
+                                        as="a" 
+                                        href="https://wa.me/254794986200"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        colorPalette="green" 
+                                        size="xl" 
+                                        borderRadius="full" 
+                                        px={8} 
+                                        boxShadow="0 4px 15px rgba(34, 197, 94, 0.4)"
+                                        _hover={{ transform: 'translateY(-2px)' }}
+                                    >
+                                        <Icon as={FaWhatsapp} mr={3} /> WhatsApp
+                                    </Button>
+                                </HStack>
+                            </VStack>
                         </VStack>
 
-                        <Box bg="whiteAlpha.50" p={8} borderRadius="3xl" border="1px solid" borderColor="whiteAlpha.100">
-                            <VStack gap={4}>
-                                <Input placeholder="Your Name" variant="subtle" bg="whiteAlpha.100" border="none" _focus={{ bg: 'whiteAlpha.200' }} />
-                                <Input placeholder="Email Address" variant="subtle" bg="whiteAlpha.100" border="none" _focus={{ bg: 'whiteAlpha.200' }} />
-                                <Input placeholder="Subject" variant="subtle" bg="whiteAlpha.100" border="none" _focus={{ bg: 'whiteAlpha.200' }} />
-                                <Textarea placeholder="How can we help?" variant="subtle" bg="whiteAlpha.100" border="none" h="150px" _focus={{ bg: 'whiteAlpha.200' }} />
-                                <Button colorPalette="indigo" w="full" size="lg" fontWeight="black" borderRadius="xl">Send Message</Button>
+                        <Box 
+                            bg="rgba(15, 23, 42, 0.8)" 
+                            p={10} 
+                            borderRadius="3xl" 
+                            border="1px solid" 
+                            borderColor="whiteAlpha.200"
+                            boxShadow="2xl"
+                            backdropFilter="blur(20px)"
+                        >
+                            <VStack gap={6} align="stretch">
+                                <Heading size="lg" fontWeight="800" mb={2}>Send a Message</Heading>
+                                
+                                {status === 'success' && (
+                                    <Box p={4} bg="green.500" color="white" borderRadius="xl" fontWeight="bold" textAlign="center">
+                                        Your message has been sent successfully! Our team will get back to you shortly.
+                                    </Box>
+                                )}
+                                
+                                {status === 'error' && (
+                                    <Box p={4} bg="red.500" color="white" borderRadius="xl" fontWeight="bold" textAlign="center">
+                                        {errorMessage}
+                                    </Box>
+                                )}
+
+                                <Input 
+                                    placeholder="Your Name" 
+                                    variant="subtle" 
+                                    size="lg"
+                                    bg="whiteAlpha.100" 
+                                    border="1px solid" 
+                                    borderColor="transparent"
+                                    _focus={{ bg: 'whiteAlpha.200', borderColor: 'indigo.400' }} 
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                />
+                                <Input 
+                                    placeholder="Email Address" 
+                                    variant="subtle" 
+                                    size="lg"
+                                    bg="whiteAlpha.100" 
+                                    border="1px solid" 
+                                    borderColor="transparent"
+                                    _focus={{ bg: 'whiteAlpha.200', borderColor: 'indigo.400' }} 
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                                />
+                                <Input 
+                                    placeholder="Subject" 
+                                    variant="subtle" 
+                                    size="lg"
+                                    bg="whiteAlpha.100" 
+                                    border="1px solid" 
+                                    borderColor="transparent"
+                                    _focus={{ bg: 'whiteAlpha.200', borderColor: 'indigo.400' }} 
+                                    value={formData.subject}
+                                    onChange={(e) => setFormData({...formData, subject: e.target.value})}
+                                />
+                                <Textarea 
+                                    placeholder="How can we help?" 
+                                    variant="subtle" 
+                                    bg="whiteAlpha.100" 
+                                    border="1px solid" 
+                                    borderColor="transparent"
+                                    h="150px" 
+                                    resize="none"
+                                    py={4}
+                                    _focus={{ bg: 'whiteAlpha.200', borderColor: 'indigo.400' }} 
+                                    value={formData.message}
+                                    onChange={(e) => setFormData({...formData, message: e.target.value})}
+                                />
+                                <Button 
+                                    colorPalette="indigo" 
+                                    w="full" 
+                                    size="xl" 
+                                    fontWeight="900" 
+                                    borderRadius="xl"
+                                    onClick={handleFormSubmit}
+                                    disabled={status === 'loading'}
+                                    mt={2}
+                                >
+                                    {status === 'loading' ? <Spinner size="sm" mr={3} /> : <Icon as={FaPaperPlane} mr={3} />}
+                                    {status === 'loading' ? 'Sending...' : 'Send Message'}
+                                </Button>
                             </VStack>
                         </Box>
                     </SimpleGrid>
@@ -356,25 +527,29 @@ const PortalSelector: React.FC = () => {
             </Box>
 
             {/* Footer */}
-            <Box py={10} borderTop="1px solid" borderColor="whiteAlpha.100">
+            <Box py={12} bg="black" borderTop="1px solid" borderColor="whiteAlpha.100">
                 <Container maxW="container.xl">
-                    <VStack gap={6}>
-                        <HStack w="full" justify="space-between" flexDir={{ base: 'column', md: 'row' }} gap={4}>
-                            <HStack gap={2}>
-                                <Box boxSize="30px" bgGradient="to-br" gradientFrom="indigo.500" gradientTo="blue.600" borderRadius="md" display="flex" alignItems="center" justifyContent="center">
-                                    <Text fontWeight="black" fontSize="sm">A</Text>
-                                </Box>
-                                <Heading size="sm" fontWeight="black" letterSpacing="widest">AISHA</Heading>
+                    <VStack gap={8}>
+                        <HStack w="full" justify="space-between" flexDir={{ base: 'column', md: 'row' }} gap={6}>
+                            <HStack gap={3}>
+                                <Image src="/aisha-logo.png" boxSize="35px" borderRadius="lg" />
+                                <Heading size="md" fontWeight="900" letterSpacing="widest">AISHA</Heading>
                             </HStack>
-                            <HStack gap={8}>
-                                <Link color="whiteAlpha.600" fontSize="xs">Privacy Policy</Link>
-                                <Link color="whiteAlpha.600" fontSize="xs">Terms of Service</Link>
-                                <Link color="whiteAlpha.600" fontSize="xs">Cookie Settings</Link>
+                            <HStack gap={10}>
+                                <Link color="whiteAlpha.600" fontSize="sm" fontWeight="bold" _hover={{ color: "white" }}>Privacy Policy</Link>
+                                <Link color="whiteAlpha.600" fontSize="sm" fontWeight="bold" _hover={{ color: "white" }}>Terms of Service</Link>
+                                <Link color="whiteAlpha.600" fontSize="sm" fontWeight="bold" _hover={{ color: "white" }}>Cookie Settings</Link>
                             </HStack>
                         </HStack>
-                        <Text fontSize="xs" color="whiteAlpha.400" fontWeight="bold">
-                            © 2026 AISHA Intelligence | Secure AI-Powered Placement Ecosystem
-                        </Text>
+                        <Box w="full" h="1px" bg="whiteAlpha.100" />
+                        <HStack w="full" justify="space-between" flexDir={{ base: 'column', md: 'row' }}>
+                            <Text fontSize="sm" color="whiteAlpha.500" fontWeight="medium">
+                                © {new Date().getFullYear()} AISHA Intelligence. All rights reserved.
+                            </Text>
+                            <Text fontSize="sm" color="whiteAlpha.500">
+                                Crafted with precision and <Box as="span" color="red.500">♥</Box> for the future.
+                            </Text>
+                        </HStack>
                     </VStack>
                 </Container>
             </Box>

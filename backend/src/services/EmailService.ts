@@ -161,6 +161,28 @@ class EmailService {
         `;
         return this.sendMail(email, subject, html);
     }
+
+    public async sendContactEmail(name: string, senderEmail: string, requestSubject: string, message: string) {
+        // Send to the system's FROM email, or if empty, fallback
+        const to = process.env.EMAIL_FROM || process.env.SMTP_USER || 'contact@aisha.io';
+        const subject = `[New Contact Message via AISHA Platform]: ${requestSubject}`;
+        const html = `
+            <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: auto; padding: 0; border: 1px solid #f0f0f0; border-radius: 16px; overflow: hidden; background-color: #ffffff;">
+                <div style="background: linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%); padding: 40px 20px; text-align: center;">
+                    <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 800;">AISHA Platform</h1>
+                    <p style="color: rgba(255,255,255,0.8); margin: 10px 0 0 0; font-size: 14px; text-transform: uppercase;">New Contact Form Submission</p>
+                </div>
+                <div style="padding: 40px 30px; color: #444444; line-height: 1.6;">
+                    <h2 style="color: #2c3e50; margin-top: 0; font-size: 20px;">You Have a New Message</h2>
+                    <p><strong>From:</strong> ${name} (<a href="mailto:${senderEmail}">${senderEmail}</a>)</p>
+                    <p><strong>Subject:</strong> ${requestSubject}</p>
+                    <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
+                    <p style="white-space: pre-wrap;">${message}</p>
+                </div>
+            </div>
+        `;
+        return this.sendMail(to, subject, html);
+    }
 }
 
 export const emailService = new EmailService();

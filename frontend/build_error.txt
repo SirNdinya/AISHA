@@ -1,0 +1,31 @@
+
+> frontend@0.0.0 build
+> vite build
+
+vite v7.3.1 building client environment for production...
+transforming...
+✓ 20 modules transformed.
+✗ Build failed in 795ms
+error during build:
+[vite:esbuild] Transform failed with 1 error:
+/home/wakanda_forever/Desktop/AISHA/frontend/src/pages/PortalSelector.tsx:261:34: ERROR: Unexpected closing "Box" tag does not match opening "VStack" tag
+file: /home/wakanda_forever/Desktop/AISHA/frontend/src/pages/PortalSelector.tsx:261:34
+
+Unexpected closing "Box" tag does not match opening "VStack" tag
+259 |                                          </HStack>
+260 |                                      </Box>
+261 |                                  </Box>
+    |                                    ^
+262 |                              </VStack>
+263 |                          </motion.div>
+
+    at failureErrorWithLog (/home/wakanda_forever/Desktop/AISHA/frontend/node_modules/esbuild/lib/main.js:1467:15)
+    at /home/wakanda_forever/Desktop/AISHA/frontend/node_modules/esbuild/lib/main.js:736:50
+    at responseCallbacks.<computed> (/home/wakanda_forever/Desktop/AISHA/frontend/node_modules/esbuild/lib/main.js:603:9)
+    at handleIncomingPacket (/home/wakanda_forever/Desktop/AISHA/frontend/node_modules/esbuild/lib/main.js:658:12)
+    at Socket.readFromStdout (/home/wakanda_forever/Desktop/AISHA/frontend/node_modules/esbuild/lib/main.js:581:7)
+    at Socket.emit (node:events:524:28)
+    at addChunk (node:internal/streams/readable:561:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+    at Readable.push (node:internal/streams/readable:392:5)
+    at Pipe.onStreamRead (node:internal/stream_base_commons:191:23)

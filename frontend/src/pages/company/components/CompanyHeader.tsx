@@ -1,14 +1,29 @@
 
 import React from 'react';
-import { Box, Flex, HStack, Text, Avatar, Icon, Separator, VStack } from '@chakra-ui/react';
+import { Box, Flex, HStack, Text, Avatar, Icon, Separator, VStack, Input } from '@chakra-ui/react';
 import { LuSearch } from 'react-icons/lu';
 import { useSelector } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
 import type { RootState } from '../../../store';
 import ThemeToggle from '../../../components/common/ThemeToggle';
 import NotificationCenter from '../../../components/common/NotificationCenter';
 
 const CompanyHeader: React.FC = () => {
     const { user } = useSelector((state: RootState) => state.auth);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const searchQuery = searchParams.get('search') || '';
+
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newQuery = e.target.value;
+        setSearchParams(prev => {
+            if (newQuery) {
+                prev.set('search', newQuery);
+            } else {
+                prev.delete('search');
+            }
+            return prev;
+        }, { replace: true });
+    };
 
     return (
         <Box
@@ -29,24 +44,35 @@ const CompanyHeader: React.FC = () => {
             <Flex justify="space-between" align="center" w="full">
                 {/* Search Bar */}
                 <HStack
-                    bg="gray.50"
+                    bg="rgba(255, 255, 255, 0.7)"
                     px={4}
-                    py={2}
+                    py={1.5}
                     borderRadius="xl"
                     border="1px solid"
-                    borderColor="whiteAlpha.200"
+                    borderColor="whiteAlpha.400"
                     gap={3}
                     w="400px"
                     display={{ base: "none", md: "flex" }}
                 >
-                    <Icon as={LuSearch} color="slate.600" />
-                    <Text color="slate.600" fontSize="sm" flex="1">Search students or postings...</Text>
+                    <Icon as={LuSearch} color="black" />
+                    <Input
+                        variant="flushed"
+                        border="none"
+                        _focus={{ outline: "none", boxShadow: "none" }}
+                        color="black"
+                        _placeholder={{ color: "gray.600" }}
+                        fontSize="sm"
+                        flex="1"
+                        placeholder="Search students or postings..."
+                        value={searchQuery}
+                        onChange={handleSearch}
+                    />
                     <HStack gap={1}>
-                        <Box bg="whiteAlpha.200" px={1.5} py={0.5} borderRadius="md">
-                            <Text fontSize="10px" color="gray.300">⌘</Text>
+                        <Box bg="blackAlpha.200" px={1.5} py={0.5} borderRadius="md">
+                            <Text fontSize="10px" color="black">⌘</Text>
                         </Box>
-                        <Box bg="whiteAlpha.200" px={1.5} py={0.5} borderRadius="md">
-                            <Text fontSize="10px" color="gray.300">K</Text>
+                        <Box bg="blackAlpha.200" px={1.5} py={0.5} borderRadius="md">
+                            <Text fontSize="10px" color="black">K</Text>
                         </Box>
                     </HStack>
                 </HStack>
