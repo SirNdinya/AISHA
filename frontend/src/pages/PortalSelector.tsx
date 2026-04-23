@@ -424,10 +424,7 @@ const PortalSelector: React.FC = () => {
                                 <Text fontWeight="bold" color="whiteAlpha.800" textTransform="uppercase" letterSpacing="widest" fontSize="sm">Chat directly</Text>
                                 <HStack>
                                     <Button 
-                                        as="a" 
-                                        href="https://wa.me/254794986200"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
+                                        asChild
                                         colorPalette="green" 
                                         size="xl" 
                                         borderRadius="full" 
@@ -435,7 +432,13 @@ const PortalSelector: React.FC = () => {
                                         boxShadow="0 4px 15px rgba(34, 197, 94, 0.4)"
                                         _hover={{ transform: 'translateY(-2px)' }}
                                     >
-                                        <Icon as={FaWhatsapp} mr={3} /> WhatsApp
+                                        <a 
+                                            href="https://wa.me/254794986200"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <Icon as={FaWhatsapp} mr={3} /> WhatsApp
+                                        </a>
                                     </Button>
                                 </HStack>
                             </VStack>
