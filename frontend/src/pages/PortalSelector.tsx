@@ -173,24 +173,6 @@ const PortalSelector: React.FC = () => {
                         transition={{ duration: 0.8, ease: "easeOut" }}
                     >
                         <VStack gap={8}>
-                            <Box 
-                                px={6} 
-                                py={2.5} 
-                                borderRadius="full" 
-                                bg="whiteAlpha.50" 
-                                border="1px solid" 
-                                borderColor="whiteAlpha.200"
-                                backdropFilter="blur(10px)"
-                                display="inline-block"
-                                boxShadow="0 10px 30px rgba(0,0,0,0.5)"
-                            >
-                                <HStack gap={2.5}>
-                                    <Box boxSize="8px" borderRadius="full" bg="cyan.400" animation="pulse 2s infinite" />
-                                    <Text fontSize="xs" fontWeight="black" letterSpacing="widest" textTransform="uppercase" color="cyan.200">
-                                        The Intelligent Ecosystem
-                                    </Text>
-                                </HStack>
-                            </Box>
                             <Heading 
                                 size="4xl" 
                                 fontSize={{ base: '5xl', md: '8xl' }}
@@ -200,7 +182,14 @@ const PortalSelector: React.FC = () => {
                             >
                                 Connect Talent With <br />
                                 <Box as="span" position="relative" display="inline-block">
-                                    <Text as="span" bgGradient="to-r" gradientFrom="cyan.400" gradientVia="fuchsia.400" gradientTo="pink.400" bgClip="text">
+                                    <Text 
+                                        as="span" 
+                                        bgGradient="to-r" 
+                                        gradientFrom="cyan.300" 
+                                        gradientTo="pink.300" 
+                                        bgClip="text"
+                                        color="transparent"
+                                    >
                                         Limitless Potential
                                     </Text>
                                     <Box 
