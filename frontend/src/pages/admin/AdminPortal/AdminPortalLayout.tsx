@@ -22,8 +22,7 @@ const navItems = [
     { name: 'Home Hub', path: '/', icon: Home },
     { name: 'Institutional Overview', path: '/institution/dashboard', icon: LayoutDashboard, roles: ['INSTITUTION'] },
     { name: 'Departments', path: '/institution/departments', icon: Users, roles: ['INSTITUTION'] },
-    { name: 'Dashboard', deptPath: '/department/dashboard', icon: LayoutDashboard, roles: ['DEPARTMENT_ADMIN'] },
-    { name: 'Placement Hub', deptPath: '/department/placements', icon: Briefcase, roles: ['DEPARTMENT_ADMIN'] },
+    { name: 'Placements', deptPath: '/department/placements', icon: Briefcase, roles: ['DEPARTMENT_ADMIN'] },
     { name: 'Settings', path: '/institution/settings', deptPath: '/department/settings', icon: Settings },
 ];
 
