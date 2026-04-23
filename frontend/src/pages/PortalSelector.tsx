@@ -18,7 +18,7 @@ const portals: PortalOption[] = [
         title: 'Student Portal',
         description: 'Dashboard, attachment management, and profile synchronization',
         icon: FaGraduationCap,
-        color: 'indigo.500',
+        color: 'cyan.500',
         path: '/login?portal=student'
     },
     {
@@ -32,7 +32,7 @@ const portals: PortalOption[] = [
         title: 'Institution Portal',
         description: 'Oversee students, manage partnerships, and track placements',
         icon: FaUniversity,
-        color: 'purple.500',
+        color: 'fuchsia.500',
         path: '/login?portal=institution'
     },
     {
@@ -77,7 +77,21 @@ const PortalSelector: React.FC = () => {
     };
 
     return (
-        <Box bg="#0B0F19" color="white" minH="100vh">
+        <Box bg="#050505" color="white" minH="100vh" position="relative" overflowX="hidden">
+            {/* Background Grid Overlay */}
+            <Box 
+                position="absolute" 
+                top={0} 
+                left={0} 
+                right={0} 
+                bottom={0} 
+                zIndex={0} 
+                opacity={0.03}
+                pointerEvents="none"
+                backgroundImage="radial-gradient(circle, white 1px, transparent 1px)"
+                backgroundSize="40px 40px"
+            />
+
             {/* Sticky Navigation Bar */}
             <Box
                 as="nav"
@@ -86,7 +100,7 @@ const PortalSelector: React.FC = () => {
                 w="full"
                 zIndex={100}
                 backdropFilter="blur(24px) saturate(180%)"
-                backgroundColor="rgba(11, 15, 25, 0.75)"
+                backgroundColor="rgba(5, 5, 5, 0.75)"
                 borderBottom="1px solid"
                 borderColor="whiteAlpha.100"
                 transition="all 0.3s ease"
@@ -100,27 +114,27 @@ const PortalSelector: React.FC = () => {
                                 boxSize="45px" 
                                 borderRadius="xl"
                                 objectFit="cover"
-                                boxShadow="0 0 15px rgba(99, 102, 241, 0.4)"
+                                boxShadow="0 0 15px rgba(34, 211, 238, 0.4)"
                             />
                             <Heading size="lg" fontWeight="900" letterSpacing="tight" bgGradient="to-r" gradientFrom="white" gradientTo="whiteAlpha.700" bgClip="text">
                                 AISHA
                             </Heading>
                         </HStack>
                         <HStack gap={8} display={{ base: 'none', md: 'flex' }}>
-                            <Link href="#hero" fontWeight="600" fontSize="sm" color="whiteAlpha.800" _hover={{ color: 'indigo.400' }}>Home</Link>
-                            <Link href="#about" fontWeight="600" fontSize="sm" color="whiteAlpha.800" _hover={{ color: 'indigo.400' }}>About</Link>
-                            <Link href="#portals" fontWeight="600" fontSize="sm" color="whiteAlpha.800" _hover={{ color: 'indigo.400' }}>Portals</Link>
-                            <Link href="#contact" fontWeight="600" fontSize="sm" color="whiteAlpha.800" _hover={{ color: 'indigo.400' }}>Contact</Link>
+                            <Link href="#hero" fontWeight="600" fontSize="sm" color="whiteAlpha.800" _hover={{ color: 'cyan.400' }}>Home</Link>
+                            <Link href="#about" fontWeight="600" fontSize="sm" color="whiteAlpha.800" _hover={{ color: 'cyan.400' }}>About</Link>
+                            <Link href="#portals" fontWeight="600" fontSize="sm" color="whiteAlpha.800" _hover={{ color: 'cyan.400' }}>Portals</Link>
+                            <Link href="#contact" fontWeight="600" fontSize="sm" color="whiteAlpha.800" _hover={{ color: 'cyan.400' }}>Contact</Link>
                         </HStack>
                         <Button
-                            colorPalette="indigo"
+                            colorPalette="cyan"
                             size="md"
                             borderRadius="full"
                             px={6}
                             fontWeight="bold"
                             onClick={scrollToPortals}
-                            boxShadow="0 4px 14px 0 rgba(79, 70, 229, 0.39)"
-                            _hover={{ transform: 'translateY(-2px)', boxShadow: "0 6px 20px rgba(79, 70, 229, 0.5)" }}
+                            boxShadow="0 4px 14px 0 rgba(6, 182, 212, 0.39)"
+                            _hover={{ transform: 'translateY(-2px)', boxShadow: "0 6px 20px rgba(6, 182, 212, 0.5)" }}
                             transition="all 0.2s"
                         >
                             Get Started
@@ -135,21 +149,21 @@ const PortalSelector: React.FC = () => {
                     position="absolute"
                     top="-20%"
                     left="-10%"
-                    w="50%"
-                    h="50%"
-                    bgGradient="radial(circle, rgba(79, 70, 229, 0.2) 0%, transparent 70%)"
+                    w="70%"
+                    h="70%"
+                    bgGradient="radial(circle, rgba(6, 182, 212, 0.15) 0%, transparent 70%)"
                     zIndex={0}
-                    filter="blur(80px)"
+                    filter="blur(120px)"
                 />
                 <Box
                     position="absolute"
                     bottom="-20%"
                     right="-10%"
-                    w="50%"
-                    h="50%"
-                    bgGradient="radial(circle, rgba(147, 51, 234, 0.2) 0%, transparent 70%)"
+                    w="70%"
+                    h="70%"
+                    bgGradient="radial(circle, rgba(217, 70, 239, 0.12) 0%, transparent 70%)"
                     zIndex={0}
-                    filter="blur(80px)"
+                    filter="blur(120px)"
                 />
                 
                 <Container maxW="container.lg" textAlign="center" position="relative" zIndex={1}>
@@ -160,65 +174,66 @@ const PortalSelector: React.FC = () => {
                     >
                         <VStack gap={8}>
                             <Box 
-                                px={5} 
-                                py={2} 
+                                px={6} 
+                                py={2.5} 
                                 borderRadius="full" 
                                 bg="whiteAlpha.50" 
                                 border="1px solid" 
                                 borderColor="whiteAlpha.200"
                                 backdropFilter="blur(10px)"
                                 display="inline-block"
+                                boxShadow="0 10px 30px rgba(0,0,0,0.5)"
                             >
-                                <HStack gap={2}>
-                                    <Box boxSize="6px" borderRadius="full" bg="indigo.400" />
-                                    <Text fontSize="xs" fontWeight="bold" letterSpacing="widest" textTransform="uppercase" color="indigo.200">
+                                <HStack gap={2.5}>
+                                    <Box boxSize="8px" borderRadius="full" bg="cyan.400" animation="pulse 2s infinite" />
+                                    <Text fontSize="xs" fontWeight="black" letterSpacing="widest" textTransform="uppercase" color="cyan.200">
                                         The Intelligent Ecosystem
                                     </Text>
                                 </HStack>
                             </Box>
                             <Heading 
                                 size="4xl" 
-                                fontSize={{ base: '5xl', md: '7xl' }}
+                                fontSize={{ base: '5xl', md: '8xl' }}
                                 fontWeight="900" 
                                 letterSpacing="tighter"
-                                lineHeight="1.1"
+                                lineHeight="0.95"
                             >
                                 Connect Talent With <br />
                                 <Box as="span" position="relative" display="inline-block">
-                                    <Text as="span" bgGradient="to-r" gradientFrom="indigo.400" gradientVia="purple.400" gradientTo="blue.300" bgClip="text">
+                                    <Text as="span" bgGradient="to-r" gradientFrom="cyan.400" gradientVia="fuchsia.400" gradientTo="pink.400" bgClip="text">
                                         Limitless Potential
                                     </Text>
                                     <Box 
                                         position="absolute" 
-                                        bottom="-2" 
+                                        bottom="0" 
                                         left="0" 
                                         w="full" 
-                                        h="4px" 
+                                        h="8px" 
                                         bgGradient="to-r" 
-                                        gradientFrom="indigo.500" 
-                                        gradientTo="blue.500" 
+                                        gradientFrom="cyan.500" 
+                                        gradientTo="pink.500" 
                                         borderRadius="full"
-                                        opacity="0.5"
-                                        filter="blur(2px)"
+                                        opacity="0.3"
+                                        filter="blur(10px)"
                                     />
                                 </Box>
                             </Heading>
-                            <Text fontSize={{ base: 'lg', md: '2xl' }} color="whiteAlpha.700" maxW="3xl" lineHeight="1.6" fontWeight="400">
+                            <Text fontSize={{ base: 'lg', md: '2xl' }} color="whiteAlpha.700" maxW="3xl" lineHeight="1.6" fontWeight="400" letterSpacing="tight">
                                 AISHA is an AI-powered platform designed to seamlessly bridge the gap between ambitious students, top-tier institutions, and industry-leading companies.
                             </Text>
                             <HStack gap={6} pt={6}>
                                 <Button 
                                     size="xl" 
-                                    colorPalette="indigo" 
-                                    px={12} 
-                                    py={7}
+                                    colorPalette="cyan" 
+                                    px={14} 
+                                    py={8}
                                     borderRadius="full" 
-                                    fontWeight="bold" 
-                                    fontSize="lg"
+                                    fontWeight="900" 
+                                    fontSize="xl"
                                     onClick={scrollToPortals}
-                                    boxShadow="0 0 30px rgba(79, 70, 229, 0.4)"
-                                    _hover={{ transform: 'scale(1.05)', boxShadow: "0 0 40px rgba(79, 70, 229, 0.6)" }}
-                                    transition="all 0.3s"
+                                    boxShadow="0 0 30px rgba(6, 182, 212, 0.3)"
+                                    _hover={{ transform: 'scale(1.05)', boxShadow: "0 0 50px rgba(6, 182, 212, 0.5)" }}
+                                    transition="all 0.3s ease-in-out"
                                 >
                                     Explore Portals
                                 </Button>
@@ -240,11 +255,11 @@ const PortalSelector: React.FC = () => {
                                     centralized digital ecosystem that ensures transparency, efficiency, and profound opportunities for all parties involved.
                                 </Text>
                                 <VStack align="start" gap={6} w="full">
-                                    <Box bg="whiteAlpha.50" p={4} borderRadius="2xl" border="1px solid" borderColor="whiteAlpha.100" w="full" _hover={{ bg: "whiteAlpha.100", borderColor: "indigo.500" }} transition="all 0.3s">
+                                    <Box bg="whiteAlpha.50" p={4} borderRadius="2xl" border="1px solid" borderColor="whiteAlpha.100" w="full" _hover={{ bg: "whiteAlpha.100", borderColor: "cyan.400", boxShadow: "0 0 20px rgba(6, 182, 212, 0.2)" }} transition="all 0.3s">
                                         <HStack gap={4}>
-                                            <Box p={3} borderRadius="xl" bgGradient="to-br" gradientFrom="indigo.500" gradientTo="blue.600" boxShadow="lg"><Icon as={FaGraduationCap} color="white" fontSize="xl" /></Box>
+                                            <Box p={3} borderRadius="xl" bgGradient="to-br" gradientFrom="cyan.500" gradientTo="blue.600" boxShadow="lg"><Icon as={FaGraduationCap} color="white" fontSize="xl" /></Box>
                                             <VStack align="start" gap={0}>
-                                                <Text fontWeight="bold" fontSize="lg">Empowering Students</Text>
+                                                <Text fontWeight="black" fontSize="lg">Empowering Students</Text>
                                                 <Text color="whiteAlpha.600" fontSize="sm">Global visibility & intelligent matching</Text>
                                             </VStack>
                                         </HStack>
@@ -266,8 +281,8 @@ const PortalSelector: React.FC = () => {
                                 <Box
                                     boxSize={{ base: '300px', lg: '450px' }}
                                     bgGradient="to-br"
-                                    gradientFrom="indigo.500"
-                                    gradientTo="purple.600"
+                                    gradientFrom="cyan.500"
+                                    gradientTo="fuchsia.600"
                                     borderRadius="3xl"
                                     transform="rotate(6deg)"
                                     opacity={0.15}
@@ -288,7 +303,7 @@ const PortalSelector: React.FC = () => {
                                     boxShadow="2xl"
                                 >
                                     <VStack align="start" gap={6}>
-                                        <Box p={4} borderRadius="2xl" bgGradient="to-br" gradientFrom="indigo.500" gradientTo="purple.500" boxShadow="0 10px 20px rgba(99, 102, 241, 0.4)">
+                                        <Box p={4} borderRadius="2xl" bgGradient="to-br" gradientFrom="cyan.500" gradientTo="fuchsia.500" boxShadow="0 10px 20px rgba(34, 211, 238, 0.4)">
                                             <Icon as={FaUserShield} fontSize="4xl" color="white" />
                                         </Box>
                                         <VStack align="start" gap={3}>
@@ -308,7 +323,7 @@ const PortalSelector: React.FC = () => {
 
             {/* Portals Section */}
             <Box id="portals" py={32} position="relative">
-                <Box position="absolute" top="10%" left="50%" transform="translateX(-50%)" w="80%" h="60%" bg="indigo.900" opacity={0.1} filter="blur(120px)" borderRadius="full" zIndex={0} />
+                <Box position="absolute" top="10%" left="50%" transform="translateX(-50%)" w="80%" h="60%" bg="cyan.900" opacity={0.1} filter="blur(120px)" borderRadius="full" zIndex={0} />
                 <Container maxW="container.xl" position="relative" zIndex={1}>
                     <VStack gap={16}>
                         <VStack gap={5} textAlign="center">
@@ -339,9 +354,9 @@ const PortalSelector: React.FC = () => {
                                         h="full"
                                         _hover={{
                                             transform: 'translateY(-12px)',
-                                            bg: 'rgba(30, 41, 59, 0.7)',
+                                            bg: 'rgba(15, 23, 42, 0.7)',
                                             borderColor: portal.color,
-                                            boxShadow: `0 25px 50px -12px var(--chakra-colors-${portal.color.split('.')[0]}-900)`
+                                            boxShadow: `0 30px 60px -12px rgba(6, 182, 212, 0.25)`
                                         }}
                                         onClick={() => navigate(portal.path)}
                                     >
@@ -389,28 +404,28 @@ const PortalSelector: React.FC = () => {
                             <VStack align="start" gap={8} w="full">
                                 <HStack gap={6}>
                                     <Box boxSize="60px" borderRadius="2xl" bg="whiteAlpha.100" border="1px solid" borderColor="whiteAlpha.200" display="flex" alignItems="center" justifyContent="center">
-                                        <Icon as={FaEnvelope} color="indigo.400" fontSize="2xl" />
+                                        <Icon as={FaEnvelope} color="cyan.400" fontSize="2xl" />
                                     </Box>
                                     <VStack align="start" gap={1}>
-                                        <Text fontWeight="bold" fontSize="lg">Email Us</Text>
+                                        <Text fontWeight="black" fontSize="lg">Email Us</Text>
                                         <Text color="whiteAlpha.600" fontSize="md">contact@aisha.io</Text>
                                     </VStack>
                                 </HStack>
                                 <HStack gap={6}>
                                     <Box boxSize="60px" borderRadius="2xl" bg="whiteAlpha.100" border="1px solid" borderColor="whiteAlpha.200" display="flex" alignItems="center" justifyContent="center">
-                                        <Icon as={FaMapMarkerAlt} color="indigo.400" fontSize="2xl" />
+                                        <Icon as={FaMapMarkerAlt} color="fuchsia.400" fontSize="2xl" />
                                     </Box>
                                     <VStack align="start" gap={1}>
-                                        <Text fontWeight="bold" fontSize="lg">Our Headquarters</Text>
+                                        <Text fontWeight="black" fontSize="lg">Our Headquarters</Text>
                                         <Text color="whiteAlpha.600" fontSize="md">Innovation Hub, Nairobi</Text>
                                     </VStack>
                                 </HStack>
                                 <HStack gap={6}>
                                     <Box boxSize="60px" borderRadius="2xl" bg="whiteAlpha.100" border="1px solid" borderColor="whiteAlpha.200" display="flex" alignItems="center" justifyContent="center">
-                                        <Icon as={FaPhone} color="indigo.400" fontSize="2xl" />
+                                        <Icon as={FaPhone} color="cyan.400" fontSize="2xl" />
                                     </Box>
                                     <VStack align="start" gap={1}>
-                                        <Text fontWeight="bold" fontSize="lg">Call Support</Text>
+                                        <Text fontWeight="black" fontSize="lg">Call Support</Text>
                                         <Text color="whiteAlpha.600" fontSize="md">+254 700 000 000</Text>
                                     </VStack>
                                 </HStack>
@@ -468,7 +483,7 @@ const PortalSelector: React.FC = () => {
                                     bg="whiteAlpha.100" 
                                     border="1px solid" 
                                     borderColor="transparent"
-                                    _focus={{ bg: 'whiteAlpha.200', borderColor: 'indigo.400' }} 
+                                    _focus={{ bg: 'whiteAlpha.200', borderColor: 'cyan.400' }} 
                                     value={formData.name}
                                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                                 />
@@ -479,7 +494,7 @@ const PortalSelector: React.FC = () => {
                                     bg="whiteAlpha.100" 
                                     border="1px solid" 
                                     borderColor="transparent"
-                                    _focus={{ bg: 'whiteAlpha.200', borderColor: 'indigo.400' }} 
+                                    _focus={{ bg: 'whiteAlpha.200', borderColor: 'cyan.400' }} 
                                     value={formData.email}
                                     onChange={(e) => setFormData({...formData, email: e.target.value})}
                                 />
@@ -490,7 +505,7 @@ const PortalSelector: React.FC = () => {
                                     bg="whiteAlpha.100" 
                                     border="1px solid" 
                                     borderColor="transparent"
-                                    _focus={{ bg: 'whiteAlpha.200', borderColor: 'indigo.400' }} 
+                                    _focus={{ bg: 'whiteAlpha.200', borderColor: 'cyan.400' }} 
                                     value={formData.subject}
                                     onChange={(e) => setFormData({...formData, subject: e.target.value})}
                                 />
@@ -503,12 +518,12 @@ const PortalSelector: React.FC = () => {
                                     h="150px" 
                                     resize="none"
                                     py={4}
-                                    _focus={{ bg: 'whiteAlpha.200', borderColor: 'indigo.400' }} 
+                                    _focus={{ bg: 'whiteAlpha.200', borderColor: 'cyan.400' }} 
                                     value={formData.message}
                                     onChange={(e) => setFormData({...formData, message: e.target.value})}
                                 />
                                 <Button 
-                                    colorPalette="indigo" 
+                                    colorPalette="cyan" 
                                     w="full" 
                                     size="xl" 
                                     fontWeight="900" 

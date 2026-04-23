@@ -4,10 +4,13 @@
 @tailwind utilities;
 
 :root {
-  --terminal-bg: #0F172A;
-  --terminal-card: #1E293B;
-  --terminal-border: #334155;
-  --terminal-accent: #38BDF8;
+  --terminal-bg: #050505;
+  --terminal-card: #0A0A0A;
+  --terminal-border: rgba(255, 255, 255, 0.1);
+  --terminal-accent: #06B6D4;
+  --brand-cyan: #06B6D4;
+  --brand-fuchsia: #D946EF;
+  --brand-pink: #EC4899;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
