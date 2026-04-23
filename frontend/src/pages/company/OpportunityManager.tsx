@@ -13,9 +13,11 @@ import { useNavigate } from 'react-router-dom';
 import CompanyService from '../../services/companyService';
 import ConfirmModal from '../../components/common/ConfirmModal';
 import {
-    LuPlus, LuX, LuBriefcase, LuClock, LuCoins, LuMapPin, LuZap, LuShield, LuPen, LuTrash,
+    LuPlus, LuBriefcase, LuClock, LuCoins, LuMapPin, LuZap, LuShield, LuPen, LuTrash,
     LuSearch, LuFilter, LuRotateCcw, LuChevronDown, LuChevronUp, LuChevronLeft, LuChevronRight
 } from 'react-icons/lu';
+import { X as LuX } from "lucide-react";
+
 
 const OpportunityManager: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();

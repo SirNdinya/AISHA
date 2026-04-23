@@ -1,13 +1,17 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { 
-    Box, Button, Text, VStack, Flex, IconButton, Spinner, HStack, Heading,
+    Box, Button, Text, VStack, Flex, IconButton, Spinner, HStack, Heading
+} from '@chakra-ui/react';
+import {
     DialogRoot, DialogContent, DialogHeader, DialogTitle, DialogBody,
     DialogFooter, DialogBackdrop, DialogPositioner, DialogCloseTrigger
-} from '@chakra-ui/react';
+} from '../ui/dialog';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchNotifications, markNotificationsRead, deleteNotifications } from '../../store/notificationSlice';
 import type { AppDispatch, RootState } from '../../store';
-import { LuBell, LuBellRing, LuCheck, LuInfo, LuCircleCheck, LuTriangleAlert, LuCircleX, LuZap, LuX, LuTrash2, LuSmartphone } from "react-icons/lu";
+import { LuBell, LuBellRing, LuCheck, LuInfo, LuCircleCheck, LuTriangleAlert, LuCircleX, LuZap, LuTrash2, LuSmartphone } from "react-icons/lu";
+import { X as LuX } from "lucide-react";
+
 import { useSocket } from '../../context/SocketContext';
 import { type Notification as AppNotification } from '../../services/notificationService';
 import MpesaPaymentModal from './MpesaPaymentModal';

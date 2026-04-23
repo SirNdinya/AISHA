@@ -3,7 +3,9 @@ import {
     Box, Heading, Text, VStack, Badge, Flex,
     HStack, Button, Container, Image, IconButton
 } from '@chakra-ui/react';
-import { LuSettings, LuX, LuMenu } from "react-icons/lu";
+import { LuSettings, LuMenu } from "react-icons/lu";
+import { X as LuX } from "lucide-react";
+
 import { Avatar } from "../../../components/ui/avatar";
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';

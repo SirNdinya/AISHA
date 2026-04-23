@@ -7,7 +7,7 @@ import {
     DialogRoot, DialogContent, DialogHeader, DialogTitle, DialogBody,
     DialogFooter, DialogActionTrigger, DialogPositioner, DialogCloseTrigger,
     DialogBackdrop
-} from '@chakra-ui/react';
+} from '../../../components/ui/dialog';
 import {
     TableRoot, TableHeader, TableRow, TableColumnHeader,
     TableBody, TableCell

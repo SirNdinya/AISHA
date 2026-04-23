@@ -10,6 +10,8 @@ import {
     Heading,
     Spinner,
     Icon,
+} from '@chakra-ui/react';
+import {
     DialogRoot,
     DialogContent,
     DialogHeader,
@@ -19,7 +21,7 @@ import {
     DialogBackdrop,
     DialogPositioner,
     DialogCloseTrigger,
-} from '@chakra-ui/react';
+} from '../../components/ui/dialog';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, X, Bot, User, Trash2, Maximize2, Minimize2 } from 'lucide-react';
 import { aiService } from '../../services/aiService';

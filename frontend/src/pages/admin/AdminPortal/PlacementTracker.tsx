@@ -174,7 +174,7 @@ const PlacementTracker: React.FC = () => {
                                         </Table.Cell>
                                         <Table.Cell color="whiteAlpha.800" fontSize="sm">
                                             <HStack gap={2} color="whiteAlpha.800" fontSize="sm">
-                                                <Icon as={Calendar} size={14} />
+                                                <Icon as={Calendar} boxSize={4} />
                                                 <Text>{item.start_date ? new Date(item.start_date).toLocaleDateString() : 'N/A'} - {item.end_date ? new Date(item.end_date).toLocaleDateString() : 'N/A'}</Text>
                                             </HStack>
                                         </Table.Cell>

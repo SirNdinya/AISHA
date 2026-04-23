@@ -5,9 +5,11 @@ import {
     Card, Heading, Badge, Flex, Spinner
 } from '@chakra-ui/react';
 import {
-    LuMessageSquare, LuX, LuSend, LuMinimize2,
+    LuMessageSquare, LuSend, LuMinimize2,
     LuCircle
 } from 'react-icons/lu';
+import { X as LuX } from "lucide-react";
+
 import { messageService } from '../../services/messageService';
 import type { ChatMessage } from '../../services/messageService';
 

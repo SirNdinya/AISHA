@@ -16,9 +16,10 @@ import {
     LuUser,
     LuFileText,
     LuSettings,
-    LuGraduationCap,
-    LuX
+    LuGraduationCap
 } from 'react-icons/lu';
+import { X as LuX } from "lucide-react";
+
 import { motion, AnimatePresence } from 'framer-motion';
 import '../../pages/student/DashboardTheme.css';
 

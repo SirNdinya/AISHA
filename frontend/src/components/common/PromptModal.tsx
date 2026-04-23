@@ -7,6 +7,9 @@ import {
     Flex,
     Input,
     Icon,
+    IconButton
+} from '@chakra-ui/react';
+import {
     DialogRoot,
     DialogContent,
     DialogHeader,
@@ -15,10 +18,11 @@ import {
     DialogFooter,
     DialogBackdrop,
     DialogPositioner,
-    DialogCloseTrigger,
-    IconButton
-} from '@chakra-ui/react';
-import { LuMessageSquareText, LuX } from "react-icons/lu";
+    DialogCloseTrigger
+} from '../ui/dialog';
+import { LuMessageSquareText } from "react-icons/lu";
+import { X as LuX } from "lucide-react";
+
 
 interface PromptModalProps {
     isOpen: boolean;

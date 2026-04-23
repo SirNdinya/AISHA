@@ -3,7 +3,9 @@ import {
     Box, Heading, Text, Flex, Button, Card, Grid,
     VStack, HStack, Input, Textarea, Spinner, Badge
 } from '@chakra-ui/react';
-import { LuPlus, LuTrash2, LuUsers, LuBuilding2, LuX } from 'react-icons/lu';
+import { LuPlus, LuTrash2, LuUsers, LuBuilding2 } from 'react-icons/lu';
+import { X as LuX } from "lucide-react";
+
 import { toaster } from '../../components/ui/toaster';
 import apiClient from '../../services/apiClient';
 

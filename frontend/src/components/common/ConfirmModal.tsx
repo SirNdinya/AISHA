@@ -6,6 +6,9 @@ import {
     Button,
     Flex,
     Icon,
+    IconButton
+} from '@chakra-ui/react';
+import {
     DialogRoot,
     DialogContent,
     DialogHeader,
@@ -14,10 +17,11 @@ import {
     DialogFooter,
     DialogBackdrop,
     DialogPositioner,
-    DialogCloseTrigger,
-    IconButton
-} from '@chakra-ui/react';
-import { LuTriangleAlert, LuX } from "react-icons/lu";
+    DialogCloseTrigger
+} from '../ui/dialog';
+import { LuTriangleAlert } from "react-icons/lu";
+import { X as LuX } from "lucide-react";
+
 
 interface ConfirmModalProps {
     isOpen: boolean;

@@ -3,11 +3,13 @@ import React, { useEffect, useState } from 'react';
 import {
     Box, Heading, Text, VStack, HStack, Card, Badge,
     Button, Icon, Flex, Spinner, Table,
-    DialogRoot, DialogContent, DialogHeader,
-    DialogTitle, DialogBody, DialogFooter, DialogActionTrigger,
-    DialogBackdrop, DialogPositioner,
     Textarea, SimpleGrid
 } from '@chakra-ui/react';
+import {
+    DialogRoot, DialogContent, DialogHeader,
+    DialogTitle, DialogBody, DialogFooter, DialogActionTrigger,
+    DialogBackdrop, DialogPositioner
+} from '../../components/ui/dialog';
 import { useNavigate } from 'react-router-dom';
 import { AvatarRoot, AvatarFallback } from '@chakra-ui/react';
 import { toaster } from '../../components/ui/toaster';

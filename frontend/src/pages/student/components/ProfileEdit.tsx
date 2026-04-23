@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Box, Button, Flex, Heading, Input, VStack, HStack, Field, Text as ChakraText, Icon, Grid, Slider } from '@chakra-ui/react';
+import { Avatar } from '../../../components/ui/avatar';
 import {
     DialogRoot, DialogContent, DialogHeader, DialogTitle, DialogBody,
     DialogFooter, DialogActionTrigger, DialogBackdrop, DialogPositioner
-} from '@chakra-ui/react';
+} from '../../../components/ui/dialog';
 import { LuSave, LuTerminal, LuUpload, LuSearch } from "react-icons/lu";
 import Cropper from 'react-easy-crop';
 import studentService from '../../../services/studentService';
@@ -206,8 +207,8 @@ const ProfileEdit: React.FC<ProfileEditProps> = ({ student, onCancel }) => {
                                 name={`${student.first_name} ${student.last_name}`}
                             />
                             <VStack align="start" gap={0}>
-                                <Text fontSize="10px" color="whiteAlpha.600" fontWeight="bold">CURRENT MATRIX</Text>
-                                <Text fontSize="9px" color="indigo.400" fontWeight="mono">ACTIVE AVATAR LAYER</Text>
+                                <ChakraText fontSize="10px" color="whiteAlpha.600" fontWeight="bold">CURRENT MATRIX</ChakraText>
+                                <ChakraText fontSize="9px" color="indigo.400" fontWeight="mono">ACTIVE AVATAR LAYER</ChakraText>
                             </VStack>
                         </HStack>
                         <Flex

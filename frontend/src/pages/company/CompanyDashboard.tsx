@@ -11,8 +11,10 @@ import { useNavigate } from 'react-router-dom';
 import {
     LuActivity, LuUsers, LuBriefcase,
     LuShield, LuZap, LuBrainCircuit,
-    LuCalendar, LuCheck, LuX
+    LuCalendar, LuCheck
 } from 'react-icons/lu';
+import { X as LuX } from "lucide-react";
+
 import apiClient from '../../services/apiClient';
 import { toaster } from '../../components/ui/toaster';
 

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Box, HStack, Icon, Text, Flex, Button } from '@chakra-ui/react';
-import { LuX, LuZap, LuTriangleAlert, LuInfo } from 'react-icons/lu';
+import {  LuZap, LuTriangleAlert, LuInfo } from 'react-icons/lu';
+import { X as LuX } from "lucide-react";
+
 import apiClient from '../../services/apiClient';
 
 interface Broadcast {

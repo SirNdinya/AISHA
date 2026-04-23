@@ -2,11 +2,15 @@ import React, { useState } from 'react';
 import {
     Box, Button, Heading, Text, VStack,
     Input, Icon, Flex, Spinner, Alert,
-    DialogRoot, DialogContent, DialogHeader, DialogTitle, DialogBody,
-    DialogFooter, DialogBackdrop, DialogPositioner, DialogCloseTrigger,
     IconButton
 } from '@chakra-ui/react';
-import { LuX, LuSmartphone, LuShieldCheck } from "react-icons/lu";
+import {
+    DialogRoot, DialogContent, DialogHeader, DialogTitle, DialogBody,
+    DialogFooter, DialogBackdrop, DialogPositioner, DialogCloseTrigger
+} from '../../components/ui/dialog';
+import {  LuSmartphone, LuShieldCheck } from "react-icons/lu";
+import { X as LuX } from "lucide-react";
+
 import apiClient from '../../services/apiClient';
 
 interface MpesaPaymentModalProps {
