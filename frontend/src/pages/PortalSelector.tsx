@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaGraduationCap, FaBuilding, FaUniversity, FaUserShield, FaWhatsapp, FaEnvelope, FaMapMarkerAlt, FaPhone, FaPaperPlane } from 'react-icons/fa';
 import axios from 'axios';
+import AishaAssistant from '../components/common/AishaAssistant';
 
 interface PortalOption {
     title: string;
@@ -560,6 +561,7 @@ const PortalSelector: React.FC = () => {
                     </VStack>
                 </Container>
             </Box>
+            <AishaAssistant />
         </Box>
     );
 };

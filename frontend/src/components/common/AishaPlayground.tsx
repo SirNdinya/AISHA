@@ -145,8 +145,8 @@ const AishaPlayground: React.FC<AishaPlaygroundProps> = ({ isOpen, onClose }) =>
                                     aria-label="Clear history"
                                     size="sm"
                                     variant="ghost"
-                                    color="gray.400"
-                                    _hover={{ color: "red.400", bg: "rgba(239, 68, 68, 0.1)" }}
+                                    color="whiteAlpha.600"
+                                    _hover={{ color: "red.400", bg: "whiteAlpha.100" }}
                                     onClick={() => setIsConfirmOpen(true)}
                                 >
                                     <Trash2 size={16} />
@@ -155,24 +155,22 @@ const AishaPlayground: React.FC<AishaPlaygroundProps> = ({ isOpen, onClose }) =>
                                     aria-label="Maximize"
                                     size="sm"
                                     variant="ghost"
-                                    color="gray.400"
-                                    _hover={{ color: "white", bg: "rgba(255,255,255,0.05)" }}
+                                    color="whiteAlpha.600"
+                                    _hover={{ color: "white", bg: "whiteAlpha.100" }}
                                     onClick={() => setIsMaximized(!isMaximized)}
                                 >
                                     {isMaximized ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
                                 </IconButton>
-                                <DialogCloseTrigger asChild>
-                                    <IconButton
-                                        aria-label="Close"
-                                        size="sm"
-                                        variant="ghost"
-                                        color="gray.400"
-                                        _hover={{ color: "white", bg: "rgba(255,255,255,0.05)" }}
-                                        onClick={onClose}
-                                    >
-                                        <X size={18} />
-                                    </IconButton>
-                                </DialogCloseTrigger>
+                                <IconButton
+                                    aria-label="Close"
+                                    size="sm"
+                                    variant="ghost"
+                                    color="whiteAlpha.600"
+                                    _hover={{ color: "white", bg: "whiteAlpha.100" }}
+                                    onClick={onClose}
+                                >
+                                    <X size={18} />
+                                </IconButton>
                             </HStack>
                         </Flex>
                     </DialogHeader>
