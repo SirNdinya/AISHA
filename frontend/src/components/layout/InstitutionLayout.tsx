@@ -30,8 +30,14 @@ const InstitutionLayout: React.FC = () => {
             <Box as="nav" bg="white" px={8} py={4} shadow="sm" borderBottom="1px solid" borderColor="gray.100">
                 <Flex justify="space-between" align="center">
                     <HStack gap={3}>
-                        <Box bg="white" p={1} borderRadius="lg" shadow="sm" border="1px solid" borderColor="gray.200">
-                            <Image src="/aisha-logo.png" alt="AISHA Logo" boxSize={8} borderRadius="md" />
+                        <Box p={1}>
+                            <Image 
+                                src="/aisha-logo.png" 
+                                alt="AISHA Logo" 
+                                boxSize={8} 
+                                borderRadius="md" 
+                                boxShadow="0 0 15px rgba(34, 211, 238, 0.4)"
+                            />
                         </Box>
                         <Heading size="md" color="purple.600">AISHA - Institution</Heading>
                     </HStack>

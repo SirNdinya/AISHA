@@ -42,14 +42,14 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
         <VStack align="stretch" gap={isCollapsed ? 4 : 8} h="full">
             {/* Logo Section */}
             <Flex align="center" gap={3} px={isCollapsed ? 0 : 2} justify={isCollapsed ? 'center' : 'flex-start'}>
-                <Box
-                    bg="white"
-                    p={1}
-                    borderRadius="xl"
-                    boxShadow="0 0 20px rgba(0, 184, 212, 0.4)"
-                    flexShrink={0}
-                >
-                    <Image src="/aisha-logo.png" alt="AISHA Logo" boxSize={8} borderRadius="lg" />
+                <Box flexShrink={0}>
+                    <Image 
+                        src="/aisha-logo.png" 
+                        alt="AISHA Logo" 
+                        boxSize={8} 
+                        borderRadius="lg" 
+                        boxShadow="0 0 15px rgba(34, 211, 238, 0.4)"
+                    />
                 </Box>
                 {(!isCollapsed || isMobile) && (
                     <VStack align="flex-start" gap={0}>

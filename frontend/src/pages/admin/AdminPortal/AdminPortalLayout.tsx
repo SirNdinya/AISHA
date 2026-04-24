@@ -50,15 +50,14 @@ const AdminPortalLayout: React.FC = () => {
                 <VStack h="full" py={8} px={4} gap={8} align="stretch">
                     {/* Logo */}
                     <Flex align="center" px={2} h="40px">
-                        <Box
-                            bg="white"
-                            p={1}
-                            borderRadius="xl"
-                            boxShadow="0 0 20px rgba(0, 184, 212, 0.4)"
-                            flexShrink={0}
-                            mr={isSidebarOpen ? 3 : 0}
-                        >
-                            <Image src="/aisha-logo.png" alt="AISHA Logo" boxSize={8} borderRadius="lg" />
+                        <Box flexShrink={0} mr={isSidebarOpen ? 3 : 0}>
+                            <Image 
+                                src="/aisha-logo.png" 
+                                alt="AISHA Logo" 
+                                boxSize={8} 
+                                borderRadius="lg" 
+                                boxShadow="0 0 15px rgba(34, 211, 238, 0.4)"
+                            />
                         </Box>
                         {isSidebarOpen && (
                             <Heading size="md" className="gradient-text" fontWeight="bold">

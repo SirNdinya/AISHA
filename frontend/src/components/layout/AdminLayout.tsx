@@ -30,8 +30,14 @@ const AdminLayout: React.FC = () => {
             <Box as="nav" bg="var(--terminal-card)" px={8} py={4} shadow="md" borderBottom="1px solid" borderColor="var(--terminal-border)">
                 <Flex justify="space-between" align="center">
                     <HStack gap={3}>
-                        <Box bg="white" p={1} borderRadius="lg" boxShadow="0 0 10px rgba(0, 184, 212, 0.2)">
-                            <Image src="/aisha-logo.png" alt="AISHA Logo" boxSize={6} borderRadius="md" />
+                        <Box p={1}>
+                            <Image 
+                                src="/aisha-logo.png" 
+                                alt="AISHA Logo" 
+                                boxSize={8} 
+                                borderRadius="md" 
+                                boxShadow="0 0 15px rgba(34, 211, 238, 0.4)"
+                            />
                         </Box>
                         <Heading size="md">AISHA Admin</Heading>
                     </HStack>
