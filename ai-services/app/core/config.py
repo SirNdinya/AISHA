@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     
     # Gemini Settings
     GEMINI_API_KEY: str | None = os.getenv("GEMINI_API_KEY")
+    CHATBOT_GEMINI_API_KEY: str | None = os.getenv("CHATBOT_GEMINI_API_KEY")
 
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> str:

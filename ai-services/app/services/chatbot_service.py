@@ -2,6 +2,7 @@ from typing import List, Dict, Any
 import json
 import datetime
 from sqlalchemy.orm import Session
+from app.core.config import settings
 # No longer using torch/sentence_transformers here for performance
 from app import models
 # No longer using model_factory at startup
@@ -12,7 +13,7 @@ from app.services.matching_service import MatchingService
 from app.services.student_agent import StudentAutonomyAgent
 from app.services.chief_agent import ChiefAutonomyAgent
 from app.services.blockchain_service import BlockchainService
-from app.services.llm_service import llm_service
+from app.services.llm_service import LLMService, llm_service
 from app.services.document_extraction_service import document_extraction_service
 import os
 
@@ -25,6 +26,8 @@ class ChatbotService:
         self.chief: ChiefAutonomyAgent = ChiefAutonomyAgent(db)
         self.blockchain: BlockchainService = BlockchainService()
         self.matcher: MatchingService = MatchingService(db) if db else None
+        # Use dedicated LLM for chatbot if key provided, else default
+        self.llm = LLMService(api_key=settings.CHATBOT_GEMINI_API_KEY) if hasattr(settings, 'CHATBOT_GEMINI_API_KEY') else llm_service
         
     async def _get_student_context(self, user_id: str) -> str:
         """Collects student profile, career path, and academic records for AI context."""
@@ -183,7 +186,7 @@ class ChatbotService:
                         "FORMATTING RULES: strictly FORBIDDEN to use asterisks (*) for any formatting. "
                         "Use '###' for headers and plain text for bulk content. For lists, use simple numbers (1, 2) or dashes (-)."
                     )
-                    gen_response = await llm_service.generate_response(message, system_prompt=persona, force_gemini=True)
+                    gen_response = await self.llm.generate_response(message, system_prompt=persona)
                     final_response += f"{gen_response} "
 
                 elif cap == "MATCHING_ANALYSIS" and self.db and user_id:
@@ -208,7 +211,7 @@ class ChatbotService:
                         FORMATTING: strictly FORBIDDEN to use asterisks (*). Use '###' for headers. 
                         {"GREETING: Briefly greet the user first." if is_first_message else "GREETING: Do NOT greet, start directly."}
                         """
-                        analysis = await llm_service.generate_response(analysis_prompt, system_prompt="You are the AISHA Matching Expert.", force_gemini=True)
+                        analysis = await self.llm.generate_response(analysis_prompt, system_prompt="You are the AISHA Matching Expert.")
                         final_response += f"**Match Analysis**: {analysis} "
                     else:
                         final_response += "I couldn't find any high-confidence matches to analyze right now. "
@@ -226,14 +229,14 @@ class ChatbotService:
                     FORMATTING: strictly FORBIDDEN to use asterisks (*). Use '###' for headers.
                     {"GREETING: Briefly greet the user first." if is_first_message else "GREETING: Do NOT greet, start directly."}
                     """
-                    advice = await llm_service.generate_response(advice_prompt, system_prompt="You are the AISHA Career Counselor.", force_gemini=True)
+                    advice = await self.llm.generate_response(advice_prompt, system_prompt="You are the AISHA Career Counselor.")
                     final_response += f"**Career Advice**: {advice} "
             
             # Final Safety: If reasoning was assigned but resulted in no text, use GENERAL_LLM
             if not final_response.strip() and plan:
                 greeting_instr = "Briefly introduce yourself as AISHA." if is_first_message else "Do NOT introduce yourself, just answer."
                 persona = f"You are AISHA. {greeting_instr} Answer the user's query helpfully and concisely. FORMATTING: strictly FORBIDDEN to use asterisks (*)."
-                gen_response = await llm_service.generate_response(message, system_prompt=persona, force_gemini=True)
+                gen_response = await self.llm.generate_response(message, system_prompt=persona)
                 final_response = gen_response
         except Exception as e:
             import logging

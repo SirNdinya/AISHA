@@ -16,8 +16,8 @@ except ImportError:
 
 
 class LLMService:
-    def __init__(self, model: str = ""):
-        self.gemini_key = settings.GEMINI_API_KEY
+    def __init__(self, model: str = "", api_key: str | None = None):
+        self.gemini_key = api_key or settings.GEMINI_API_KEY
         
         # Initialize Gemini
         self.gemini_ready = False
