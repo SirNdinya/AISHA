@@ -11,7 +11,8 @@ import {
     Badge,
     Spinner,
     Container,
-    Grid
+    Grid,
+    Image
 } from '@chakra-ui/react';
 import { Avatar } from "../../components/ui/avatar";
 import { LuTarget, LuGraduationCap, LuSettings, LuBuilding2, LuBot, LuActivity, LuSparkles } from "react-icons/lu";
@@ -406,9 +407,12 @@ const StudentDashboard: React.FC = () => {
                                         <VStack gap={4}>
                                             <MotionBox
                                                 animate={{ rotate: 360 }}
-                                                transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                                                transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+                                                borderRadius="full"
+                                                overflow="hidden"
+                                                boxShadow="0 0 20px rgba(34, 211, 238, 0.3)"
                                             >
-                                                <Icon as={LuBot} boxSize={16} color="brand.500" />
+                                                <Image src="/aisha-logo.png" boxSize="80px" objectFit="cover" />
                                             </MotionBox>
                                             <Text fontSize="xs" color="brand.500" fontWeight="bold" letterSpacing="widest">
                                                 FINDING YOUR BEST MATCHES...
@@ -420,7 +424,7 @@ const StudentDashboard: React.FC = () => {
                                         <VStack gap={4} textAlign="center">
                                             <Icon as={LuBot} boxSize={12} color="brand.400" />
                                             <Heading size="md" color="#F8FAFC" fontWeight="black" letterSpacing="widest">MATCHING STRATEGY</Heading>
-                                            <Text fontSize="sm" color="var(--terminal-accent)" fontWeight="bold">Academic records synchronized. How would you like to proceed with your placement?</Text>
+                                            <Text fontSize="sm" color="var(--terminal-accent)" fontWeight="bold">How would you like to proceed with your placement?</Text>
                                             <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={4} w="full" mt={4}>
                                                 <Button
                                                     height="60px"
