@@ -515,9 +515,11 @@ export class ApplicationController extends BaseController {
             const addWatermark = () => {
                 if (fs.existsSync(watermarkPath)) {
                     doc.save();
-                    doc.fillOpacity(0.05);
+                    doc.opacity(0.1); // Use global opacity for images
                     doc.image(watermarkPath, 147, 260, { width: 300 });
                     doc.restore();
+                } else {
+                    console.error('[PDF] Watermark logo not found at:', watermarkPath);
                 }
             };
             
