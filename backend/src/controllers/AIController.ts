@@ -8,21 +8,22 @@ export class AIController {
      */
     static async chat(req: Request, res: Response) {
         const { message, history } = req.body;
-        const userId = (req as any).user?.id;
+        const userId = (req as any).user?.id || null;
+        const aiUserId = userId || 'guest';
 
         if (!message) {
             return res.status(400).json({ status: 'error', message: 'Message is required' });
         }
 
         try {
-            // 1. Store user message
+            // 1. Store user message (if userId is null, it stores as NULL in DB)
             await pool.query(
                 'INSERT INTO ai_conversations (user_id, role, content) VALUES ($1, $2, $3)',
                 [userId, 'user', message]
             );
 
-            // 2. Get response from AI Service
-            const aiResponse = await AIService.chat(userId, message, history || []);
+            // 2. Get response from AI Service (pass 'guest' if unauthenticated)
+            const aiResponse = await AIService.chat(aiUserId, message, history || []);
 
             // 3. Store AI response
             if (aiResponse && aiResponse.content) {

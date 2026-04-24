@@ -46,7 +46,7 @@ class LLMService:
                 # Combine system prompt if provided
                 full_prompt = f"SYSTEM: {system_prompt}\n\nUSER: {prompt}" if system_prompt else prompt
                 response = await self.client.aio.models.generate_content(
-                    model='gemini-1.5-flash',
+                    model='gemini-2.0-flash',
                     contents=full_prompt
                 )
                 logger.info("Gemini response received.")

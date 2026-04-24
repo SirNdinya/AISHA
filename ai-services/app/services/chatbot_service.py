@@ -31,6 +31,8 @@ class ChatbotService:
         
     async def _get_student_context(self, user_id: str) -> str:
         """Collects student profile, career path, and academic records for AI context."""
+        if user_id == "guest":
+            return "User is an unauthenticated guest. No profile context available."
         if not self.db:
             return "No database connection available."
             
@@ -161,7 +163,7 @@ class ChatbotService:
                     else:
                         final_response += "All necessary documents (Insurance, School Letter) are automatically generated and secured on the blockchain once you accept a placement. "
 
-                elif cap == "DECISION_ANALYSIS" and self.db and user_id:
+                elif cap == "DECISION_ANALYSIS" and self.db and user_id and user_id != "guest":
                     analysis = await self.chief.handle_complex_goal(user_id, message)
                     final_response += f"**Sovereign Analysis**: {analysis['agent_vibe']} response - I have orchestrated a plan involving {', '.join(analysis['orchestrated_plan'])}. "
                     
@@ -189,7 +191,7 @@ class ChatbotService:
                     gen_response = await self.llm.generate_response(message, system_prompt=persona)
                     final_response += f"{gen_response} "
 
-                elif cap == "MATCHING_ANALYSIS" and self.db and user_id:
+                elif cap == "MATCHING_ANALYSIS" and self.db and user_id and user_id != "guest":
                     # Explain why matches were made
                     student_ctx = await self._get_student_context(user_id)
                     matches = await self.matcher.calculate_matches_for_student(user_id)
@@ -216,7 +218,7 @@ class ChatbotService:
                     else:
                         final_response += "I couldn't find any high-confidence matches to analyze right now. "
 
-                elif cap == "CAREER_ADVICE" and self.db and user_id:
+                elif cap == "CAREER_ADVICE" and self.db and user_id and user_id != "guest":
                     # Provide personalized career advice
                     student_ctx = await self._get_student_context(user_id)
                     advice_prompt = f"""

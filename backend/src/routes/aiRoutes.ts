@@ -1,14 +1,14 @@
 import { Router } from 'express';
 import { AIController } from '../controllers/AIController';
-import { authenticate } from '../middleware/authMiddleware';
+import { authenticate, optionalAuthenticate } from '../middleware/authMiddleware';
 
 const router = Router();
 
-// All AI routes require authentication
-router.use(authenticate);
+// Publicly accessible chat (optional auth)
+router.post('/chat', optionalAuthenticate, AIController.chat);
 
-router.post('/chat', AIController.chat);
-router.get('/history', AIController.getHistory);
-router.delete('/history', AIController.clearHistory);
+// History routes still require authentication
+router.get('/history', authenticate, AIController.getHistory);
+router.delete('/history', authenticate, AIController.clearHistory);
 
 export default router;

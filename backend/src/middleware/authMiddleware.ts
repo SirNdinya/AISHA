@@ -21,6 +21,27 @@ export const authenticate = (req: Request, res: Response, next: NextFunction) =>
     }
 };
 
+export const optionalAuthenticate = (req: Request, res: Response, next: NextFunction) => {
+    let token;
+
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        token = req.headers.authorization.split(' ')[1];
+    }
+
+    if (!token) {
+        return next();
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'aisha_secret_key_v1');
+        (req as any).user = decoded;
+        next();
+    } catch (error) {
+        // Continue as guest even if token fails
+        next();
+    }
+};
+
 export const restrictTo = (...roles: string[]) => {
     return (req: Request, res: Response, next: NextFunction) => {
         const user = (req as any).user;
