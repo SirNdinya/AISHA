@@ -1,14 +1,9 @@
 import { Request, Response } from 'express';
 import pool from '../config/database';
-import path from 'path';
+import { StorageService } from '../services/StorageService';
 
 export class DocumentController {
-
-
-
-
-    // --- Legacy / Compatibility Methods ---
-
+    // ... (keep legacy methods)
 
     async uploadDocument(req: Request, res: Response) {
         try {
@@ -24,7 +19,8 @@ export class DocumentController {
                 return res.status(400).json({ message: 'Only PDF documents are allowed' });
             }
 
-            const fileUrl = `/uploads/documents/${file.filename}`;
+            // Upload to Supabase Storage instead of local disk
+            const fileUrl = await StorageService.uploadFile(file, 'documents', 'student_docs');
 
             const result = await pool.query(
                 `INSERT INTO document_hub (owner_id, type, file_url, status, is_auto_generated, metadata)

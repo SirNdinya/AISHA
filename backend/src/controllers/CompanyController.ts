@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import pool from '../config/database';
 import { BaseController } from './BaseController';
 
+import { StorageService } from '../services/StorageService';
+
 export class CompanyController extends BaseController {
     constructor() {
         super('companies');
@@ -93,7 +95,8 @@ export class CompanyController extends BaseController {
                 return res.status(400).json({ status: 'error', message: 'No file uploaded' });
             }
 
-            const profilePictureUrl = `/uploads/profiles/${req.file.filename}`;
+            // Upload to Supabase Storage instead of local disk
+            const profilePictureUrl = await StorageService.uploadFile(req.file, 'profiles', 'logos');
 
             const query = `
                 UPDATE companies 
@@ -111,7 +114,7 @@ export class CompanyController extends BaseController {
 
             res.status(200).json({
                 status: 'success',
-                message: 'Profile picture uploaded successfully',
+                message: 'Profile picture uploaded successfully to cloud storage',
                 data: {
                     profile_picture_url: profilePictureUrl
                 }

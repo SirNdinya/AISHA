@@ -6,6 +6,7 @@ import { RealtimeService } from '../services/RealtimeService';
 import PDFDocument from 'pdfkit';
 import path from 'path';
 import fs from 'fs';
+import axios from 'axios';
 
 export class ApplicationController extends BaseController {
     constructor() {
@@ -512,14 +513,26 @@ export class ApplicationController extends BaseController {
             // ============================================================
             let logoRendered = false;
             const logoPath = d.profile_picture_url || d.logo_url;
-            if (logoPath && logoPath.startsWith('/uploads')) {
-                const relPath = logoPath.startsWith('/') ? logoPath.substring(1) : logoPath;
-                const fullPath = path.join(__dirname, '../../', relPath);
-                if (fs.existsSync(fullPath)) {
-                    try {
-                        doc.image(fullPath, 55, 40, { width: 65 });
+            
+            if (logoPath) {
+                try {
+                    if (logoPath.startsWith('http')) {
+                        // Remote logo from Cloud Storage
+                        const response = await axios.get(logoPath, { responseType: 'arraybuffer' });
+                        const logoBuffer = Buffer.from(response.data, 'utf-8');
+                        doc.image(logoBuffer, 55, 40, { width: 65 });
                         logoRendered = true;
-                    } catch (e) { console.error('Logo embed error:', e); }
+                    } else if (logoPath.startsWith('/uploads')) {
+                        // Local logo (fallback for existing records or dev)
+                        const relPath = logoPath.startsWith('/') ? logoPath.substring(1) : logoPath;
+                        const fullPath = path.join(__dirname, '../../', relPath);
+                        if (fs.existsSync(fullPath)) {
+                            doc.image(fullPath, 55, 40, { width: 65 });
+                            logoRendered = true;
+                        }
+                    }
+                } catch (e) {
+                    console.error('Logo render error:', e);
                 }
             }
 

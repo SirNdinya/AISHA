@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import pool from '../config/database';
 import { AIService } from '../services/AIService';
 import { BaseController } from './BaseController';
+import { StorageService } from '../services/StorageService';
 
 export class StudentController extends BaseController {
     constructor() {
@@ -199,7 +200,9 @@ export class StudentController extends BaseController {
             const studentRes = await pool.query('SELECT id FROM students WHERE user_id = $1', [userId]);
             if (studentRes.rows.length === 0) return res.status(404).json({ message: 'Student profile not found' });
             const studentId = studentRes.rows[0].id;
-            const profilePictureUrl = `/uploads/profiles/${file.filename}`;
+            
+            // Upload to Supabase Storage instead of local disk
+            const profilePictureUrl = await StorageService.uploadFile(file, 'profiles', 'student_avatars');
 
             // Update Database
             const query = 'UPDATE students SET profile_picture_url = $1 WHERE id = $2 RETURNING *';
@@ -207,7 +210,7 @@ export class StudentController extends BaseController {
 
             res.status(200).json({
                 status: 'success',
-                message: 'Profile picture uploaded successfully',
+                message: 'Profile picture uploaded successfully to cloud storage',
                 data: result.rows[0],
             });
 
