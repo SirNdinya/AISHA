@@ -130,7 +130,13 @@ class ChatbotService:
                 if cap == "KNOWLEDGE_QUERY":
                     kb_results = self.knowledge.query_knowledge(message)
                     if kb_results:
-                        final_response += f"{kb_results[0]['snippet']} "
+                        knowledge_ctx = kb_results[0]['snippet']
+                        # Use LLM to formulate a natural response based on the knowledge
+                        gen_response = await self.llm.generate_response(
+                            f"Based on this platform knowledge: '{knowledge_ctx}', answer the user's question: '{message}'",
+                            system_prompt="You are AISHA, the Intelligent Assistant. Provide a helpful, professional response using the provided knowledge. Do not mention that you were given a snippet."
+                        )
+                        final_response += f"{gen_response} "
                         context_data["kb_source"] = kb_results[0]["id"]
                 
                 elif cap == "DATA_RETRIEVAL" and self.db:

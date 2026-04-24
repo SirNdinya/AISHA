@@ -50,8 +50,7 @@ class ReasoningEngine:
             prompt = f"Plan for: \"{query}\""
             response_text = await llm_service.generate_response(
                 prompt=prompt, 
-                system_prompt=self.system_prompt,
-                force_gemini=True
+                system_prompt=self.system_prompt
             )
             
             # Robust JSON extraction
