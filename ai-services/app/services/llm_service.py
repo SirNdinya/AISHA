@@ -24,7 +24,7 @@ class LLMService:
         self.client = None
         if GEMINI_AVAILABLE and self.gemini_key:
             try:
-                # Revert to v1beta for structured analysis support (matching engine)
+                # Use v1beta for gemini-2.5 features including structured analysis
                 self.client = genai.Client(
                     api_key=self.gemini_key,
                     http_options={'api_version': 'v1beta'}
@@ -46,7 +46,7 @@ class LLMService:
                 # Combine system prompt if provided
                 full_prompt = f"SYSTEM: {system_prompt}\n\nUSER: {prompt}" if system_prompt else prompt
                 response = await self.client.aio.models.generate_content(
-                    model='gemini-1.5-flash',
+                    model='gemini-2.5-flash',
                     contents=full_prompt
                 )
                 logger.info("Gemini response received.")
@@ -66,7 +66,7 @@ class LLMService:
                 # Fix: Use types.GenerateContentConfig for the configuration
                 # This resolves the 400 Bad Request error by correctly mapping response_mime_type
                 response = await self.client.aio.models.generate_content(
-                    model='gemini-1.5-flash',
+                    model='gemini-2.5-flash',
                     contents=f"{prompt}\n\nRespond ONLY with a JSON object that follows this schema: {json.dumps(schema)}",
                     config=types.GenerateContentConfig(
                         response_mime_type='application/json'
