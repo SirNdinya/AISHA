@@ -1,6 +1,8 @@
 import json
 import re
 import logging
+import asyncio
+import time
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -18,6 +20,7 @@ except ImportError:
 class LLMService:
     def __init__(self, model: str = "", api_key: str | None = None):
         self.gemini_key = api_key or settings.GEMINI_API_KEY
+        self.semaphore = asyncio.Semaphore(2) # Prevent 429 by limiting concurrency
         
         # Initialize Gemini
         self.gemini_ready = False
@@ -36,67 +39,85 @@ class LLMService:
 
     async def generate_response(self, prompt: str, system_prompt: str = "") -> str:
         """
-        Primary entry point for generation.
+        Primary entry point for generation with built-in retry logic.
         """
-        if self.gemini_ready and self.client:
-            try:
-                # Use gemini-1.5-flash via new SDK
-                logger.info("Calling Gemini (gemini-1.5-flash) via aio...")
+        if not (self.gemini_ready and self.client):
+            return "I'm currently unable to generate a response. AI services are unavailable."
+
+        full_prompt = f"SYSTEM: {system_prompt}\n\nUSER: {prompt}" if system_prompt else prompt
+        
+        for attempt in range(3):
+            async with self.semaphore:
+                try:
+                    logger.info(f"Calling Gemini (attempt {attempt+1}) via aio...")
+                    response = await self.client.aio.models.generate_content(
+                        model='gemini-2.5-flash',
+                        contents=full_prompt
+                    )
+                    logger.info("Gemini response received.")
+                    return response.text
+                except Exception as e:
+                    err_msg = str(e).upper()
+                    if ("429" in err_msg or "RESOURCE_EXHAUSTED" in err_msg or "503" in err_msg or "UNAVAILABLE" in err_msg) and attempt < 2:
+                        delay = (2 ** attempt) * 2 + (time.time() % 1) # Exponential backoff with jitter
+                        logger.warning(f"Gemini API rate limited or unavailable (attempt {attempt+1}). Retrying in {delay:.2f}s...")
+                        await asyncio.sleep(delay)
+                        continue
+                    logger.error(f"Gemini Error after {attempt+1} attempts: {e}")
+                    break
                 
-                # Combine system prompt if provided
-                full_prompt = f"SYSTEM: {system_prompt}\n\nUSER: {prompt}" if system_prompt else prompt
-                response = await self.client.aio.models.generate_content(
-                    model='gemini-2.5-flash',
-                    contents=full_prompt
-                )
-                logger.info("Gemini response received.")
-                return response.text
-            except Exception as e:
-                logger.error(f"Gemini Error: {e}")
-                
-        return "I'm currently unable to generate a response. AI services are unavailable."
+        return "I'm currently unable to generate a response. AI services are under high demand."
 
     async def analyze_structured(self, prompt: str, schema: dict) -> dict:
         """
-        Generates a structured JSON response based on a schema.
+        Generates a structured JSON response with retry logic and concurrency control.
         """
-        if self.gemini_ready and self.client:
-            try:
-                logger.info("Calling Gemini for structured analysis via aio...")
-                # Fix: Use types.GenerateContentConfig for the configuration
-                # This resolves the 400 Bad Request error by correctly mapping response_mime_type
-                response = await self.client.aio.models.generate_content(
-                    model='gemini-2.5-flash',
-                    contents=f"{prompt}\n\nRespond ONLY with a JSON object that follows this schema: {json.dumps(schema)}",
-                    config=types.GenerateContentConfig(
-                        response_mime_type='application/json'
-                    )
-                )
-                logger.info("Gemini structured response received.")
-                text = response.text
-                
-                if not text.strip():
-                    return {"error": "Empty response from Gemini"}
-                
+        if not (self.gemini_ready and self.client):
+            return {"error": "No LLM service available for structured analysis"}
+
+        for attempt in range(3):
+            async with self.semaphore:
                 try:
-                    parsed = json.loads(text)
-                    if isinstance(parsed, dict):
-                        return parsed
-                    elif isinstance(parsed, list) and len(parsed) > 0:
-                        return parsed[0]
-                    return {"error": "Unexpected JSON structure", "raw": text}
-                except json.JSONDecodeError:
-                    match = re.search(r'(\{.*\})', text, re.DOTALL)
-                    if match:
-                        try:
-                            return json.loads(match.group(1))
-                        except json.JSONDecodeError:
-                            pass
-                    return {"error": "Could not parse JSON from LLM response", "raw": text}
+                    logger.info(f"Calling Gemini for structured analysis (attempt {attempt+1}) via aio...")
+                    response = await self.client.aio.models.generate_content(
+                        model='gemini-2.5-flash',
+                        contents=f"{prompt}\n\nRespond ONLY with a JSON object that follows this schema: {json.dumps(schema)}",
+                        config=types.GenerateContentConfig(
+                            response_mime_type='application/json'
+                        )
+                    )
+                    logger.info("Gemini structured response received.")
+                    text = response.text
                     
-            except Exception as e:
-                logger.warning(f"Gemini structured analysis failed: {e}")
+                    if not text.strip():
+                        return {"error": "Empty response from Gemini"}
+                    
+                    try:
+                        parsed = json.loads(text)
+                        if isinstance(parsed, dict):
+                            return parsed
+                        elif isinstance(parsed, list) and len(parsed) > 0:
+                            return parsed[0]
+                        return {"error": "Unexpected JSON structure", "raw": text}
+                    except json.JSONDecodeError:
+                        match = re.search(r'(\{.*\})', text, re.DOTALL)
+                        if match:
+                            try:
+                                return json.loads(match.group(1))
+                            except json.JSONDecodeError:
+                                pass
+                        return {"error": "Could not parse JSON from LLM response", "raw": text}
+                        
+                except Exception as e:
+                    err_msg = str(e).upper()
+                    if ("429" in err_msg or "RESOURCE_EXHAUSTED" in err_msg or "503" in err_msg or "UNAVAILABLE" in err_msg) and attempt < 2:
+                        delay = (2 ** attempt) * 2 + (time.time() % 1)
+                        logger.warning(f"Gemini structured analysis rate limited (attempt {attempt+1}). Retrying in {delay:.2f}s...")
+                        await asyncio.sleep(delay)
+                        continue
+                    logger.warning(f"Gemini structured analysis failed after {attempt+1} attempts: {e}")
+                    break
             
-        return {"error": "No LLM service available for structured analysis"}
+        return {"error": "LLM structured analysis failed after multiple retries due to quota or availability."}
 
 llm_service = LLMService()
