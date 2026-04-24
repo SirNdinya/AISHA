@@ -509,6 +509,24 @@ export class ApplicationController extends BaseController {
             doc.pipe(res);
 
             // ============================================================
+            // WATERMARK
+            // ============================================================
+            const watermarkPath = path.join(__dirname, '../../assets/aisha-logo.png');
+            const addWatermark = () => {
+                if (fs.existsSync(watermarkPath)) {
+                    doc.save();
+                    doc.fillOpacity(0.05);
+                    doc.image(watermarkPath, 147, 260, { width: 300 });
+                    doc.restore();
+                }
+            };
+            
+            // Add to first page
+            addWatermark();
+            // Add to any subsequent pages
+            doc.on('pageAdded', addWatermark);
+
+            // ============================================================
             // HEADER — Company Branding
             // ============================================================
             let logoRendered = false;
