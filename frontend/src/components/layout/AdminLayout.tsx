@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Flex, Heading, HStack, Button, Text } from '@chakra-ui/react';
+import { Box, Flex, Heading, HStack, Button, Text, Image } from '@chakra-ui/react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import ThemeToggle from '../common/ThemeToggle';
@@ -29,7 +29,12 @@ const AdminLayout: React.FC = () => {
         <Flex direction="column" minH="100vh">
             <Box as="nav" bg="var(--terminal-card)" px={8} py={4} shadow="md" borderBottom="1px solid" borderColor="var(--terminal-border)">
                 <Flex justify="space-between" align="center">
-                    <Heading size="md">SAPS Admin</Heading>
+                    <HStack gap={3}>
+                        <Box bg="white" p={1} borderRadius="lg" boxShadow="0 0 10px rgba(0, 184, 212, 0.2)">
+                            <Image src="/aisha-logo.png" alt="AISHA Logo" boxSize={6} borderRadius="md" />
+                        </Box>
+                        <Heading size="md">AISHA Admin</Heading>
+                    </HStack>
                     <HStack gap={6}>
                         <Link to="/">Home Hub</Link>
                         <Link to="/admin/dashboard">Dashboard</Link>

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Box, VStack, HStack, Text, Icon, Flex, Separator, IconButton } from '@chakra-ui/react';
+import { Box, VStack, HStack, Text, Icon, Flex, Separator, IconButton, Image } from '@chakra-ui/react';
 import { NavLink } from 'react-router-dom';
 import {
     LuPanelLeftOpen,
@@ -18,7 +18,6 @@ export interface NavItem {
 interface UnifiedSidebarProps {
     portalName: string;
     portalType: string;
-    portalLogo: React.ElementType;
     navItems: NavItem[];
     isCollapsed: boolean;
     onToggle?: () => void;
@@ -31,7 +30,6 @@ interface UnifiedSidebarProps {
 const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
     portalName,
     portalType,
-    portalLogo,
     navItems,
     isCollapsed,
     onToggle,
@@ -45,13 +43,13 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
             {/* Logo Section */}
             <Flex align="center" gap={3} px={isCollapsed ? 0 : 2} justify={isCollapsed ? 'center' : 'flex-start'}>
                 <Box
-                    bg={`${accentColor}.600`}
-                    p={2}
+                    bg="white"
+                    p={1}
                     borderRadius="xl"
-                    boxShadow={`0 0 15px rgba(0, 184, 212, 0.3)`}
+                    boxShadow="0 0 20px rgba(0, 184, 212, 0.4)"
                     flexShrink={0}
                 >
-                    <Icon as={portalLogo} color="white" boxSize={6} />
+                    <Image src="/aisha-logo.png" alt="AISHA Logo" boxSize={8} borderRadius="lg" />
                 </Box>
                 {(!isCollapsed || isMobile) && (
                     <VStack align="flex-start" gap={0}>

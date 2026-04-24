@@ -10,7 +10,6 @@ import ErrorBoundary from './components/common/ErrorBoundary';
 // Layouts
 import StudentLayout from './components/layout/StudentLayout';
 import CompanyLayout from './components/layout/CompanyLayout';
-import PublicLayout from './components/layout/PublicLayout';
 import AdminLayout from './components/layout/AdminLayout';
 import PortalSelector from './pages/PortalSelector';
 
@@ -24,6 +23,7 @@ import RegisterPage from './pages/auth/RegisterPage';
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import VerifyEmailPage from './pages/auth/VerifyEmailPage';
+import TitleManager from './components/common/TitleManager';
 
 // Student Pages
 import StudentDashboard from './pages/student/StudentDashboard';
@@ -204,6 +204,7 @@ const App: React.FC = () => {
         <ErrorBoundary>
           <ColorModeProviderWrapper>
             <Router>
+              <TitleManager />
               <SocketProvider userId={store.getState().auth.user?.id} institutionId={store.getState().auth.user?.institutionId}>
                 <Routes>
                   {renderPortalRoutes()}

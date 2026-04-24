@@ -9,11 +9,9 @@ import AishaAssistant from '../../../components/common/AishaAssistant';
 import {
     LayoutDashboard,
     Users,
-    FileText,
     Briefcase,
     Settings,
     LogOut,
-    Megaphone,
     Home
 } from 'lucide-react';
 import { LuPanelLeftClose, LuPanelLeftOpen } from 'react-icons/lu';
@@ -53,16 +51,14 @@ const AdminPortalLayout: React.FC = () => {
                     {/* Logo */}
                     <Flex align="center" px={2} h="40px">
                         <Box
-                            w="40px"
-                            h="40px"
-                            borderRadius="10px"
-                            bg="linear-gradient(135deg, var(--terminal-accent) 0%, #2dd4bf 100%)"
-                            display="flex"
-                            alignItems="center"
-                            justifyContent="center"
+                            bg="white"
+                            p={1}
+                            borderRadius="xl"
+                            boxShadow="0 0 20px rgba(0, 184, 212, 0.4)"
+                            flexShrink={0}
                             mr={isSidebarOpen ? 3 : 0}
                         >
-                            <Box w="20px" h="20px" bg="white" borderRadius="4px" />
+                            <Image src="/aisha-logo.png" alt="AISHA Logo" boxSize={8} borderRadius="lg" />
                         </Box>
                         {isSidebarOpen && (
                             <Heading size="md" className="gradient-text" fontWeight="bold">

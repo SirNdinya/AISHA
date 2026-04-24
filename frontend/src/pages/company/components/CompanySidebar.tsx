@@ -1,13 +1,12 @@
 
 import React from 'react';
-import { Box, VStack, HStack, Text, Icon, Flex, Separator, IconButton } from '@chakra-ui/react';
+import { Box, VStack, HStack, Text, Icon, Flex, Separator, IconButton, Image } from '@chakra-ui/react';
 import { NavLink } from 'react-router-dom';
 import {
     LuLayoutDashboard,
     LuBriefcase,
     LuGrip,
     LuSettings,
-    LuShield,
     LuPanelLeftClose,
     LuPanelLeftOpen,
     LuCreditCard,
@@ -51,13 +50,13 @@ const CompanySidebar: React.FC<CompanySidebarProps> = ({ isCollapsed, onToggle, 
                 {/* Logo Section */}
                 <Flex align="center" gap={3} px={isCollapsed ? 0 : 2} justify={isCollapsed ? 'center' : 'flex-start'}>
                     <Box
-                        bg="orange.600"
-                        p={2}
+                        bg="white"
+                        p={1}
                         borderRadius="xl"
-                        boxShadow="0 0 15px rgba(49, 130, 206, 0.3)"
+                        boxShadow="0 0 20px rgba(0, 184, 212, 0.4)"
                         flexShrink={0}
                     >
-                        <Icon as={LuShield} color="gray.800" boxSize={6} />
+                        <Image src="/aisha-logo.png" alt="AISHA Logo" boxSize={8} borderRadius="lg" />
                     </Box>
                     {!isCollapsed && (
                         <VStack align="flex-start" gap={0}>

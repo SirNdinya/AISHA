@@ -16,7 +16,6 @@ import {
     LuUser,
     LuFileText,
     LuSettings,
-    LuGraduationCap
 } from 'react-icons/lu';
 import { X as LuX } from "lucide-react";
 
@@ -71,7 +70,6 @@ const StudentLayout: React.FC = () => {
                 <UnifiedSidebar
                     portalName="AISHA"
                     portalType="STUDENT PORTAL"
-                    portalLogo={LuGraduationCap}
                     navItems={navItems}
                     isCollapsed={isSidebarCollapsed}
                     onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
@@ -125,7 +123,6 @@ const StudentLayout: React.FC = () => {
                                 <UnifiedSidebar
                                     portalName="AISHA"
                                     portalType="STUDENT PORTAL"
-                                    portalLogo={LuGraduationCap}
                                     navItems={navItems}
                                     isCollapsed={false}
                                     onLogout={handleLogout}
