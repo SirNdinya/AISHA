@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaGraduationCap, FaBuilding, FaUniversity, FaUserShield, FaWhatsapp, FaEnvelope, FaMapMarkerAlt, FaPhone, FaPaperPlane } from 'react-icons/fa';
 import axios from 'axios';
+import apiClient from '../services/apiClient';
+
 import AishaAssistant from '../components/common/AishaAssistant';
 
 interface PortalOption {
@@ -67,7 +69,7 @@ const PortalSelector: React.FC = () => {
 
         setStatus('loading');
         try {
-            await axios.post('/api/v1/public/contact', formData);
+            await apiClient.post('/public/contact', formData);
             setStatus('success');
             setFormData({ name: '', email: '', subject: '', message: '' });
         } catch (error: any) {

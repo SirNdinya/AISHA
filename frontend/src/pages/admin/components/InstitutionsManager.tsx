@@ -5,6 +5,8 @@ import {
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import apiClient from '../../../services/apiClient';
+
 import { toaster } from '../../../components/ui/toaster';
 import { LuBuilding2, LuCircleCheck, LuMailCheck, LuMailX, LuShieldX } from 'react-icons/lu';
 
@@ -34,17 +36,16 @@ const InstitutionsManager: React.FC = () => {
     const [verifying, setVerifying] = useState<string | null>(null);
     const [filter, setFilter] = useState<FilterType>('all');
 
-    const API = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
+
 
     const fetchInstitutions = async (f: FilterType) => {
         setLoading(true);
         try {
             const params = f === 'all' ? {} : { verified: f };
-            const token = localStorage.getItem('token');
-            const res = await axios.get(`${API}/admin/institutions`, {
-                params,
-                headers: { Authorization: `Bearer ${token}` }
+            const res = await apiClient.get(`/admin/institutions`, {
+                params
             });
+
             setInstitutions(res.data.data);
         } catch (err: any) {
             toaster.create({ title: 'Failed to load institutions', type: 'error' });
@@ -68,11 +69,9 @@ const InstitutionsManager: React.FC = () => {
         }
         setVerifying(inst.id);
         try {
-            const token = localStorage.getItem('token');
-            await axios.patch(`${API}/admin/institutions/${inst.id}/verify`, {}, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await apiClient.patch(`/admin/institutions/${inst.id}/verify`, {});
             toaster.create({ title: `${inst.name} verified!`, type: 'success' });
+
             fetchInstitutions(filter);
         } catch (err: any) {
             const msg = err.response?.data?.message || 'Verification failed.';

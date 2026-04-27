@@ -3,6 +3,7 @@ import re
 import logging
 import asyncio
 import time
+import httpx
 from app.core.config import settings
 
 logger = logging.getLogger(__name__)
@@ -65,8 +66,37 @@ class LLMService:
                         continue
                     logger.error(f"Gemini Error after {attempt+1} attempts: {e}")
                     break
+        
+        # New: Ollama Fallback for non-mocked response
+        ollama_res = await self._ollama_fallback(prompt, system_prompt)
+        if ollama_res:
+            return ollama_res
                 
         return "I'm currently unable to generate a response. AI services are under high demand."
+
+    async def _ollama_fallback(self, prompt: str, system_prompt: str = "") -> str:
+        """
+        Fallback to local Ollama instance for non-mocked responses when Gemini is unavailable.
+        """
+        try:
+            logger.info(f"Initiating Ollama fallback [Model: {settings.OLLAMA_MODEL}] at {settings.OLLAMA_HOST}...")
+            async with httpx.AsyncClient(timeout=45.0) as client:
+                response = await client.post(
+                    f"{settings.OLLAMA_HOST}/api/generate",
+                    json={
+                        "model": settings.OLLAMA_MODEL,
+                        "prompt": f"SYSTEM: {system_prompt}\n\nUSER: {prompt}" if system_prompt else prompt,
+                        "stream": False
+                    }
+                )
+                if response.status_code == 200:
+                    logger.info("Ollama fallback successful.")
+                    return response.json().get("response", "")
+                else:
+                    logger.warning(f"Ollama returned status {response.status_code}")
+        except Exception as e:
+            logger.error(f"Ollama fallback connection failed: {e}")
+        return ""
 
     async def analyze_structured(self, prompt: str, schema: dict) -> dict:
         """
