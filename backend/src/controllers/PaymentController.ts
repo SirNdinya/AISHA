@@ -101,15 +101,19 @@ export class PaymentController extends BaseController {
                 `UPDATE payments 
                  SET status = $1, result_desc = $2, mpesa_receipt_number = $3 
                  WHERE merchant_request_id = $4 
-                 RETURNING user_id, updated_at`,
+                 RETURNING id, student_id, status`,
                 [status, ResultDesc, receipt, MerchantRequestID]
             );
 
-            // LOG Callback
-            console.log(`M-Pesa Callback Processed: ${MerchantRequestID} -> ${status}`);
+            if (result.rows.length === 0) {
+                console.warn(`M-Pesa Callback: No payment found for MerchantRequestID: ${MerchantRequestID}`);
+            } else {
+                console.log(`M-Pesa Callback Processed: ${MerchantRequestID} -> ${status} (Payment ID: ${result.rows[0].id})`);
+            }
 
             res.status(200).json({ status: 'success' });
-        } catch (error) {
+        } catch (error: any) {
+            console.error('M-Pesa Callback Error:', error.message);
             next(error);
         }
     };
