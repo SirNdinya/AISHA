@@ -557,36 +557,36 @@ const LogbookManager: React.FC = () => {
                         </Box>
 
                         {/* Supervisor Confirmations (Read Only for Student) */}
-                        <Box bg="var(--terminal-card)" borderRadius="xl" boxShadow="md" border="1px solid" borderColor="var(--terminal-border)" overflow="hidden">
-                            <Box bg="whiteAlpha.50" color="var(--terminal-accent)" p={4} textAlign="center">
+                        <Box bg="white" color="slate.900" borderRadius="xl" boxShadow="md" border="1px solid" borderColor="gray.200" overflow="hidden">
+                            <Box bg="var(--terminal-accent)" color="black" p={4} textAlign="center">
                                 <Heading size="md" fontWeight="black">WEEKLY CONFIRMATION BY SUPERVISORS</Heading>
                             </Box>
                             
                             <Box p={6}>
                                 <VStack gap={6} align="stretch">
-                                    <Box p={4} bg="whiteAlpha.50" borderRadius="md" border="1px solid" borderColor="var(--terminal-border)">
-                                        <Text fontWeight="bold" color="var(--terminal-accent)" mb={2}>Comments by Industry-based Supervisor:</Text>
-                                        <Text p={3} bg="blackAlpha.200" minH="80px" borderRadius="sm" fontStyle={entry.industry_supervisor_comments ? "normal" : "italic"} color={entry.industry_supervisor_comments ? "#F8FAFC" : "whiteAlpha.400"}>
+                                    <Box p={4} bg="gray.50" borderRadius="md" border="1px solid" borderColor="gray.200">
+                                        <Text fontWeight="bold" color="indigo.600" mb={2}>Comments by Industry-based Supervisor:</Text>
+                                        <Text p={3} bg="white" border="1px solid" borderColor="gray.200" minH="80px" borderRadius="sm" fontStyle={entry.industry_supervisor_comments ? "normal" : "italic"} color={entry.industry_supervisor_comments ? "#0F172A" : "gray.400"}>
                                             {entry.industry_supervisor_comments || "Pending evaluation..."}
                                         </Text>
                                         <HStack justify="space-between" mt={4}>
                                             <Badge colorPalette={entry.industry_supervisor_signature_date ? "green" : "gray"} variant="solid">
                                                 {entry.industry_supervisor_signature_date ? "SIGNED DIGITALLY" : "PENDING SIGNATURE"}
                                             </Badge>
-                                            {entry.industry_supervisor_signature_date && <Text fontSize="xs" color="whiteAlpha.600">Date: {new Date(entry.industry_supervisor_signature_date).toLocaleString()}</Text>}
+                                            {entry.industry_supervisor_signature_date && <Text fontSize="xs" color="gray.600">Date: {new Date(entry.industry_supervisor_signature_date).toLocaleString()}</Text>}
                                         </HStack>
                                     </Box>
 
-                                    <Box p={4} bg="whiteAlpha.50" borderRadius="md" border="1px solid" borderColor="var(--terminal-border)">
-                                        <Text fontWeight="bold" color="purple.400" mb={2}>Comments by Assessing University Supervisor:</Text>
-                                        <Text p={3} bg="blackAlpha.200" minH="80px" borderRadius="sm" fontStyle={entry.university_supervisor_comments ? "normal" : "italic"} color={entry.university_supervisor_comments ? "#F8FAFC" : "whiteAlpha.400"}>
+                                    <Box p={4} bg="gray.50" borderRadius="md" border="1px solid" borderColor="gray.200">
+                                        <Text fontWeight="bold" color="purple.600" mb={2}>Comments by Assessing University Supervisor:</Text>
+                                        <Text p={3} bg="white" border="1px solid" borderColor="gray.200" minH="80px" borderRadius="sm" fontStyle={entry.university_supervisor_comments ? "normal" : "italic"} color={entry.university_supervisor_comments ? "#0F172A" : "gray.400"}>
                                             {entry.university_supervisor_comments || "Pending evaluation..."}
                                         </Text>
                                         <HStack justify="space-between" mt={4}>
                                             <Badge colorPalette={entry.university_supervisor_signature_date ? "green" : "gray"} variant="solid">
                                                 {entry.university_supervisor_signature_date ? "SIGNED DIGITALLY" : "PENDING SIGNATURE"}
                                             </Badge>
-                                            {entry.university_supervisor_signature_date && <Text fontSize="xs" color="whiteAlpha.600">Date: {new Date(entry.university_supervisor_signature_date).toLocaleString()}</Text>}
+                                            {entry.university_supervisor_signature_date && <Text fontSize="xs" color="gray.600">Date: {new Date(entry.university_supervisor_signature_date).toLocaleString()}</Text>}
                                         </HStack>
                                     </Box>
                                 </VStack>
