@@ -5,9 +5,9 @@ export class PaymentService {
     private consumerSecret = process.env.MPESA_CONSUMER_SECRET || 'your_consumer_secret';
     private passkey = process.env.MPESA_PASSKEY || 'your_passkey';
     private shortcode = process.env.MPESA_SHORTCODE || '174379';
-    private callbackUrl = (process.env.MPESA_CALLBACK_URL && !process.env.MPESA_CALLBACK_URL.includes('your-domain.com')) 
+    private callbackUrl = ((process.env.MPESA_CALLBACK_URL && !process.env.MPESA_CALLBACK_URL.includes('your-domain.com')) 
         ? process.env.MPESA_CALLBACK_URL 
-        : 'https://aisha-j9q9.onrender.com/api/v1/payments/callback';
+        : 'https://aisha-j9q9.onrender.com/api/v1/payments/callback').replace(/^MPESA_CALLBACK_URL=/, '');
     private baseUrl = process.env.MPESA_ENV === 'production'
         ? 'https://api.safaricom.co.ke'
         : 'https://sandbox.safaricom.co.ke';
