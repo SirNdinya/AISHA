@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, Heading, Text, Button, VStack, HStack, Card, Icon, Container, SimpleGrid, Link, Input, Textarea, Image, Spinner } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaGraduationCap, FaBuilding, FaUniversity, FaUserShield, FaWhatsapp, FaEnvelope, FaMapMarkerAlt, FaPhone, FaPaperPlane } from 'react-icons/fa';
+import { FaGraduationCap, FaBuilding, FaUniversity, FaUserShield, FaWhatsapp, FaEnvelope, FaMapMarkerAlt, FaPhone, FaPaperPlane, FaArrowRight } from 'react-icons/fa';
 import axios from 'axios';
 import apiClient from '../services/apiClient';
 
@@ -353,7 +353,7 @@ const PortalSelector: React.FC = () => {
                                         onClick={() => navigate(portal.path)}
                                     >
                                         <Card.Body h="full" display="flex" flexDirection="column">
-                                            <VStack align="start" gap={6} flex="1">
+                                            <VStack align="start" gap={6} flex="1" w="full">
                                                 <Box
                                                     p={5}
                                                     borderRadius="2xl"
@@ -371,6 +371,17 @@ const PortalSelector: React.FC = () => {
                                                     <Heading size="lg" color="white" fontWeight="900">{portal.title}</Heading>
                                                     <Text fontSize="md" color="whiteAlpha.600" lineHeight="1.6">{portal.description}</Text>
                                                 </VStack>
+                                                <Button 
+                                                    w="full" 
+                                                    mt={2}
+                                                    colorPalette={portal.color.split('.')[0]} 
+                                                    variant="subtle" 
+                                                    fontWeight="bold" 
+                                                    borderRadius="xl"
+                                                    pointerEvents="none"
+                                                >
+                                                    Enter Portal <Icon as={FaArrowRight} ml={2} />
+                                                </Button>
                                             </VStack>
                                         </Card.Body>
                                     </Card.Root>
