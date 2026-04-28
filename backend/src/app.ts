@@ -60,6 +60,11 @@ app.use('/api/v1', v1Router);
 app.use('/api', v1Router);
 app.use('/', v1Router);
 
+// Short direct callback for Safaricom
+import { PaymentController } from './controllers/PaymentController';
+const paymentCtrl = new PaymentController();
+app.post('/mpesa-cb', paymentCtrl.handleCallback);
+
 // Health Check Routes
 v1Router.get('/health', async (req: Request, res: Response) => {
     const health: any = {
