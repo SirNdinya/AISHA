@@ -18,27 +18,34 @@ export class PaymentService {
         return response.data.access_token;
     }
 
-    async initiateSTKPush(phoneNumber: string, amount: number, accountReference: string, transactionDesc: string = 'SAPS Payment') {
+    async initiateSTKPush(phoneNumber: string, amount: number | string, accountReference: string, transactionDesc: string = 'SAPS Payment') {
         const token = await this.getAccessToken();
         const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14);
         const password = Buffer.from(`${this.shortcode}${this.passkey}${timestamp}`).toString('base64');
+        
+        const numericAmount = Math.max(1, Math.round(Number(amount)));
 
-        const response = await axios.post(`${this.baseUrl}/mpesa/stkpush/v1/processrequest`, {
-            BusinessShortCode: this.shortcode,
-            Password: password,
-            Timestamp: timestamp,
-            TransactionType: 'CustomerPayBillOnline',
-            Amount: amount,
-            PartyA: phoneNumber,
-            PartyB: this.shortcode,
-            PhoneNumber: phoneNumber,
-            CallBackURL: this.callbackUrl,
-            AccountReference: accountReference,
-            TransactionDesc: transactionDesc
-        }, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+        try {
+            const response = await axios.post(`${this.baseUrl}/mpesa/stkpush/v1/processrequest`, {
+                BusinessShortCode: this.shortcode,
+                Password: password,
+                Timestamp: timestamp,
+                TransactionType: 'CustomerPayBillOnline',
+                Amount: numericAmount,
+                PartyA: phoneNumber,
+                PartyB: this.shortcode,
+                PhoneNumber: phoneNumber,
+                CallBackURL: this.callbackUrl,
+                AccountReference: accountReference,
+                TransactionDesc: transactionDesc
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
 
-        return response.data;
+            return response.data;
+        } catch (error: any) {
+            console.error('Safaricom API Error:', error.response?.data || error.message);
+            throw error;
+        }
     }
 }

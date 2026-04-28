@@ -46,8 +46,8 @@ export class PaymentController extends BaseController {
                 // Formatting phone number to 254...
                 const formattedPhone = phoneNumber.startsWith('0') ? `254${phoneNumber.slice(1)}` : phoneNumber;
 
-                const accountRef = transactionType === 'INSURANCE' ? 'SAPS Insurance' : 'Placement Stipend';
-                const transDesc = transactionType === 'INSURANCE' ? 'Insurance Payment' : 'Placement Fee';
+                const accountRef = transactionType === 'INSURANCE' ? 'SAPS-INS' : 'STIPEND';
+                const transDesc = transactionType === 'INSURANCE' ? 'Insurance' : 'Placement';
 
                 const mpesaResponse = await this.paymentService.initiateSTKPush(formattedPhone, amount, accountRef, transDesc);
 
