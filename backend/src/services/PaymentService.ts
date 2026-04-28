@@ -5,7 +5,9 @@ export class PaymentService {
     private consumerSecret = process.env.MPESA_CONSUMER_SECRET || 'your_consumer_secret';
     private passkey = process.env.MPESA_PASSKEY || 'your_passkey';
     private shortcode = process.env.MPESA_SHORTCODE || '174379';
-    private callbackUrl = process.env.MPESA_CALLBACK_URL || 'https://aisha-j9q9.onrender.com/api/v1/payments/callback';
+    private callbackUrl = (process.env.MPESA_CALLBACK_URL && !process.env.MPESA_CALLBACK_URL.includes('your-domain.com')) 
+        ? process.env.MPESA_CALLBACK_URL 
+        : 'https://aisha-j9q9.onrender.com/api/v1/payments/callback';
     private baseUrl = process.env.MPESA_ENV === 'production'
         ? 'https://api.safaricom.co.ke'
         : 'https://sandbox.safaricom.co.ke';
@@ -19,6 +21,7 @@ export class PaymentService {
     }
 
     async initiateSTKPush(phoneNumber: string, amount: number | string, accountReference: string, transactionDesc: string = 'SAPS Payment') {
+        console.log('[M-Pesa] Using Callback URL:', this.callbackUrl);
         const token = await this.getAccessToken();
         const timestamp = new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14);
         const password = Buffer.from(`${this.shortcode}${this.passkey}${timestamp}`).toString('base64');
