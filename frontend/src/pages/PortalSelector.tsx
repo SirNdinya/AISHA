@@ -5,8 +5,11 @@ import { motion } from 'framer-motion';
 import { FaGraduationCap, FaBuilding, FaUniversity, FaUserShield, FaWhatsapp, FaEnvelope, FaMapMarkerAlt, FaPhone, FaPaperPlane, FaArrowRight } from 'react-icons/fa';
 import axios from 'axios';
 import apiClient from '../services/apiClient';
+import { DialogRoot, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogBody, DialogCloseTrigger } from '../components/ui/dialog';
+import { Tooltip } from '../components/ui/tooltip';
 
 import AishaAssistant from '../components/common/AishaAssistant';
+import ThemeSwitcher from '../components/common/ThemeSwitcher';
 
 interface PortalOption {
     title: string;
@@ -129,19 +132,22 @@ const PortalSelector: React.FC = () => {
                             <Link href="#portals" fontWeight="600" fontSize="sm" color="whiteAlpha.800" _hover={{ color: 'cyan.400' }}>Portals</Link>
                             <Link href="#contact" fontWeight="600" fontSize="sm" color="whiteAlpha.800" _hover={{ color: 'cyan.400' }}>Contact</Link>
                         </HStack>
-                        <Button
-                            colorPalette="cyan"
-                            size="md"
-                            borderRadius="full"
-                            px={6}
-                            fontWeight="bold"
-                            onClick={scrollToPortals}
-                            boxShadow="0 4px 14px 0 rgba(6, 182, 212, 0.39)"
-                            _hover={{ transform: 'translateY(-2px)', boxShadow: "0 6px 20px rgba(6, 182, 212, 0.5)" }}
-                            transition="all 0.2s"
-                        >
-                            Get Started
-                        </Button>
+                        <HStack gap={4}>
+                            <ThemeSwitcher />
+                            <Button
+                                colorPalette="cyan"
+                                size="md"
+                                borderRadius="full"
+                                px={6}
+                                fontWeight="bold"
+                                onClick={scrollToPortals}
+                                boxShadow="0 4px 14px 0 rgba(6, 182, 212, 0.39)"
+                                _hover={{ transform: 'translateY(-2px)', boxShadow: "0 6px 20px rgba(6, 182, 212, 0.5)" }}
+                                transition="all 0.2s"
+                            >
+                                Get Started
+                            </Button>
+                        </HStack>
                     </HStack>
                 </Container>
             </Box>
@@ -405,22 +411,41 @@ const PortalSelector: React.FC = () => {
                             </VStack>
                             
                             <VStack align="start" gap={8} w="full">
-                                <Link 
-                                    href="https://www.google.com/maps/search/?api=1&query=Masinde+Muliro+University+Kakamega"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    _hover={{ textDecoration: 'none' }}
-                                >
-                                    <HStack gap={6} _hover={{ opacity: 0.8 }} transition="opacity 0.2s">
-                                        <Box boxSize="60px" borderRadius="2xl" bg="whiteAlpha.100" border="1px solid" borderColor="whiteAlpha.200" display="flex" alignItems="center" justifyContent="center">
-                                            <Icon as={FaMapMarkerAlt} color="fuchsia.400" fontSize="2xl" />
-                                        </Box>
-                                        <VStack align="start" gap={1}>
-                                            <Text fontWeight="black" fontSize="lg">MMUST-Kakamega</Text>
-                                            <Text color="whiteAlpha.600" fontSize="md">Masinde Muliro University</Text>
-                                        </VStack>
-                                    </HStack>
-                                </Link>
+                                <DialogRoot>
+                                    <Tooltip content="Click to view map" showArrow>
+                                        <DialogTrigger asChild>
+                                            <Box cursor="pointer" w="full" _hover={{ textDecoration: 'none' }}>
+                                                <HStack gap={6} _hover={{ opacity: 0.8 }} transition="opacity 0.2s">
+                                                    <Box boxSize="60px" borderRadius="2xl" bg="whiteAlpha.100" border="1px solid" borderColor="whiteAlpha.200" display="flex" alignItems="center" justifyContent="center">
+                                                        <Icon as={FaMapMarkerAlt} color="fuchsia.400" fontSize="2xl" />
+                                                    </Box>
+                                                    <VStack align="start" gap={1}>
+                                                        <Text fontWeight="black" fontSize="lg">MMUST-Kakamega</Text>
+                                                        <Text color="whiteAlpha.600" fontSize="md">Masinde Muliro University</Text>
+                                                    </VStack>
+                                                </HStack>
+                                            </Box>
+                                        </DialogTrigger>
+                                    </Tooltip>
+                                    <DialogContent bg="#0f172a" color="white" borderRadius="2xl" border="1px solid" borderColor="whiteAlpha.200">
+                                        <DialogHeader>
+                                            <DialogTitle fontWeight="bold">Our Location</DialogTitle>
+                                        </DialogHeader>
+                                        <DialogCloseTrigger color="whiteAlpha.800" _hover={{ bg: "whiteAlpha.200" }} />
+                                        <DialogBody pb={6}>
+                                            <Box w="full" h="400px" borderRadius="xl" overflow="hidden" boxShadow="lg">
+                                                <iframe 
+                                                    width="100%" 
+                                                    height="100%" 
+                                                    style={{ border: 0 }} 
+                                                    loading="lazy" 
+                                                    allowFullScreen 
+                                                    src="https://maps.google.com/maps?q=Masinde%20Muliro%20University%20Kakamega&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                                                ></iframe>
+                                            </Box>
+                                        </DialogBody>
+                                    </DialogContent>
+                                </DialogRoot>
                                 <HStack gap={6}>
                                     <Box boxSize="60px" borderRadius="2xl" bg="whiteAlpha.100" border="1px solid" borderColor="whiteAlpha.200" display="flex" alignItems="center" justifyContent="center">
                                         <Icon as={FaPhone} color="cyan.400" fontSize="2xl" />

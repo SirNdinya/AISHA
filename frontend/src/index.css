@@ -3,11 +3,12 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+:root, .dark {
   --terminal-bg: #050505;
   --terminal-card: #0A0A0A;
   --terminal-border: rgba(255, 255, 255, 0.1);
   --terminal-accent: #06B6D4;
+  --text-primary: #F8FAFC;
   --brand-cyan: #06B6D4;
   --brand-fuchsia: #D946EF;
   --brand-pink: #EC4899;
@@ -17,6 +18,30 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.light {
+  --terminal-bg: #F8FAFC;
+  --terminal-card: #FFFFFF;
+  --terminal-border: #E2E8F0;
+  --terminal-accent: #0284C7;
+  --text-primary: #0F172A;
+}
+
+.midnight {
+  --terminal-bg: #000B18;
+  --terminal-card: #00152B;
+  --terminal-border: rgba(0, 150, 255, 0.2);
+  --terminal-accent: #38BDF8;
+  --text-primary: #E0F2FE;
+}
+
+.cyberpunk {
+  --terminal-bg: #090014;
+  --terminal-card: #1A0B2E;
+  --terminal-border: #D946EF;
+  --terminal-accent: #22D3EE;
+  --text-primary: #FDF4FF;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -24,5 +49,6 @@ body {
   font-size: 16px;
   font-family: 'Inter', system-ui, sans-serif;
   background-color: var(--terminal-bg);
-  color: #F8FAFC;
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }

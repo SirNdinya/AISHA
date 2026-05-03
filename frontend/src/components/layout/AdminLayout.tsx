@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Flex, Heading, HStack, Button, Text, Image } from '@chakra-ui/react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import ThemeToggle from '../common/ThemeToggle';
+import ThemeSwitcher from '../common/ThemeSwitcher';
 import type { RootState } from '../../store';
 import { logout } from '../../store/authSlice';
 
@@ -44,7 +44,7 @@ const AdminLayout: React.FC = () => {
                     <HStack gap={6}>
                         <Link to="/">Home Hub</Link>
                         <Link to="/admin/dashboard">Dashboard</Link>
-                        <ThemeToggle />
+                        <ThemeSwitcher />
                         <HStack>
                             <Text fontSize="sm" fontWeight="bold">{user.firstName} (Admin)</Text>
                             <Button size="sm" colorPalette="red" variant="solid" onClick={handleLogout}>Sign Out</Button>

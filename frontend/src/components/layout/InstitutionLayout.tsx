@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Flex, Heading, HStack, Button, Text, Image } from '@chakra-ui/react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import ThemeToggle from '../common/ThemeToggle';
+import ThemeSwitcher from '../common/ThemeSwitcher';
 import type { RootState } from '../../store';
 import { logout } from '../../store/authSlice';
 
@@ -43,7 +43,8 @@ const InstitutionLayout: React.FC = () => {
                     </HStack>
                     <HStack gap={6}>
                         <Link to="/institution/dashboard">Dashboard</Link>
-                        <ThemeToggle />
+                        <Link to="/institution/students">Students</Link>
+                        <ThemeSwitcher />
                         <HStack>
                             <Text fontSize="sm" fontWeight="bold">{user.firstName} (Coordinator)</Text>
                             <Button size="sm" variant="outline" colorPalette="red" onClick={handleLogout}>Sign out</Button>
