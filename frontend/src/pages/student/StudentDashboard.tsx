@@ -224,8 +224,8 @@ const StudentDashboard: React.FC = () => {
                 <Flex h="100%" align="center" justify="center" direction="column" gap={6}>
                     <Icon as={LuActivity} color="red.400" boxSize={12} />
                     <VStack gap={1} textAlign="center">
-                        <Text fontWeight="black" color="#F8FAFC" textTransform="uppercase" letterSpacing="widest">SECURE SYNC OFFLINE</Text>
-                        <Text fontSize="xs" color="#F8FAFC" fontWeight="bold">Institutional synchronization failed. Dashboard access is currently restricted.</Text>
+                        <Text fontWeight="black" color={{ base: "gray.900", _dark: "#F8FAFC" }} textTransform="uppercase" letterSpacing="widest">SECURE SYNC OFFLINE</Text>
+                        <Text fontSize="xs" color={{ base: "gray.900", _dark: "#F8FAFC" }} fontWeight="bold">Institutional synchronization failed. Dashboard access is currently restricted.</Text>
                         <Button mt={4} size="sm" colorPalette="red" variant="outline" onClick={() => dispatch(fetchDashboardData())}>
                             RETRY SYNC
                         </Button>
@@ -250,8 +250,8 @@ const StudentDashboard: React.FC = () => {
                         />
                     </Box>
                     <VStack gap={1} textAlign="center">
-                        <Text fontWeight="bold" color="#F8FAFC" textTransform="uppercase" letterSpacing="widest">Loading Dashboard</Text>
-                        <Text fontSize="xs" color="#F8FAFC" fontWeight="bold">Retrieving your records and placement status...</Text>
+                        <Text fontWeight="bold" color={{ base: "gray.900", _dark: "#F8FAFC" }} textTransform="uppercase" letterSpacing="widest">Loading Dashboard</Text>
+                        <Text fontSize="xs" color={{ base: "gray.900", _dark: "#F8FAFC" }} fontWeight="bold">Retrieving your records and placement status...</Text>
                     </VStack>
                 </Flex>
             </Box>
@@ -275,8 +275,8 @@ const StudentDashboard: React.FC = () => {
                         <VStack gap={6}>
                             <Icon as={LuGraduationCap} w={12} h={12} color="brand.400" />
                             <VStack gap={2}>
-                                <Heading size="md" color="#F8FAFC" textTransform="uppercase" letterSpacing="widest">Profile incomplete</Heading>
-                                <Text color="#F8FAFC" fontSize="sm" fontWeight="bold">Please provide your registration number to access your academic dashboard and matching opportunities.</Text>
+                                <Heading size="md" color={{ base: "gray.900", _dark: "#F8FAFC" }} textTransform="uppercase" letterSpacing="widest">Profile incomplete</Heading>
+                                <Text color={{ base: "gray.900", _dark: "#F8FAFC" }} fontSize="sm" fontWeight="bold">Please provide your registration number to access your academic dashboard and matching opportunities.</Text>
                             </VStack>
                             <Button
                                 colorPalette="brand"
@@ -300,7 +300,7 @@ const StudentDashboard: React.FC = () => {
                 <Flex justify="space-between" align="center" mb={1}>
                     <HStack>
                         <Icon as={LuActivity} color={progressColor} boxSize={3} />
-                        <Text fontSize="sm" color="#F8FAFC" fontWeight="bold" letterSpacing="widest" textTransform="uppercase">
+                        <Text fontSize="sm" color={{ base: "gray.900", _dark: "#F8FAFC" }} fontWeight="bold" letterSpacing="widest" textTransform="uppercase">
                             {progressText}
                         </Text>
                     </HStack>
@@ -338,7 +338,7 @@ const StudentDashboard: React.FC = () => {
                         >
                             <Flex justify="space-between" align="center" mb={4}>
                                 <VStack align="start" gap={0}>
-                                    <Heading size="md" color="#F8FAFC" fontWeight="black" letterSpacing="widest">ACADEMIC DATA</Heading>
+                                    <Heading size="md" color={{ base: "gray.900", _dark: "#F8FAFC" }} fontWeight="black" letterSpacing="widest">ACADEMIC DATA</Heading>
                                     <Text fontSize="sm" color="var(--terminal-accent)" fontWeight="black">VERIFIED DATA</Text>
                                 </VStack>
                             </Flex>
@@ -358,7 +358,7 @@ const StudentDashboard: React.FC = () => {
                                     (academicRecords || []).slice(0, 4).map((record: any) => (
                                         <Flex key={record.id} justify="space-between" align="center" py={{ base: 2, md: 3 }} borderBottom="1px solid" borderColor="gray.200">
                                             <VStack align="start" gap={0} flex={1} mr={2}>
-                                                <Text fontSize={{ base: "sm", md: "md" }} color="#F8FAFC" fontWeight="bold" lineClamp={1}>{record.unit_name}</Text>
+                                                <Text fontSize={{ base: "sm", md: "md" }} color={{ base: "gray.900", _dark: "#F8FAFC" }} fontWeight="bold" lineClamp={1}>{record.unit_name}</Text>
                                                 <Text fontSize="10px" color="var(--terminal-accent)" fontWeight="black" letterSpacing="wide">{record.unit_code} | SEMEST_{record.semester}</Text>
                                             </VStack>
                                             <Badge colorPalette={record.grade?.startsWith('A') ? 'green' : 'cyan'} variant="solid" px={{ base: 2, md: 3 }} py={1} borderRadius="md" fontSize={{ base: "xs", md: "sm" }} fontWeight="black">
@@ -423,7 +423,7 @@ const StudentDashboard: React.FC = () => {
                                     <Flex flex={1} align="center" justify="center" direction="column" gap={6} p={8} bg="var(--terminal-card)" borderRadius="3xl" border="1px dashed" borderColor="brand.400">
                                         <VStack gap={4} textAlign="center">
                                             <Icon as={LuBot} boxSize={12} color="brand.400" />
-                                            <Heading size="md" color="#F8FAFC" fontWeight="black" letterSpacing="widest">MATCHING STRATEGY</Heading>
+                                            <Heading size="md" color={{ base: "gray.900", _dark: "#F8FAFC" }} fontWeight="black" letterSpacing="widest">MATCHING STRATEGY</Heading>
                                             <Text fontSize="sm" color="var(--terminal-accent)" fontWeight="bold">How would you like to proceed with your placement?</Text>
                                             <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={4} w="full" mt={4}>
                                                 <Button
@@ -478,7 +478,7 @@ const StudentDashboard: React.FC = () => {
 
                                                         <HStack gap={2}>
                                                             <Icon as={LuSparkles} color="yellow.400" size="xs" />
-                                                            <Text fontSize="10px" color="#F8FAFC" fontWeight="black" letterSpacing="widest">OPTIMIZED</Text>
+                                                            <Text fontSize="10px" color={{ base: "gray.900", _dark: "#F8FAFC" }} fontWeight="black" letterSpacing="widest">OPTIMIZED</Text>
                                                         </HStack>
                                                     </HStack>
 
@@ -497,7 +497,7 @@ const StudentDashboard: React.FC = () => {
                                                             portrayedIcon={<Icon as={LuBuilding2} color="brand.400" boxSize={{ base: 6, md: 10 }} />}
                                                         />
                                                         <VStack align="start" gap={1} flex="1">
-                                                            <Heading size={{ base: "md", md: "lg" }} color="#F8FAFC" fontWeight="black" letterSpacing="tight">
+                                                            <Heading size={{ base: "md", md: "lg" }} color={{ base: "gray.900", _dark: "#F8FAFC" }} fontWeight="black" letterSpacing="tight">
                                                                 {matchIntelligence[0].job_title}
                                                             </Heading>
                                                             <Text fontSize={{ base: "xs", md: "sm" }} color="var(--terminal-accent)" fontWeight="black" letterSpacing="widest">
@@ -505,7 +505,7 @@ const StudentDashboard: React.FC = () => {
                                                             </Text>
                                                         </VStack>
                                                         <VStack align="end" gap={0} display={{ base: "none", sm: "flex" }}>
-                                                            <Text fontSize="3xl" color="#F8FAFC" fontWeight="black" lineHeight={1}>
+                                                            <Text fontSize="3xl" color={{ base: "gray.900", _dark: "#F8FAFC" }} fontWeight="black" lineHeight={1}>
                                                                 {matchIntelligence[0].match_score > 100 ? 100 : matchIntelligence[0].match_score}%
                                                             </Text>
                                                             <Text fontSize="9px" color="brand.400" fontWeight="black" letterSpacing="2px">MATCH SCORE</Text>

@@ -53,7 +53,7 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
                 </Box>
                 {(!isCollapsed || isMobile) && (
                     <VStack align="flex-start" gap={0}>
-                        <Text fontWeight="extrabold" fontSize="2xl" letterSpacing="tight" color="whiteAlpha.900">
+                        <Text fontWeight="extrabold" fontSize="2xl" letterSpacing="tight" color={{ base: "gray.900", _dark: "whiteAlpha.900" }}>
                             {portalName}
                         </Text>
                         <Text fontSize="10px" fontWeight="bold" color={`${accentColor}.400`} mt="-1">
@@ -71,8 +71,8 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
                     <IconButton
                         aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
                         variant="ghost"
-                        color="white"
-                        _hover={{ color: 'white', bg: 'whiteAlpha.100' }}
+                        color={{ base: "gray.600", _dark: "white" }}
+                        _hover={{ color: { base: "gray.900", _dark: "white" }, bg: { base: "gray.100", _dark: "whiteAlpha.100" } }}
                         size="sm"
                         rounded="lg"
                         onClick={onToggle}
@@ -98,9 +98,9 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
                         px={(isCollapsed && !isMobile) ? 0 : 4}
                         py={3}
                         gap={3}
-                        color="whiteAlpha.800"
+                        color={{ base: "gray.700", _dark: "whiteAlpha.800" }}
                         opacity={0.8}
-                        _hover={{ opacity: 1, bg: 'whiteAlpha.100', color: 'white' }}
+                        _hover={{ opacity: 1, bg: { base: 'gray.100', _dark: 'whiteAlpha.100' }, color: { base: 'gray.900', _dark: 'white' } }}
                         borderRadius="12px"
                         justify={(isCollapsed && !isMobile) ? 'center' : 'flex-start'}
                     >
@@ -129,9 +129,9 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
                             px={(isCollapsed && !isMobile) ? 0 : 4}
                             py={3}
                             gap={3}
-                            color="whiteAlpha.800"
+                            color={{ base: "gray.700", _dark: "whiteAlpha.800" }}
                             opacity={0.8}
-                            _hover={{ opacity: 1, bg: 'whiteAlpha.100', color: 'white' }}
+                            _hover={{ opacity: 1, bg: { base: 'gray.100', _dark: 'whiteAlpha.100' }, color: { base: 'gray.900', _dark: 'white' } }}
                             borderRadius="12px"
                             justify={(isCollapsed && !isMobile) ? 'center' : 'flex-start'}
                         >
@@ -181,6 +181,8 @@ const UnifiedSidebar: React.FC<UnifiedSidebarProps> = ({
             w={isCollapsed ? '80px' : '280px'}
             h="calc(100vh - 32px)"
             className="glass-panel"
+            bg={{ base: "white", _dark: "transparent" }}
+            boxShadow={{ base: "xl", _dark: "none" }}
             position="fixed"
             left="4"
             top="4"

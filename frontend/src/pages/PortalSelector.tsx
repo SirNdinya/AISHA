@@ -411,50 +411,26 @@ const PortalSelector: React.FC = () => {
                             </VStack>
                             
                             <VStack align="start" gap={8} w="full">
-                                <DialogRoot placement="center">
-                                    <Tooltip content="Click to view map" showArrow>
-                                        <DialogTrigger asChild>
-                                            <Box cursor="pointer" w="full" _hover={{ textDecoration: 'none' }}>
-                                                <HStack gap={6} _hover={{ opacity: 0.8 }} transition="opacity 0.2s">
-                                                    <Box boxSize="60px" borderRadius="2xl" bg="whiteAlpha.100" border="1px solid" borderColor="whiteAlpha.200" display="flex" alignItems="center" justifyContent="center">
-                                                        <Icon as={FaMapMarkerAlt} color="fuchsia.400" fontSize="2xl" />
-                                                    </Box>
-                                                    <VStack align="start" gap={1}>
-                                                        <Text fontWeight="black" fontSize="lg">MMUST-Kakamega</Text>
-                                                        <Text color="whiteAlpha.600" fontSize="md">Masinde Muliro University</Text>
-                                                    </VStack>
-                                                </HStack>
-                                            </Box>
-                                        </DialogTrigger>
-                                    </Tooltip>
-                                    <DialogContent 
-                                        bg="#0f172a" 
-                                        color="white" 
-                                        borderRadius="2xl" 
-                                        border="1px solid" 
-                                        borderColor="whiteAlpha.200"
-                                        w={{ base: "92vw", md: "700px" }}
-                                        maxW="95vw"
-                                        mx="auto"
+                                <Tooltip content="Click to view map" showArrow>
+                                    <Link 
+                                        href="https://www.google.com/maps/search/?api=1&query=Masinde+Muliro+University+Kakamega"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        _hover={{ textDecoration: 'none' }}
+                                        w="full"
+                                        display="block"
                                     >
-                                        <DialogHeader>
-                                            <DialogTitle fontWeight="bold">Our Location</DialogTitle>
-                                        </DialogHeader>
-                                        <DialogCloseTrigger color="whiteAlpha.800" _hover={{ bg: "whiteAlpha.200" }} />
-                                        <DialogBody pb={6} px={{ base: 4, md: 6 }}>
-                                            <Box w="full" h={{ base: "300px", md: "450px" }} borderRadius="xl" overflow="hidden" boxShadow="lg">
-                                                <iframe 
-                                                    width="100%" 
-                                                    height="100%" 
-                                                    style={{ border: 0 }} 
-                                                    loading="lazy" 
-                                                    allowFullScreen 
-                                                    src="https://maps.google.com/maps?q=Masinde%20Muliro%20University%20Kakamega&t=&z=15&ie=UTF8&iwloc=&output=embed"
-                                                ></iframe>
+                                        <HStack gap={6} _hover={{ opacity: 0.8 }} transition="opacity 0.2s">
+                                            <Box boxSize="60px" borderRadius="2xl" bg="whiteAlpha.100" border="1px solid" borderColor="whiteAlpha.200" display="flex" alignItems="center" justifyContent="center">
+                                                <Icon as={FaMapMarkerAlt} color="fuchsia.400" fontSize="2xl" />
                                             </Box>
-                                        </DialogBody>
-                                    </DialogContent>
-                                </DialogRoot>
+                                            <VStack align="start" gap={1}>
+                                                <Text fontWeight="black" fontSize="lg">MMUST-Kakamega</Text>
+                                                <Text color="whiteAlpha.600" fontSize="md">Masinde Muliro University</Text>
+                                            </VStack>
+                                        </HStack>
+                                    </Link>
+                                </Tooltip>
                                 <HStack gap={6}>
                                     <Box boxSize="60px" borderRadius="2xl" bg="whiteAlpha.100" border="1px solid" borderColor="whiteAlpha.200" display="flex" alignItems="center" justifyContent="center">
                                         <Icon as={FaPhone} color="cyan.400" fontSize="2xl" />
