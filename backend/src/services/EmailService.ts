@@ -31,19 +31,21 @@ class EmailService {
         const isGmail = smtpHost?.toLowerCase().includes('gmail');
 
         if (isGmail) {
-            console.log('[EmailService] 📧 Using GMAIL mode with Port 465 (Implicit SSL, IPv4)');
+            console.log('[EmailService] 📧 Using GMAIL mode with Port 465 (Implicit SSL, Direct IP)');
             this.transporter = nodemailer.createTransport({
-                host: 'smtp.gmail.com',
-                port: 465,         // Changed from 587
-                secure: true,      // Changed to true for Port 465
-                family: 4,         // Keep this! It fixed your first error.
+                host: '74.125.142.108', // Direct IPv4 for smtp.gmail.com
+                port: 465,         
+                secure: true,      
+                family: 4,         
                 auth: {
                     user: smtpUser,
                     pass: smtpPass,
                 },
-                // Adding a short timeout so you don't wait 2 minutes to fail
-                connectionTimeout: 10000, // 10 seconds
-                greetingTimeout: 10000,   // 10 seconds
+                tls: {
+                    servername: 'smtp.gmail.com' // REQUIRED for direct IP
+                },
+                connectionTimeout: 10000, 
+                greetingTimeout: 10000,   
             } as any);
         } else {
             console.log(`[EmailService] 🌐 Using custom SMTP mode: ${smtpHost}:${smtpPort}`);
