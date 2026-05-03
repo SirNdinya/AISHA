@@ -1,11 +1,10 @@
-
 import React from 'react';
 import { Box, Flex, HStack, Text, Avatar, Icon, Separator, VStack, Input } from '@chakra-ui/react';
 import { LuSearch } from 'react-icons/lu';
 import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 import type { RootState } from '../../../store';
-import ThemeToggle from '../../../components/common/ThemeToggle';
+import ThemeSwitcher from '../../../components/common/ThemeSwitcher';
 import NotificationCenter from '../../../components/common/NotificationCenter';
 
 const CompanyHeader: React.FC = () => {
@@ -81,7 +80,7 @@ const CompanyHeader: React.FC = () => {
                 <HStack gap={6}>
                     <HStack gap={4} display={{ base: "none", lg: "flex" }}>
                         <NotificationCenter />
-                        <ThemeToggle />
+                        <ThemeSwitcher />
                     </HStack>
 
                     <Separator orientation="vertical" h="30px" opacity={0.1} />

@@ -411,7 +411,7 @@ const PortalSelector: React.FC = () => {
                             </VStack>
                             
                             <VStack align="start" gap={8} w="full">
-                                <DialogRoot>
+                                <DialogRoot placement="center">
                                     <Tooltip content="Click to view map" showArrow>
                                         <DialogTrigger asChild>
                                             <Box cursor="pointer" w="full" _hover={{ textDecoration: 'none' }}>
@@ -427,13 +427,22 @@ const PortalSelector: React.FC = () => {
                                             </Box>
                                         </DialogTrigger>
                                     </Tooltip>
-                                    <DialogContent bg="#0f172a" color="white" borderRadius="2xl" border="1px solid" borderColor="whiteAlpha.200">
+                                    <DialogContent 
+                                        bg="#0f172a" 
+                                        color="white" 
+                                        borderRadius="2xl" 
+                                        border="1px solid" 
+                                        borderColor="whiteAlpha.200"
+                                        w={{ base: "92vw", md: "700px" }}
+                                        maxW="95vw"
+                                        mx="auto"
+                                    >
                                         <DialogHeader>
                                             <DialogTitle fontWeight="bold">Our Location</DialogTitle>
                                         </DialogHeader>
                                         <DialogCloseTrigger color="whiteAlpha.800" _hover={{ bg: "whiteAlpha.200" }} />
-                                        <DialogBody pb={6}>
-                                            <Box w="full" h="400px" borderRadius="xl" overflow="hidden" boxShadow="lg">
+                                        <DialogBody pb={6} px={{ base: 4, md: 6 }}>
+                                            <Box w="full" h={{ base: "300px", md: "450px" }} borderRadius="xl" overflow="hidden" boxShadow="lg">
                                                 <iframe 
                                                     width="100%" 
                                                     height="100%" 

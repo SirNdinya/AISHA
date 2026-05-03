@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../../store/authSlice';
 import type { AppDispatch, RootState } from '../../../store';
 import NotificationCenter from '../../../components/common/NotificationCenter';
+import ThemeSwitcher from '../../../components/common/ThemeSwitcher';
 
 const BACKEND_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api')
     .replace(/\/api(.*)?$/, '');
@@ -111,6 +112,7 @@ const StudentHeader: React.FC<StudentHeaderProps> = ({ onMenuClick }) => {
                         <HStack gap={{ base: 4, md: 8 }}>
                             <HStack gap={{ base: 2, md: 5 }}>
                                 <NotificationCenter />
+                                <ThemeSwitcher />
                                 <IconButton
                                     aria-label="Settings"
                                     variant="ghost"
