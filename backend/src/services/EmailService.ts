@@ -93,7 +93,7 @@ class EmailService {
         });
     }
 
-    private async sendMail(to: string, subject: string, html: string) {
+    private async sendMail(to: string, subject: string, html: string, replyTo?: string) {
         try {
             const from = process.env.SMTP_USER || process.env.EMAIL_FROM || 'aishaadmin@gmail.com';
             
@@ -106,6 +106,7 @@ class EmailService {
                 const mail = new MailComposer({
                     to: to,
                     from: from,
+                    replyTo: replyTo, // Allows clicking 'Reply' to email the person who filled the form
                     subject: subject,
                     html: html,
                     textEncoding: 'base64'
@@ -139,6 +140,7 @@ class EmailService {
             const mailOptions = {
                 from: from,
                 to,
+                replyTo, // Allows clicking 'Reply' to email the person who filled the form
                 subject,
                 html,
             };
@@ -239,7 +241,7 @@ class EmailService {
                 </div>
             </div>
         `;
-        return this.sendMail(to, subject, html);
+        return this.sendMail(to, subject, html, senderEmail);
     }
 }
 
