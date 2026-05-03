@@ -1,10 +1,22 @@
 import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import path from 'path';
 
 class EmailService {
-    private transporter;
+    private transporter: any = null;
+    private resendClient: Resend | null = null;
+    private isResend = false;
 
     constructor() {
+        // 1. Check if we should use Resend API
+        if (process.env.RESEND_API_KEY) {
+            console.log('[EmailService] 🚀 RESEND_API_KEY detected. Using Resend API for robust cloud email delivery.');
+            this.resendClient = new Resend(process.env.RESEND_API_KEY);
+            this.isResend = true;
+            return; // Skip Nodemailer initialization
+        }
+
+        // 2. Fallback to Nodemailer for Local Development
         const smtpHost = process.env.SMTP_HOST;
         const smtpPort = process.env.SMTP_PORT || '587';
         const smtpUser = process.env.SMTP_USER;
@@ -19,9 +31,8 @@ class EmailService {
             from: process.env.EMAIL_FROM || 'NOT_SET (Will use fallback)'
         });
 
-        // CRITICAL: Prevent defaulting to localhost if SMTP_HOST is missing
         if (!smtpHost) {
-            const errorMsg = '[EmailService] ❌ CRITICAL CONFIG ERROR: SMTP_HOST environment variable is missing. Check your Render dashboard or .env file.';
+            const errorMsg = '[EmailService] ❌ CRITICAL CONFIG ERROR: SMTP_HOST or RESEND_API_KEY is missing. Check your Render dashboard or .env file.';
             console.error(errorMsg);
             if (process.env.NODE_ENV === 'production') {
                 throw new Error(errorMsg);
@@ -52,21 +63,19 @@ class EmailService {
             this.transporter = nodemailer.createTransport({
                 host: smtpHost,
                 port: parseInt(smtpPort),
-                secure: false, // true for 465, false for other ports
-                family: 4, // Force IPv4 to prevent ENETUNREACH
+                secure: false, 
+                family: 4, 
                 auth: {
                     user: smtpUser,
                     pass: smtpPass,
                 },
                 tls: {
-                    // Do not fail on invalid certs
                     rejectUnauthorized: false
                 }
             } as any);
         }
 
-        // Verify connection as soon as service is initialized
-        this.transporter.verify((error: Error | null, success: boolean) => {
+        this.transporter?.verify((error: Error | null, success: boolean) => {
             if (error) {
                 console.error('[EmailService] ❌ Transporter Connection Error:', error.message);
             } else {
@@ -76,10 +85,32 @@ class EmailService {
     }
 
     private async sendMail(to: string, subject: string, html: string) {
-        console.log(`[EmailService] SMTP_USER currently is: ${process.env.SMTP_USER}`);
-        console.log(`[EmailService] Attempting to send email to: ${to} | Subject: ${subject}`);
         try {
-            // Gmail often requires 'from' to match the authenticated user
+            // IF USING RESEND API
+            if (this.isResend && this.resendClient) {
+                // Resend requires a verified domain. If you don't have one, Resend lets you test with onboarding@resend.dev
+                const from = process.env.EMAIL_FROM || 'onboarding@resend.dev';
+                console.log(`[EmailService] Attempting to send email via RESEND to: ${to} | Subject: ${subject}`);
+                
+                const data = await this.resendClient.emails.send({
+                    from: from,
+                    to: [to],
+                    subject: subject,
+                    html: html,
+                });
+
+                if (data.error) {
+                    throw new Error(data.error.message);
+                }
+
+                console.log('[EmailService] Success! Message sent via Resend:', data.data?.id);
+                return data;
+            }
+
+            // IF USING NODEMAILER FALLBACK
+            console.log(`[EmailService] SMTP_USER currently is: ${process.env.SMTP_USER}`);
+            console.log(`[EmailService] Attempting to send email to: ${to} | Subject: ${subject}`);
+            
             const from = process.env.SMTP_HOST?.includes('gmail')
                 ? process.env.SMTP_USER
                 : (process.env.EMAIL_FROM || '"AISHA Platform" <noreply@aisha.ai>');
@@ -98,12 +129,10 @@ class EmailService {
             return info;
         } catch (error: any) {
             console.error('[EmailService] Critical Failure sending email:');
-            console.error('  - Error Code:', error.code);
-            console.error('  - Response:', error.response);
-            console.error('  - Stack:', error.stack);
-
+            console.error('  - Error Message:', error.message);
+            
             if (error.code === 'EAUTH') {
-                console.error('  - REASON: SMTP authentication failed. Check your SMTP_USER and SMTP_PASS (App Password if using Gmail).');
+                console.error('  - REASON: SMTP authentication failed. Check your credentials.');
             }
 
             throw new Error(`Email delivery failed: ${error.message}`);
@@ -172,7 +201,6 @@ class EmailService {
     }
 
     public async sendContactEmail(name: string, senderEmail: string, requestSubject: string, message: string) {
-        // Send to the system's FROM email, or if empty, fallback
         const to = process.env.EMAIL_FROM || process.env.SMTP_USER || 'contact@aisha.io';
         const subject = `[New Contact Message via AISHA Platform]: ${requestSubject}`;
         const html = `
