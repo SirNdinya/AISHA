@@ -41,7 +41,7 @@ class EmailService {
                     user: smtpUser,
                     pass: smtpPass,
                 }
-            });
+            } as any);
         } else {
             console.log(`[EmailService] 🌐 Using custom SMTP mode: ${smtpHost}:${smtpPort}`);
             this.transporter = nodemailer.createTransport({
@@ -57,7 +57,7 @@ class EmailService {
                     // Do not fail on invalid certs
                     rejectUnauthorized: false
                 }
-            });
+            } as any);
         }
 
         // Verify connection as soon as service is initialized
