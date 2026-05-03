@@ -1,42 +1,51 @@
 import nodemailer from 'nodemailer';
-import { Resend } from 'resend';
+import { google } from 'googleapis';
 import path from 'path';
 
 class EmailService {
     private transporter: any = null;
-    private resendClient: Resend | null = null;
-    private isResend = false;
+    private gmailClient: any = null;
 
     constructor() {
-        // 1. Check if we should use Resend API
-        if (process.env.RESEND_API_KEY) {
-            console.log('[EmailService] 🚀 RESEND_API_KEY detected. Using Resend API for robust cloud email delivery.');
-            this.resendClient = new Resend(process.env.RESEND_API_KEY);
-            this.isResend = true;
-            return; // Skip Nodemailer initialization
-        }
-
-        // 2. Fallback to Nodemailer for Local Development
+        // We will look for these 3 OAuth credentials instead of the old SMTP_PASS
+        const clientId = process.env.GMAIL_CLIENT_ID;
+        const clientSecret = process.env.GMAIL_CLIENT_SECRET;
+        const refreshToken = process.env.GMAIL_REFRESH_TOKEN;
+        
+        // Old SMTP settings (kept for local testing fallback)
         const smtpHost = process.env.SMTP_HOST;
         const smtpPort = process.env.SMTP_PORT || '587';
         const smtpUser = process.env.SMTP_USER;
         const smtpPass = process.env.SMTP_PASS;
 
-        console.log('[EmailService] 🛡️ Validating SMTP Configuration...');
-        console.log('[EmailService] Parameters:', {
-            host: smtpHost || 'MISSING',
-            port: smtpPort,
-            user: smtpUser || 'MISSING',
-            hasPass: !!smtpPass,
-            from: process.env.EMAIL_FROM || 'NOT_SET (Will use fallback)'
-        });
-
-        if (!smtpHost) {
-            const errorMsg = '[EmailService] ❌ CRITICAL CONFIG ERROR: SMTP_HOST or RESEND_API_KEY is missing. Check your Render dashboard or .env file.';
-            console.error(errorMsg);
-            if (process.env.NODE_ENV === 'production') {
-                throw new Error(errorMsg);
+        // 1. Google API / OAuth2 Mode (Best for Render Free Tier)
+        if (clientId && clientSecret && refreshToken) {
+            console.log('[EmailService] 🚀 Gmail OAuth2 credentials detected. Using Google API (HTTP Port 443).');
+            try {
+                const OAuth2 = google.auth.OAuth2;
+                const oauth2Client = new OAuth2(
+                    clientId,
+                    clientSecret,
+                    'https://developers.google.com/oauthplayground' // Redirect URL required by Google
+                );
+                
+                oauth2Client.setCredentials({
+                    refresh_token: refreshToken
+                });
+                
+                this.gmailClient = google.gmail({ version: 'v1', auth: oauth2Client });
+                return; // Skip Nodemailer initialization
+            } catch (error: any) {
+                console.error('[EmailService] ❌ Failed to initialize Google API client:', error.message);
             }
+        }
+
+        // 2. Nodemailer Fallback (For local testing without OAuth)
+        console.log('[EmailService] 🛡️ Validating SMTP Configuration (Fallback)...');
+        
+        if (!smtpHost) {
+            console.warn('[EmailService] ⚠️ No SMTP_HOST found and no GMAIL OAuth credentials found.');
+            return;
         }
 
         const isGmail = smtpHost?.toLowerCase().includes('gmail');
@@ -53,7 +62,7 @@ class EmailService {
                     pass: smtpPass,
                 },
                 tls: {
-                    servername: 'smtp.gmail.com' // REQUIRED for direct IP
+                    servername: 'smtp.gmail.com'
                 },
                 connectionTimeout: 10000, 
                 greetingTimeout: 10000,   
@@ -86,35 +95,47 @@ class EmailService {
 
     private async sendMail(to: string, subject: string, html: string) {
         try {
-            // IF USING RESEND API
-            if (this.isResend && this.resendClient) {
-                // Resend requires a verified domain. If you don't have one, Resend lets you test with onboarding@resend.dev
-                const from = process.env.EMAIL_FROM || 'onboarding@resend.dev';
-                console.log(`[EmailService] Attempting to send email via RESEND to: ${to} | Subject: ${subject}`);
+            const from = process.env.SMTP_USER || process.env.EMAIL_FROM || 'aishaadmin@gmail.com';
+            
+            // IF USING GOOGLE API (OAUTH2)
+            if (this.gmailClient) {
+                console.log(`[EmailService] Attempting to send email via Google API to: ${to} | Subject: ${subject}`);
                 
-                const data = await this.resendClient.emails.send({
+                // Use MailComposer from nodemailer to create the raw MIME email string safely
+                const MailComposer = require('nodemailer/lib/mail-composer');
+                const mail = new MailComposer({
+                    to: to,
                     from: from,
-                    to: [to],
                     subject: subject,
                     html: html,
+                    textEncoding: 'base64'
                 });
 
-                if (data.error) {
-                    throw new Error(data.error.message);
-                }
+                const mailBuffer = await mail.compile().build();
+                
+                // Google API requires Base64URL encoding (different from standard Base64)
+                const encodedMessage = mailBuffer.toString('base64')
+                    .replace(/\+/g, '-')
+                    .replace(/\//g, '_')
+                    .replace(/=+$/, '');
 
-                console.log('[EmailService] Success! Message sent via Resend:', data.data?.id);
-                return data;
+                const response = await this.gmailClient.users.messages.send({
+                    userId: 'me',
+                    requestBody: {
+                        raw: encodedMessage,
+                    },
+                });
+
+                console.log('[EmailService] Success! Message sent via Google API:', response.data.id);
+                return response.data;
             }
 
-            // IF USING NODEMAILER FALLBACK
-            console.log(`[EmailService] SMTP_USER currently is: ${process.env.SMTP_USER}`);
-            console.log(`[EmailService] Attempting to send email to: ${to} | Subject: ${subject}`);
-            
-            const from = process.env.SMTP_HOST?.includes('gmail')
-                ? process.env.SMTP_USER
-                : (process.env.EMAIL_FROM || '"AISHA Platform" <noreply@aisha.ai>');
+            // IF USING NODEMAILER FALLBACK (SMTP)
+            if (!this.transporter) {
+                throw new Error("Email service is not configured. Missing OAuth or SMTP credentials.");
+            }
 
+            console.log(`[EmailService] Attempting to send email via SMTP to: ${to} | Subject: ${subject}`);
             const mailOptions = {
                 from: from,
                 to,
@@ -122,17 +143,17 @@ class EmailService {
                 html,
             };
 
-            console.log(`[EmailService] Using FROM address: ${from}`);
-
             const info = await this.transporter.sendMail(mailOptions);
-            console.log('[EmailService] Success! Message sent: %s', info.messageId);
+            console.log('[EmailService] Success! Message sent via SMTP: %s', info.messageId);
             return info;
+            
         } catch (error: any) {
             console.error('[EmailService] Critical Failure sending email:');
             console.error('  - Error Message:', error.message);
             
-            if (error.code === 'EAUTH') {
-                console.error('  - REASON: SMTP authentication failed. Check your credentials.');
+            // Helpful message if the Refresh Token expires
+            if (error.message.includes('invalid_grant')) {
+                console.error('  - REASON: Google OAuth Refresh Token is expired or invalid. Please generate a new one.');
             }
 
             throw new Error(`Email delivery failed: ${error.message}`);
