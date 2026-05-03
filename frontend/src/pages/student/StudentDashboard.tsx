@@ -339,7 +339,7 @@ const StudentDashboard: React.FC = () => {
                             <Flex justify="space-between" align="center" mb={4}>
                                 <VStack align="start" gap={0}>
                                     <Heading size="md" color={{ base: "gray.900", _dark: "#F8FAFC" }} fontWeight="black" letterSpacing="widest">ACADEMIC DATA</Heading>
-                                    <Text fontSize="sm" color="var(--terminal-accent)" fontWeight="black">VERIFIED DATA</Text>
+                                    <Text fontSize="sm" color={{ base: "brand.600", _dark: "var(--terminal-accent)" }} fontWeight="black">VERIFIED DATA</Text>
                                 </VStack>
                             </Flex>
 
@@ -351,15 +351,15 @@ const StudentDashboard: React.FC = () => {
                                     </HStack>
                                 ) : (academicRecords || []).length === 0 ? (
                                     <Flex flex={1} align="center" justify="center" direction="column" gap={2}>
-                                        <Icon as={LuGraduationCap} color="whiteAlpha.200" boxSize={10} />
-                                        <Text fontSize="sm" color="var(--terminal-accent)" fontWeight="black" textAlign="center">No records found. Update profile to load.</Text>
+                                        <Icon as={LuGraduationCap} color={{ base: "gray.300", _dark: "whiteAlpha.200" }} boxSize={10} />
+                                        <Text fontSize="sm" color={{ base: "brand.600", _dark: "var(--terminal-accent)" }} fontWeight="black" textAlign="center">No records found. Update profile to load.</Text>
                                     </Flex>
                                 ) : (
                                     (academicRecords || []).slice(0, 4).map((record: any) => (
                                         <Flex key={record.id} justify="space-between" align="center" py={{ base: 2, md: 3 }} borderBottom="1px solid" borderColor="gray.200">
                                             <VStack align="start" gap={0} flex={1} mr={2}>
                                                 <Text fontSize={{ base: "sm", md: "md" }} color={{ base: "gray.900", _dark: "#F8FAFC" }} fontWeight="bold" lineClamp={1}>{record.unit_name}</Text>
-                                                <Text fontSize="10px" color="var(--terminal-accent)" fontWeight="black" letterSpacing="wide">{record.unit_code} | SEMEST_{record.semester}</Text>
+                                                <Text fontSize="10px" color={{ base: "brand.600", _dark: "var(--terminal-accent)" }} fontWeight="black" letterSpacing="wide">{record.unit_code} | SEMEST_{record.semester}</Text>
                                             </VStack>
                                             <Badge colorPalette={record.grade?.startsWith('A') ? 'green' : 'cyan'} variant="solid" px={{ base: 2, md: 3 }} py={1} borderRadius="md" fontSize={{ base: "xs", md: "sm" }} fontWeight="black">
                                                 {record.grade || 'N/A'} {record.mark ? `(${record.mark}%)` : ''}
@@ -368,7 +368,7 @@ const StudentDashboard: React.FC = () => {
                                     ))
                                 )}
                                 {(academicRecords || []).length > 4 && (
-                                    <Text fontSize="10px" color="var(--terminal-accent)" textAlign="center" mt={2} letterSpacing="widest" fontWeight="black">
+                                    <Text fontSize="10px" color={{ base: "brand.600", _dark: "var(--terminal-accent)" }} textAlign="center" mt={2} letterSpacing="widest" fontWeight="black">
                                         + {(academicRecords || []).length - 4} MORE_UNITS_IN_FULL_RECORDS
                                     </Text>
                                 )}
@@ -395,8 +395,8 @@ const StudentDashboard: React.FC = () => {
                         >
                             <HStack justify="space-between" mb={6}>
                                 <VStack align="start" gap={0}>
-                                    <Heading size="lg" color="var(--terminal-accent)" fontWeight="black" letterSpacing="widest">TOP RECOMMENDATION</Heading>
-                                    <Text fontSize="sm" color="var(--terminal-accent)" fontWeight="bold">OPTIMAL MATCH</Text>
+                                    <Heading size="lg" color={{ base: "brand.600", _dark: "var(--terminal-accent)" }} fontWeight="black" letterSpacing="widest">TOP RECOMMENDATION</Heading>
+                                    <Text fontSize="sm" color={{ base: "brand.600", _dark: "var(--terminal-accent)" }} fontWeight="bold">OPTIMAL MATCH</Text>
                                 </VStack>
                                 <Icon as={LuTarget} color="brand.500" boxSize={6} />
                             </HStack>
@@ -424,7 +424,7 @@ const StudentDashboard: React.FC = () => {
                                         <VStack gap={4} textAlign="center">
                                             <Icon as={LuBot} boxSize={12} color="brand.400" />
                                             <Heading size="md" color={{ base: "gray.900", _dark: "#F8FAFC" }} fontWeight="black" letterSpacing="widest">MATCHING STRATEGY</Heading>
-                                            <Text fontSize="sm" color="var(--terminal-accent)" fontWeight="bold">How would you like to proceed with your placement?</Text>
+                                            <Text fontSize="sm" color={{ base: "brand.600", _dark: "var(--terminal-accent)" }} fontWeight="bold">How would you like to proceed with your placement?</Text>
                                             <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }} gap={4} w="full" mt={4}>
                                                 <Button
                                                     height="60px"
@@ -500,7 +500,7 @@ const StudentDashboard: React.FC = () => {
                                                             <Heading size={{ base: "md", md: "lg" }} color={{ base: "gray.900", _dark: "#F8FAFC" }} fontWeight="black" letterSpacing="tight">
                                                                 {matchIntelligence[0].job_title}
                                                             </Heading>
-                                                            <Text fontSize={{ base: "xs", md: "sm" }} color="var(--terminal-accent)" fontWeight="black" letterSpacing="widest">
+                                                            <Text fontSize={{ base: "xs", md: "sm" }} color={{ base: "brand.600", _dark: "var(--terminal-accent)" }} fontWeight="black" letterSpacing="widest">
                                                                 {matchIntelligence[0].company_name}
                                                             </Text>
                                                         </VStack>
@@ -512,8 +512,8 @@ const StudentDashboard: React.FC = () => {
                                                         </VStack>
                                                     </Flex>
 
-                                                    <Box p={4} bg="whiteAlpha.50" borderRadius="2xl" borderLeft="4px solid" borderColor="var(--terminal-accent)" shadow="sm">
-                                                        <Text fontSize="sm" color="whiteAlpha.800" fontStyle="italic" lineHeight="relaxed">
+                                                    <Box p={4} bg={{ base: "gray.50", _dark: "whiteAlpha.50" }} borderRadius="2xl" borderLeft="4px solid" borderColor="var(--terminal-accent)" shadow="sm">
+                                                        <Text fontSize="sm" color={{ base: "gray.700", _dark: "whiteAlpha.800" }} fontStyle="italic" lineHeight="relaxed">
                                                             "{matchIntelligence[0].reasoning || matchIntelligence[0].match_reason || "Analyzing requirements and profile alignment..."}"
                                                         </Text>
                                                     </Box>
