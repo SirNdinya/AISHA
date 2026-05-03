@@ -405,31 +405,29 @@ const PortalSelector: React.FC = () => {
                             </VStack>
                             
                             <VStack align="start" gap={8} w="full">
-                                <HStack gap={6}>
-                                    <Box boxSize="60px" borderRadius="2xl" bg="whiteAlpha.100" border="1px solid" borderColor="whiteAlpha.200" display="flex" alignItems="center" justifyContent="center">
-                                        <Icon as={FaEnvelope} color="cyan.400" fontSize="2xl" />
-                                    </Box>
-                                    <VStack align="start" gap={1}>
-                                        <Text fontWeight="black" fontSize="lg">Email Us</Text>
-                                        <Text color="whiteAlpha.600" fontSize="md">contact@aisha.io</Text>
-                                    </VStack>
-                                </HStack>
-                                <HStack gap={6}>
-                                    <Box boxSize="60px" borderRadius="2xl" bg="whiteAlpha.100" border="1px solid" borderColor="whiteAlpha.200" display="flex" alignItems="center" justifyContent="center">
-                                        <Icon as={FaMapMarkerAlt} color="fuchsia.400" fontSize="2xl" />
-                                    </Box>
-                                    <VStack align="start" gap={1}>
-                                        <Text fontWeight="black" fontSize="lg">Our Headquarters</Text>
-                                        <Text color="whiteAlpha.600" fontSize="md">Innovation Hub, Nairobi</Text>
-                                    </VStack>
-                                </HStack>
+                                <Link 
+                                    href="https://www.google.com/maps/search/?api=1&query=Masinde+Muliro+University+Kakamega"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    _hover={{ textDecoration: 'none' }}
+                                >
+                                    <HStack gap={6} _hover={{ opacity: 0.8 }} transition="opacity 0.2s">
+                                        <Box boxSize="60px" borderRadius="2xl" bg="whiteAlpha.100" border="1px solid" borderColor="whiteAlpha.200" display="flex" alignItems="center" justifyContent="center">
+                                            <Icon as={FaMapMarkerAlt} color="fuchsia.400" fontSize="2xl" />
+                                        </Box>
+                                        <VStack align="start" gap={1}>
+                                            <Text fontWeight="black" fontSize="lg">MMUST-Kakamega</Text>
+                                            <Text color="whiteAlpha.600" fontSize="md">Masinde Muliro University</Text>
+                                        </VStack>
+                                    </HStack>
+                                </Link>
                                 <HStack gap={6}>
                                     <Box boxSize="60px" borderRadius="2xl" bg="whiteAlpha.100" border="1px solid" borderColor="whiteAlpha.200" display="flex" alignItems="center" justifyContent="center">
                                         <Icon as={FaPhone} color="cyan.400" fontSize="2xl" />
                                     </Box>
                                     <VStack align="start" gap={1}>
                                         <Text fontWeight="black" fontSize="lg">Call Support</Text>
-                                        <Text color="whiteAlpha.600" fontSize="md">+254 700 000 000</Text>
+                                        <Text color="whiteAlpha.600" fontSize="md">+254 794 987 200</Text>
                                     </VStack>
                                 </HStack>
                             </VStack>
@@ -447,7 +445,7 @@ const PortalSelector: React.FC = () => {
                                         _hover={{ transform: 'translateY(-2px)' }}
                                     >
                                         <a 
-                                            href="https://wa.me/254794986200"
+                                            href="https://wa.me/254794987200"
                                             target="_blank"
                                             rel="noopener noreferrer"
                                         >
