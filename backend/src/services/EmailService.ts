@@ -31,9 +31,12 @@ class EmailService {
         const isGmail = smtpHost?.toLowerCase().includes('gmail');
 
         if (isGmail) {
-            console.log('[EmailService] 📧 Using GMAIL service mode');
+            console.log('[EmailService] 📧 Using GMAIL mode with explicit settings (Port 465, IPv4)');
             this.transporter = nodemailer.createTransport({
-                service: 'gmail',
+                host: 'smtp.gmail.com',
+                port: 465,
+                secure: true, // true for 465
+                family: 4, // Force IPv4 to prevent ENETUNREACH
                 auth: {
                     user: smtpUser,
                     pass: smtpPass,
@@ -45,6 +48,7 @@ class EmailService {
                 host: smtpHost,
                 port: parseInt(smtpPort),
                 secure: false, // true for 465, false for other ports
+                family: 4, // Force IPv4 to prevent ENETUNREACH
                 auth: {
                     user: smtpUser,
                     pass: smtpPass,

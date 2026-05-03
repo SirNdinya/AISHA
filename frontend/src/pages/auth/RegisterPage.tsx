@@ -261,13 +261,7 @@ const RegisterPage: React.FC = () => {
                                     : (
                                         <VStack gap={4} align="stretch">
                                             <Text>Registration successful for <b>{formik.values.email}</b>, but we couldn't send the verification email.</Text>
-                                            {emailError && (
-                                                <Box p={3} bg="red.50" color="red.700" borderRadius="lg" fontSize="xs" textAlign="left" border="1px solid" borderColor="red.100">
-                                                    <Text fontWeight="bold" mb={1}>Technical Error Detail:</Text>
-                                                    <chakra.code fontSize="8pt" display="block">{emailError}</chakra.code>
-                                                </Box>
-                                            )}
-                                            <Text fontSize="sm" color="gray.800">Please check your SMTP settings or contact support.</Text>
+                                            <Text fontSize="sm" color="gray.800">Please try to log in and request a new verification email, or contact support.</Text>
                                         </VStack>
                                     )
                                 }
