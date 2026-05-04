@@ -290,7 +290,7 @@ const PortalSelector: React.FC = () => {
                                         {[
                                             { step: '01', title: 'Secure Login', desc: 'Access your dedicated student dashboard using your verified credentials.' },
                                             { step: '02', title: 'Dashboard Analytics', desc: 'Instantly view your AI match scores, application statuses, and top recommended roles.' },
-                                            { step: '03', title: 'Find Placements', desc: 'Navigate to "Opportunities" to scroll through targeted, high-confidence attachments.' },
+                                            { step: '03', title: 'Find Placement', desc: 'Navigate to "Opportunities" to scroll through targeted, high-confidence attachments.' },
                                             { step: '04', title: 'Manage Logbooks', desc: 'Use the "Logbook" tab to submit weekly activities and track supervisor signatures.' }
                                         ].map((item) => (
                                             <HStack key={item.step} gap={6} align="start">
