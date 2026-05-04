@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, Heading, Text, Button, VStack, HStack, Card, Icon, Container, SimpleGrid, Link, Input, Textarea, Image, Spinner } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FaGraduationCap, FaBuilding, FaUniversity, FaUserShield, FaWhatsapp, FaEnvelope, FaMapMarkerAlt, FaPhone, FaPaperPlane, FaArrowRight } from 'react-icons/fa';
+import { FaGraduationCap, FaBuilding, FaUniversity, FaUserShield, FaWhatsapp, FaEnvelope, FaMapMarkerAlt, FaPhone, FaPaperPlane, FaArrowRight, FaCheckCircle, FaPlayCircle } from 'react-icons/fa';
 import axios from 'axios';
 import apiClient from '../services/apiClient';
 import { DialogRoot, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogBody, DialogCloseTrigger } from '../components/ui/dialog';
@@ -238,6 +238,82 @@ const PortalSelector: React.FC = () => {
                             </HStack>
                         </VStack>
                     </motion.div>
+                </Container>
+            </Box>
+
+            {/* System Walkthrough Section */}
+            <Box id="walkthrough" py={24} position="relative" borderTop="1px solid" borderColor="whiteAlpha.100">
+                <Container maxW="container.xl">
+                    <VStack gap={16}>
+                        <VStack gap={5} textAlign="center">
+                            <Heading size="3xl" fontWeight="900" letterSpacing="tight">See AISHA in Action</Heading>
+                            <Text color="whiteAlpha.600" fontSize="xl" maxW="2xl">
+                                Watch how easy it is to navigate the Student Portal, from discovering opportunities to managing your daily logbooks.
+                            </Text>
+                        </VStack>
+
+                        <SimpleGrid columns={{ base: 1, lg: 2 }} gap={16} alignItems="center">
+                            {/* Video Container */}
+                            <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+                                <Box
+                                    borderRadius="3xl"
+                                    overflow="hidden"
+                                    boxShadow="0 20px 40px rgba(0,0,0,0.4)"
+                                    border="1px solid"
+                                    borderColor="whiteAlpha.200"
+                                    position="relative"
+                                    bg="rgba(15, 23, 42, 0.6)"
+                                    p={2}
+                                >
+                                    <Box borderRadius="2xl" overflow="hidden" position="relative" bg="black">
+                                        <Image
+                                            src="/student_guide.webp"
+                                            alt="Student Portal Guide Animation"
+                                            w="full"
+                                            objectFit="cover"
+                                            display="block"
+                                        />
+                                        <HStack position="absolute" top={4} left={4} bg="rgba(0,0,0,0.6)" backdropFilter="blur(10px)" px={4} py={2} borderRadius="full" border="1px solid" borderColor="whiteAlpha.300">
+                                            <Icon as={FaPlayCircle} color="cyan.400" />
+                                            <Text fontSize="sm" fontWeight="bold" color="white">Live Tour</Text>
+                                        </HStack>
+                                    </Box>
+                                </Box>
+                            </motion.div>
+
+                            {/* Step-by-Step Guide */}
+                            <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.2 }}>
+                                <VStack align="start" gap={8}>
+                                    <Heading size="xl" fontWeight="800">Student Portal Guide</Heading>
+                                    
+                                    <VStack align="start" gap={6} w="full">
+                                        {[
+                                            { step: '01', title: 'Secure Login', desc: 'Access your dedicated student dashboard using your verified credentials.' },
+                                            { step: '02', title: 'Dashboard Analytics', desc: 'Instantly view your AI match scores, application statuses, and top recommended roles.' },
+                                            { step: '03', title: 'Find Placements', desc: 'Navigate to "Opportunities" to scroll through targeted, high-confidence attachments.' },
+                                            { step: '04', title: 'Manage Logbooks', desc: 'Use the "Logbook" tab to submit weekly activities and track supervisor signatures.' }
+                                        ].map((item) => (
+                                            <HStack key={item.step} gap={6} align="start">
+                                                <Box flexShrink={0} mt={1}>
+                                                    <Box boxSize="40px" borderRadius="full" bg="cyan.500" bgGradient="to-br" gradientFrom="cyan.400" gradientTo="blue.500" display="flex" alignItems="center" justifyContent="center" boxShadow="lg">
+                                                        <Text fontWeight="black" color="white" fontSize="sm">{item.step}</Text>
+                                                    </Box>
+                                                </Box>
+                                                <VStack align="start" gap={1}>
+                                                    <Text fontWeight="bold" fontSize="xl" color="white">{item.title}</Text>
+                                                    <Text color="whiteAlpha.700" fontSize="md" lineHeight="1.6">{item.desc}</Text>
+                                                </VStack>
+                                            </HStack>
+                                        ))}
+                                    </VStack>
+                                    
+                                    <Button mt={4} colorPalette="cyan" variant="outline" size="lg" borderRadius="full" onClick={() => { const el = document.getElementById('portals'); el?.scrollIntoView({ behavior: 'smooth' }); }}>
+                                        Try it Yourself
+                                    </Button>
+                                </VStack>
+                            </motion.div>
+                        </SimpleGrid>
+                    </VStack>
                 </Container>
             </Box>
 
