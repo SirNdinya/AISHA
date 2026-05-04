@@ -130,6 +130,7 @@ const PortalSelector: React.FC = () => {
                             <Link href="#hero" fontWeight="600" fontSize="sm" color="whiteAlpha.800" _hover={{ color: 'cyan.400' }}>Home</Link>
                             <Link href="#about" fontWeight="600" fontSize="sm" color="whiteAlpha.800" _hover={{ color: 'cyan.400' }}>About</Link>
                             <Link href="#portals" fontWeight="600" fontSize="sm" color="whiteAlpha.800" _hover={{ color: 'cyan.400' }}>Portals</Link>
+                            <Link href="#walkthrough" fontWeight="600" fontSize="sm" color="whiteAlpha.800" _hover={{ color: 'cyan.400' }}>Student Guide</Link>
                             <Link href="#contact" fontWeight="600" fontSize="sm" color="whiteAlpha.800" _hover={{ color: 'cyan.400' }}>Contact</Link>
                         </HStack>
                         <HStack gap={4}>
