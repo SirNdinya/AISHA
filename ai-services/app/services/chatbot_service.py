@@ -164,10 +164,10 @@ class ChatbotService:
                         final_response += " " # Ensure trailing space
 
                 elif cap == "DOCUMENT_AUTOMATION":
-                    if "verify" in str(message).lower() or "blockchain" in str(message).lower():
-                        final_response += "Initiating blockchain integrity check... All system-generated documents are anchored to our private immutable ledger. "
+                    if "verify" in str(message).lower():
+                        final_response += "Initiating document integrity check... All system-generated documents are anchored to our secure database. "
                     else:
-                        final_response += "All necessary documents (Insurance, School Letter) are automatically generated and secured on the blockchain once you accept a placement. "
+                        final_response += "All necessary documents (Insurance, School Letter) are automatically generated once you accept a placement. "
 
                 elif cap == "DECISION_ANALYSIS" and self.db and user_id and user_id != "guest":
                     analysis = await self.chief.handle_complex_goal(user_id, message)
@@ -188,7 +188,8 @@ class ChatbotService:
                 elif cap == "GENERAL_LLM":
                     greeting_instr = "Greet the user warmly only if they said hello or this is the start of a conversation." if is_first_message else "Do NOT greet the user, start your response directly."
                     persona = (
-                        "You are AISHA (Autonomous Intelligent Student Herald Assistant). "
+                        "You are AISHA. The name AISHA is a reflection of our core technical philosophy: AI (Artificial Intelligence) represents smart decision making; S (Student) represents the primary user; H (Hub) represents the centralized ecosystem for stakeholders; and A represents Automation and Attachment focus. "
+                        "You also act as the official User Support Guide. Help students navigate the system, understand what it does, and be ready to answer common FAQs about attachments, logbooks, and insurance. "
                         f"{greeting_instr} "
                         "ANSWER the user's question directly and concisely. Be friendly and encouraging. "
                         "FORMATTING RULES: strictly FORBIDDEN to use asterisks (*) for any formatting. "
@@ -243,7 +244,7 @@ class ChatbotService:
             # Final Safety: If reasoning was assigned but resulted in no text, use GENERAL_LLM
             if not final_response.strip() and plan:
                 greeting_instr = "Briefly introduce yourself as AISHA." if is_first_message else "Do NOT introduce yourself, just answer."
-                persona = f"You are AISHA. {greeting_instr} Answer the user's query helpfully and concisely. FORMATTING: strictly FORBIDDEN to use asterisks (*)."
+                persona = f"You are AISHA. The name AISHA means AI (Artificial Intelligence), S (Student), H (Hub), and A (Automation and Attachment). You are the official User Support Guide, here to help students navigate the system and answer common FAQs. {greeting_instr} Answer the user's query helpfully and concisely. FORMATTING: strictly FORBIDDEN to use asterisks (*)."
                 gen_response = await self.llm.generate_response(message, system_prompt=persona)
                 final_response = gen_response
         except Exception as e:

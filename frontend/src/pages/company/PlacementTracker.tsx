@@ -25,7 +25,8 @@ import {
     LuClipboardCheck,
     LuPen,
     LuFileText,
-    LuCheck
+    LuCheck,
+    LuDownload
 } from 'react-icons/lu';
 
 const CompanyPlacementTracker: React.FC = () => {
@@ -42,6 +43,7 @@ const CompanyPlacementTracker: React.FC = () => {
         assessor_type: 'COMPANY'
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isDownloadingMap, setIsDownloadingMap] = useState<Record<string, boolean>>({});
 
     useEffect(() => {
         dispatch(fetchPlacements());
@@ -83,6 +85,25 @@ const CompanyPlacementTracker: React.FC = () => {
         }
     };
 
+    const handleDownloadLogbook = async (placementId: string, firstName: string, lastName: string) => {
+        try {
+            setIsDownloadingMap(prev => ({ ...prev, [placementId]: true }));
+            const response = await apiClient.get(`/placements/logbook/export?placement_id=${placementId}`, { responseType: 'blob' });
+            
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `Logbook_Archive_${firstName}_${lastName}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            toaster.create({ title: 'Logbook Downloaded Successfully', type: 'success' });
+        } catch (error) {
+            toaster.create({ title: 'Download Failed', description: 'Could not download the logbook.', type: 'error' });
+        } finally {
+            setIsDownloadingMap(prev => ({ ...prev, [placementId]: false }));
+        }
+    };
+
 
 
     if (isLoading && placements.length === 0) {
@@ -115,6 +136,37 @@ const CompanyPlacementTracker: React.FC = () => {
         return "Ongoing";
     };
 
+    const handleExportCSV = () => {
+        if (!uniquePlacements || uniquePlacements.length === 0) {
+            toaster.create({ title: 'No data to export', type: 'warning' });
+            return;
+        }
+
+        const headers = ["Student Name", "Course", "Assigned Role", "Department", "AI Score", "Start Date", "End Date", "1st Assessment", "2nd Assessment", "Status"];
+        const rows = uniquePlacements.map((p: any) => [
+            `"${p.first_name} ${p.last_name}"`,
+            `"${p.course_of_study}"`,
+            `"${p.job_title}"`,
+            `"${p.department_name || 'General'}"`,
+            p.match_score || "N/A",
+            new Date(p.start_date).toLocaleDateString(),
+            new Date(p.end_date).toLocaleDateString(),
+            p.first_assessment_date ? new Date(p.first_assessment_date).toLocaleDateString() : 'Not Set',
+            p.second_assessment_date ? new Date(p.second_assessment_date).toLocaleDateString() : 'Not Set',
+            getStatusText(p.start_date)
+        ]);
+
+        const csvContent = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", "Company_Placements_Report.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     return (
         <Box animation="slideUp 0.5s ease-out">
             <Flex justify="space-between" align="center" mb={10}>
@@ -127,7 +179,13 @@ const CompanyPlacementTracker: React.FC = () => {
                     </Text>
                 </Box>
                 <HStack gap={4}>
-                    <Button variant="outline" borderColor="whiteAlpha.300" color="#F8FAFC" rounded="full">
+                    <Button 
+                        variant="outline" 
+                        borderColor="whiteAlpha.300" 
+                        color="#F8FAFC" 
+                        rounded="full"
+                        onClick={handleExportCSV}
+                    >
                         <Icon as={LuFileText} mr={2} /> Export Report
                     </Button>
                 </HStack>
@@ -209,6 +267,15 @@ const CompanyPlacementTracker: React.FC = () => {
                                             onClick={() => navigate(`/company/logbooks?student_id=${p.student_id}`)}
                                         >
                                             <Icon as={LuClipboardCheck} boxSize={4} /> Assess
+                                        </Button>
+                                        <Button
+                                            size="sm"
+                                            variant="ghost"
+                                            color="green.300"
+                                            onClick={() => handleDownloadLogbook(p.id, p.first_name, p.last_name)}
+                                            loading={isDownloadingMap[p.id]}
+                                        >
+                                            <Icon as={LuDownload} boxSize={4} /> Logbook
                                         </Button>
                                     </HStack>
                                 </Table.Cell>

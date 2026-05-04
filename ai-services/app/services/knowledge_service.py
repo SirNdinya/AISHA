@@ -38,8 +38,8 @@ class KnowledgeService:
         self.knowledge_base: List[Dict[str, Any]] = [
             {
                 "id": "attachment_rules",
-                "content": "Students must have accepted a placement offer before they can officially start. Placements are recorded on the ledger.",
-                "tags": ["rules", "attachment", "blockchain"]
+                "content": "Students must have accepted a placement offer before they can officially start. Placements are recorded on the secure ledger.",
+                "tags": ["rules", "attachment", "ledger"]
             },
             {
                 "id": "insurance_info",
@@ -60,6 +60,51 @@ class KnowledgeService:
                 "id": "stipend_guidelines",
                 "content": "While not all attachments offer stipends, the system allows companies to list stipend amounts. Students can filter for paid opportunities in the search dashboard.",
                 "tags": ["stipend", "payment", "money"]
+            },
+            {
+                "id": "system_overview",
+                "content": "AISHA is an AI-powered system designed to automate the industrial attachment process. As a user support guide, the system helps students find placements, manage digital logbooks, and automatically generate necessary documents.",
+                "tags": ["overview", "system", "guide", "purpose"]
+            },
+            {
+                "id": "how_to_navigate",
+                "content": "To navigate the system: The 'Dashboard' shows your active status. The 'Opportunities' tab lists available attachments you can apply for. The 'Logbook' tab is where you record your daily activities and submit them weekly for supervisor review. The 'Documents' section holds your verified files like insurance and placement letters.",
+                "tags": ["navigate", "help", "tabs", "dashboard", "logbook"]
+            },
+            {
+                "id": "common_questions",
+                "content": "Common questions students ask: 1. How do I get an attachment? (Complete your profile, check 'Opportunities', and rely on our AI matching). 2. How do I fill my logbook? (Go to 'Logbook', fill in daily activities, and submit at the end of the week). 3. Is insurance mandatory? (Yes, you must have insurance before starting your placement). 4. How are matches made? (Based on a combination of your skills, academic grades, and career interests).",
+                "tags": ["faq", "common", "questions", "help"]
+            },
+            {
+                "id": "single_best_fit_and_window",
+                "content": "The system uses a 'Single Best Fit' matching logic. When matched with an opportunity, students have a 24-hour preference window to either accept or decline the offer. If they do not act within 24 hours, the offer automatically expires and is passed to the next best candidate.",
+                "tags": ["matching", "24-hour", "window", "preference", "timeout", "offer"]
+            },
+            {
+                "id": "nita_forms_removal",
+                "content": "AISHA does NOT use the outdated NITA forms. All references to NITA forms have been completely removed and replaced by our automated Cover Letter and Acceptance Letter generation systems.",
+                "tags": ["nita", "forms", "cover letter", "acceptance letter", "automation"]
+            },
+            {
+                "id": "system_architecture_gemini",
+                "content": "The platform's primary AI architecture is powered by the cloud-based Google Gemini models. Mentions of Ollama are obsolete; Gemini handles reasoning, transcript extraction, matching analysis, and chatbot interactions.",
+                "tags": ["architecture", "gemini", "ai", "ollama", "cloud"]
+            },
+            {
+                "id": "portals_and_dashboards",
+                "content": "AISHA has four main portals: 1. Student Portal (for applying and logging). 2. Company Portal (with an Opportunity Manager and Placement Tracker for supervisors). 3. Institution Portal (where university admins and department supervisors track students). 4. Admin Portal (for global system management).",
+                "tags": ["portals", "company", "institution", "student", "admin", "dashboard"]
+            },
+            {
+                "id": "digital_logbooks_workflow",
+                "content": "Logbooks are entirely digital. Students fill out daily activities and submit a weekly summary. Industry supervisors sign off digitally via the Placement Tracker, and University supervisors follow up via the Institution portal. These digital logbooks can be exported as official PDF documents.",
+                "tags": ["logbook", "pdf", "export", "supervisor", "digital", "signature"]
+            },
+            {
+                "id": "creators_and_developers",
+                "content": "The AISHA system was created by a dedicated team of students from Masinde Muliro University of Science and Technology (MMUST). The team includes Brian Ndinya as the Project Manager and Chief/Main Developer, alongside developers Obadiah Kipngetich, Emmanuel Muchina, and Joshua Kephas.",
+                "tags": ["developers", "creators", "team", "mmust", "brian ndinya", "obadiah kipngetich", "emmanuel muchina", "joshua kephas", "project manager", "chief developer", "main developer"]
             }
         ]
         
