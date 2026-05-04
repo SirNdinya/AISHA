@@ -257,9 +257,9 @@ const PortalSelector: React.FC = () => {
                                 { step: '01', title: 'Account Registration', desc: 'Create your secure profile on the platform using your academic details.' },
                                 { step: '02', title: 'Verify Account', desc: 'Complete the email verification process to activate your profile and unlock portal access.' },
                                 { step: '03', title: 'Profile & Preferences', desc: 'Update your matching preferences and skill sets to receive highly targeted attachments.' },
-                                { step: '04', title: 'My Placement', desc: 'Navigate to "My Placement" to scroll through and apply for high-confidence AI-matched attachments.' },
-                                { step: '05', title: 'Acceptance Letters', desc: 'View and download system-generated acceptance and cover letters securely under the "Documents" tab.' },
-                                { step: '06', title: 'Manage Logbooks', desc: 'Use the "Logbook" tab to submit your daily activities and track weekly supervisor signatures.' }
+                                { step: '04', title: 'My Placement', desc: 'View your designated AI-matched placement. You have a strict 24-hour window to review, or edit your preferences to get new matches.' },
+                                { step: '05', title: 'Acceptance Letters', desc: 'Once a placement is finalized, view and download your official Acceptance Letter directly from the "My Placement" tab.' },
+                                { step: '06', title: 'Manage Logbooks', desc: 'After your attachment commences, use the "Logbook" tab to submit your daily activities and track weekly supervisor signatures.' }
                             ].map((item) => (
                                 <motion.div key={item.step} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: parseInt(item.step) * 0.1 }}>
                                     <Box bg="rgba(15, 23, 42, 0.4)" p={8} h="full" borderRadius="3xl" border="1px solid" borderColor="whiteAlpha.100" _hover={{ borderColor: 'cyan.500', transform: 'translateY(-5px)', bg: 'rgba(15, 23, 42, 0.6)', boxShadow: '0 10px 30px rgba(6, 182, 212, 0.1)' }} transition="all 0.3s">
